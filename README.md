@@ -25,12 +25,18 @@ conjunction and ellipsoidal check for every low-mass companion seen to eclipse. 
 flags the commonest trap: near-equal eclipses with a tiny mass function, which signal a
 diluted SB1 amplitude.
 
-Earlier work mostly went the other way:
-- Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits.
-- arXiv:2310.12380 used Gaia spectroscopic orbits to reject transit candidates.
-
-We have not found a systematic search that starts from the Gaia astrometric orbits and
-predicts TESS eclipses for the whole catalogue (see *Prior art* below).
+**Prior work (corrected 2026-11-17).** Earlier versions of this README said we had found
+no systematic search that starts from Gaia astrometric orbits and predicts TESS eclipses.
+That was wrong. **Théo Chopard-Vilhem published one on 2026-10-13**: *"Eclipsing binaries
+at the conjunctions predicted by near-edge-on Gaia DR3 astrometric orbits"* (Zenodo,
+doi:10.5281/zenodo.23342416, the data and code of an AAS Research Note). It covers 1,726
+DR3 orbits with G < 14 and inclination within 1° of 90°, and reports seven new eclipsing
+binaries with periods of 26 to 242 days, plus forecasts. The idea and its first results
+are his. This project differs in sample size (24,157 orbits out to |cos i| < 0.2, about
+11.5° from edge-on), in pre-registering its predictions, in using Gaia RVs to say which
+conjunction is the transit, and in its brown-dwarf focus. Other earlier work went the
+other way: Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits, and
+arXiv:2310.12380 used Gaia spectroscopic orbits to reject transit candidates.
 
 Gaia DR4 is due on 2 December 2026. It will publish millions of orbits over a 5.5-year
 baseline, including 638,966 RVS SB1 orbits (`rvs_two_body_orbit`), plus Gaia's first
@@ -48,6 +54,18 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
 
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
+
+## Status (2026-11-17)
+
+- **Full DR3 search done** (`findings/2026-11-17-dr3-full-search-results.md`). Real
+  eclipses land where Gaia's orbits predict them, some repeating at Gaia's period to
+  within 0.03–0.07 d. There are about 21 eclipsing systems against 74 expected, so the
+  pre-registered rate test fails narrowly (24 strong matches, 25 needed). **No brown
+  dwarf or planet transits** at a predicted conjunction in DR3.
+- Which of those systems are new is being checked against the Chopard-Vilhem deposit,
+  SIMBAD, VSX and the TESS EB catalogue (`xmatch_prior.py`). None is called new until
+  then.
+- Next: Gaia DR4 on 2 December 2026.
 
 ## Method
 
@@ -109,6 +127,19 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
    - `covered_windows.csv` (0.3.0: every predicted window TESS covered; a covered
      window with no dip is a constraint);
    - `events.csv`, plots, `windows/*.png` (with `--window-plots`) and `report.md`.
+
+### What is already known (`xmatch_prior.py`, 0.6.2)
+
+For every strong match of the full search (`findings/2026-11-17-dr3-strong-matches.csv`):
+- whether it is in the 1,726-orbit selection of Chopard-Vilhem (2026), and in which
+  files of that Zenodo deposit (newest version) its Gaia DR3 source_id or TIC appears;
+- the Gaia DR3 inclination of each of its solutions and |i − 90°|;
+- SIMBAD main identifier, object types and number of references;
+- AAVSO VSX and TESS EB catalogue (Prša et al. 2022) entries within 15″, and every
+  VizieR table with a source within 3″.
+
+It grades pre-registered prediction P3 and lists the systems found in none of the
+sources. Only those can be reported as new.
 
 ### Archival test (`archival.py`)
 
@@ -297,6 +328,13 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - the circular and eccentric conjunction limits;
   - the Roche lobe, the Planck ratio and its inverse;
   - the twin flag, the population statistics and every verdict rule.
+- `xmatch_prior.py` (0.6.2):
+  - Gaia ids are found in any text file but the decimals of a float are not;
+  - TIC ids from `TIC 123` text and from tic columns;
+  - inclinations from Thiele-Innes constants worked by hand (0°, 60°, 90°);
+  - VSX and SIMBAD eclipsing types (ELL, EP and EXOR are not eclipsing);
+  - the P3 grade (exactly half is not "more than half");
+  - an offline end-to-end run with stubbed archives.
 - `archival.py`:
   - parsers for the ZTF, Gaia epoch-photometry (raw or zipped DataLink answers) and
     ASAS-SN formats, including the time conversions and the rejection of flagged and
@@ -317,7 +355,10 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 - The masses and radii are rough, for ranking only.
 - A small photocentre orbit can also come from a *luminous* near-twin companion. Many
   "substellar" rankings will be such binaries, so the eclipse depth, the colour and
-  SIMBAD/VSX must be checked before any claim.
+  SIMBAD/VSX must be checked before any claim. In the full DR3 search, the 554-d system
+  Gaia DR3 5267683998775216256 shows a 10% occultation, so its companion is luminous.
+- The predicted eclipse rate is about three times too high in DR3 (74 expected, ~21
+  seen). Until that is understood, treat the eclipse probabilities as upper limits.
 - The transit label assumes that AstroSpectroSB1 C/H follow the same RV convention as
   the EclipsingSpectro solutions used to test it, as the Gaia DR3 documentation states.
 - A dip that matches a predicted window is a **candidate**, not a discovery. It still
@@ -326,7 +367,7 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 - Dips at the start or end of a TESS orbit are where scattered light is strongest. The
   search flags them (`near_edge`), but it does not remove them. 0.4.3 removes the two
   artefact types seen so far (floor ramps and single-bin spikes), not smooth
-  scattered-light trends.
+  scattered-light trends or flux that falls to zero (seen on TIC 219744709).
 - The dip search does not report dips shorter than ~1.3 h (0.4.3).
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
@@ -352,7 +393,7 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -369,6 +410,8 @@ python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.4
     --k-rv 19.695569 --k-rv-err 1.3143485 --e-rv 0.2008897 --p-phot 0.8513754 \
     --m1 0.9556862 --r1 1.1634727 --data-dir data --out-dir out      # vet a short-period SB1
 python eblm_screen.py --schema gaiadr3 --n-tess 20 --data-dir data --out-dir out  # SB1 x EB
+python xmatch_prior.py --targets findings/2026-11-17-dr3-strong-matches.csv \
+    --data-dir data --out-dir out                                    # what is already known
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
@@ -442,9 +485,35 @@ checked against the published datamodel on release day.)
   - **No brown dwarf.** No companion of brown-dwarf mass is seen to eclipse in DR3.
   - **Radii.** Gaia's depths imply radii 1.1–1.7× the main sequence; the TESS test is
     pre-registered.
+- `findings/2026-11-17-dr3-full-search-results.md` (0.6.2): **the graded full DR3
+  search**, with the prior-art correction.
+  - 24,157 near-edge-on orbits; 287 targets reached TESS, 277 with data.
+  - P1 uninformative (one Gaia-EB target, a triple); **P2 fails narrowly** (24 strong
+    matches, 24.7 needed); P3 pending; **P4 passes** (no substellar strong match).
+  - Eclipses repeat at Gaia's period where Gaia predicts them, e.g. four eclipses of
+    Gaia DR3 6360777231720947328 (P = 58.73 d), each within 0.07 d of prediction.
+  - A 554-d doubly eclipsing binary (Gaia DR3 5267683998775216256) whose 4× different
+    eclipse lengths match Gaia's eccentricity and ω. Whether it is new is being checked.
+  - The 550-d K-dwarf system TIC 342194997 is recovered; it was reported first by
+    Chopard-Vilhem (2026).
+- `findings/2026-11-17-dr3-strong-matches.csv`: the 24 strong matches, with times,
+  depths, offsets and vetting status.
+- `data/dr3-full-search-v4/`: the raw outputs of that run (CC BY 4.0): every target with
+  its eclipse probability and window coverage (`tess_targets.csv`), all 2,505 dips
+  (`events.csv`), the 1,079 covered windows, the substellar list, the run summary and
+  the report. The full prior table (`gaia_edge_on_priors.csv`) is not included; rerun
+  `run_search.py --no-tess` to rebuild it.
 
 ## Prior art checked (2026-11-17)
 
+- **Chopard-Vilhem 2026, Zenodo doi:10.5281/zenodo.23342416** (AAS Research Note data and
+  code): eclipsing binaries at the conjunctions predicted by near-edge-on (|i − 90°| < 1°)
+  Gaia DR3 astrometric orbits; 1,726 orbits, seven new EBs with P = 26–242 d, forecasts.
+  The first systematic search of this kind. Missed by our earlier prior-art checks and
+  added on 2026-11-17.
+- github.com/alejandrozarco/tess-candidates-2026 (v1.3, 2026-10-19; not peer reviewed):
+  lists TIC 342194997 (P = 550.75 d, one 16.9% eclipse, credited to Chopard-Vilhem) and
+  other single eclipses at Gaia-predicted conjunctions.
 - Holl et al. 2023, A&A 674, A10 (arXiv:2206.05439): Gaia DR3 orbits and a few TOI
   coincidences.
 - arXiv:2310.12380: rejects K2/TESS candidates using Gaia DR3 *spectroscopic* (SB1)
@@ -467,8 +536,9 @@ checked against the published datamodel on release day.)
 - arXiv:2608.06453 (2026): spectroscopic follow-up of 227 Gaia DR3 binaries with high
   inferred companion masses. TESS light curves show some of them to be hierarchical
   triples (an inner eclipsing pair inside the astrometric orbit). That agrees with our
-  finding that DR3 astrometric orbits with Gaia eclipses are triples. It does not
-  predict eclipses from the astrometric orbits.
+  finding that DR3 astrometric orbits with Gaia eclipses are triples.
+- arXiv:2307.10812: oscillating red giants in Gaia DR3 binaries; notes that Gaia's
+  sampling rarely detects long-period eclipsing binaries itself.
 - arXiv:2512.04606 (A&A 2026): HD 128717 B / Gaia-6 B, a long-period brown dwarf found by
   Gaia astrometry and confirmed with radial velocities; no transit search.
 - github.com/coracle-us/gaia-dr4: searches DR4 epoch astrometry for outer companions of
@@ -480,6 +550,8 @@ checked against the published datamodel on release day.)
   (arXiv:1906.08219), TOI-263b (arXiv:2103.11150) and ZTF J2020+5033 (arXiv:2307.15729).
 - The EBLM project (Maxted, Triaud & Martin 2023 review; EBLM XVIII, arXiv:2511.23430):
   M dwarfs eclipsing F/G/K stars, found in WASP photometry and CORALIE RVs.
+- TESS EB catalogues: Prša et al. 2022 (sectors 1–26) and the TESS Ten Thousand catalogue
+  (arXiv:2506.05631).
 
 ## Credits and licence
 
@@ -490,5 +562,6 @@ Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-
 QLP light curves, TESScut); the TESS Input Catalog; ExoFOP-TESS and the NASA Exoplanet
 Archive TOI table; the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and
 VizieR (CDS) with the AAVSO VSX catalogue and the TESS EB catalogue (Prša et al. 2022);
-TESS pointings from the TESS Science Center and tess-point (tessgi). Uses numpy, astropy,
+TESS pointings from the TESS Science Center and tess-point (tessgi); the Chopard-Vilhem
+(2026) Zenodo deposit (CC BY 4.0) for the prior-work cross-match. Uses numpy, astropy,
 astroquery, lightkurve, matplotlib, skypatrol (pyasassn) and tess-point.
