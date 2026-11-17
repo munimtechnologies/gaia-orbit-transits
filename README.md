@@ -84,10 +84,17 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
      spectroscopic binaries (see Findings).
 5. **TESS light curves.** Look up the TIC ID (MAST) and download TESS light curves:
    SPOC 2-min first, then TESS-SPOC, then QLP, one per sector.
-6. **Dip search.**
+6. **Dip search** (`dipsearch.py`).
    - **0.4.2:** first drop cadences below half the median flux. In the watch-list run,
      QLP light curves of Sector 104 fall to about 10% at the start and end of each orbit,
      and those cadences are not quality-flagged.
+   - **0.4.3:** also drop every cadence within 0.5 d of such a cadence, because the flux
+     ramps down to the floor and back up over ~0.3 d and the ramps still made 3–22%
+     "dips". Drop **incoherent boxes**: coherence = in-box scatter / box-mean depth,
+     which is sqrt((1−p)/p) for a dip filling a fraction p of the box and sqrt(k−1) for
+     a one-bin spike. Boxes above 0.75 whose scatter is also > 3× the per-bin noise are
+     dropped before de-duplication, so the box that sits inside a real dip still wins.
+     Dips shorter than ~1.3 h are no longer reported.
    - Bin the light curves to 30 min and split them at gaps.
    - Detrend each piece with a running median three times as wide as the trial
      duration.
@@ -251,8 +258,15 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - results merge under one header;
   - capped or aborted ranges are split and the answer is complete;
   - plain network errors are not split.
-- `dipsearch.py` (0.4.2): broken cadences at 10% flux are dropped and counted. Without
-  the floor they dominate the search.
+- `dipsearch.py`:
+  - 0.4.2: broken cadences at 10% flux are dropped and counted. Without the floor they
+    dominate the search.
+  - 0.4.3: a floor with linear 0.3-d ramps (as on TIC 41898425 in Sector 104) gives a
+    > 1% "dip" without the pad and nothing with it.
+  - 0.4.3: one scattered 30-min bin at 0.8 (as on TIC 322271767) is an event without
+    the coherence cut and is rejected with it.
+  - 0.4.3: coherence values worked by hand (0, 1, √3, and 0.84 for the TIC 322271767
+    box). A 3-h flat dip and an 8-h V-shaped grazing dip are still recovered.
 - `vet_event.py`:
   - box depth with a sloped baseline;
   - repeat-epoch windows and covered period ranges, worked by hand;
@@ -310,7 +324,10 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   needs vetting: pixel-level centroids, nearby stars, known variables in VSX, SIMBAD and
   the TOI/CTOI lists, and the shape of the event.
 - Dips at the start or end of a TESS orbit are where scattered light is strongest. The
-  search flags them (`near_edge`), but it does not remove them.
+  search flags them (`near_edge`), but it does not remove them. 0.4.3 removes the two
+  artefact types seen so far (floor ramps and single-bin spikes), not smooth
+  scattered-light trends.
+- The dip search does not report dips shorter than ~1.3 h (0.4.3).
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
   Ground photometry of bright stars (G ≲ 12.5 in ZTF) can be affected by saturation.
@@ -386,6 +403,12 @@ checked against the published datamodel on release day.)
   - Six of the seven dips with Bayes factor > 3 are broken QLP cadences in Sector 104.
   - One edge-of-orbit dip on TIC 41898425 (Sector 69) is being vetted. It is not a
     candidate yet.
+- `findings/2026-11-17-watchlist-v2-results.md` (0.4.3): the re-run with the 0.4.2 floor.
+  - The floor removed the 10%-flux cadences but not the ramps around them (3–22% "dips"
+    remain), and single scattered bins made 7–10% 2-h "dips" on TIC 322271767. The goal
+    "artefacts gone" fails.
+  - 0.4.3 pads the floor by 0.5 d and drops incoherent boxes. Predictions W1–W3 for
+    the v3 re-run are written down before it runs.
 - `findings/2026-11-17-vet-41898425-prereg.md`: the fixed rules and predictions for
   vetting that event.
 - `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
