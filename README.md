@@ -1,6 +1,7 @@
 # gaia-orbit-transits
 
 **Do Gaia's astrometric orbits predict eclipses and transits that TESS can see?**
+**And can Gaia alone weigh the things it sees transiting?**
 
 Gaia DR3 published about 170,000 astrometric orbits of unresolved binaries. They are in
 the `nss_two_body_orbit` table, as `Orbital`, `OrbitalTargetedSearch*`,
@@ -13,6 +14,10 @@ windows and checks TESS light curves at those times. From 0.4.0 it also checks a
 ground-based and Gaia photometry (ZTF, ASAS-SN, Gaia DR3 epoch photometry), and it
 publishes forecasts of future transit windows, both those TESS will observe and those
 only the ground can see, before the data exist.
+
+From 0.5.0 it also works in the other direction. It starts from Gaia's own photometric
+transit candidates (`vari_planetary_transit`: 214 in DR3, 1,007 in DR4) and asks what
+Gaia's own radial velocities and orbits say about them (`transit_rv_screen.py`).
 
 Earlier work mostly went the other way:
 - Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits.
@@ -29,7 +34,8 @@ release day (`--schema gaiadr4`).
 orbit has a measured true mass (from astrometry) and radius (from the transit). That
 pairing is very rare and valuable for a long-period brown dwarf or giant planet. A
 long-period eclipsing binary with a Gaia astrometric orbit is also a strong mass and
-radius benchmark.
+radius benchmark. A Gaia transit with a Gaia orbit at the same period gives a mass, a
+radius and a period from one mission.
 
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
@@ -148,6 +154,43 @@ This stage vets a single dip with decision rules fixed in advance (`verdict()`):
   covered period range, and runs an injection check at each epoch.
 - **Catalogues.** A Gaia DR3 cone, SIMBAD and VSX (through VizieR).
 
+### Gaia transit candidates and Gaia radial velocities (`transit_rv_screen.py`, 0.5.0)
+
+This stage joins `vari_planetary_transit` to `gaia_source`, `astrophysical_parameters`,
+`nss_two_body_orbit` and `nss_acceleration_astro` in one archive query, then applies
+fixed rules:
+- **Same-period orbit.** An SB1 orbit at the transit period (n:m ≤ 3, within 0.2%) gives
+  m2 sin i from K and the FLAME mass. It is classed as planet, brown dwarf, star or
+  boundary from K ± 2σ.
+- **RV scatter.** For bright stars (`rv_method_used` = 1), the DR3 error model
+  ε = √(π/2N)·σ + 0.11 km/s gives the epoch scatter σ, and K ≥ √(2(σ² − σn²)).
+  - The noise ceiling σn defaults to 7 km/s.
+  - If K exceeds what 13 M_Jup can produce at P = 0.25 d, a planet-only system is
+    excluded at any period.
+- **Other orbits.** SB2 orbits and orbits at other periods are reported, and
+  accelerations mark outer companions.
+- **Catalogues.** SIMBAD (TAP) and VSX (VizieR TAP) lookups for every flagged star.
+- **Release day.** `--schema gaiadr4` runs the same rules on DR4.
+
+### Vetting a short-period SB1 / transit candidate (`vet_short_period.py`, 0.5.0)
+
+This stage vets one candidate with pre-registered rules (`verdict()`):
+1. **TESS light curves.** All sectors are used (SPOC > TESS-SPOC > QLP), detrended with a
+   2-d running median and binned to 10 min.
+2. **Period search.** Lomb–Scargle, then BLS. BLS refinement is run at the BLS best, 2×
+   the BLS best, the SB1 period, 2× the SB1 period and Gaia's photometric period.
+3. **Measurements.**
+   - A harmonic out-of-eclipse model (ellipsoidal, reflection, beaming).
+   - Primary, secondary, odd and even depths against that model. Their errors include the
+     error of the model extrapolated into the eclipse.
+4. **Physics checks.**
+   - R2 from the depth;
+   - m2 from K ± 2σ;
+   - the predicted ellipsoidal amplitude (Morris 1985);
+   - the central duration.
+5. **Verdict:** one of NO_ECLIPSE, PERIOD_CONFLICT, STELLAR_EB, MASS_TENSION or
+   TRANSITING_{BROWN_DWARF_CANDIDATE, BD_OR_VLM_BOUNDARY, VLM_STAR}.
+
 ## Checks (all run as unit tests)
 
 - The conjunction times equal the minima of the projected separation (brute force).
@@ -176,6 +219,22 @@ This stage vets a single dip with decision rules fixed in advance (`verdict()`):
   - repeat-epoch windows and covered period ranges, worked by hand;
   - the difference-image centroid;
   - neighbour statistics;
+  - every verdict rule.
+- `transit_rv_screen.py` (0.5.0):
+  - the RV constant (212.908 km/s) from GM☉;
+  - Earth's (0.0895 m/s) and Jupiter's (12.46 m/s) reflex velocities;
+  - the mass function, and round trips between mass and K;
+  - the DR3 error model;
+  - period ratios;
+  - WASP-18 b classed as a planet from Gaia's own SB1 (m2 sin i = 0.0100 M☉);
+  - the real hot Jupiter WASP-163 b not flagged;
+  - every class, and an offline end-to-end run.
+- `vet_short_period.py` (0.5.0):
+  - Kepler's law;
+  - the ellipsoidal amplitude, duration and mass range, worked by hand;
+  - the detrending and binning;
+  - a synthetic brown-dwarf eclipse with ellipsoidal and reflection terms, recovered
+    within its errors;
   - every verdict rule.
 - `archival.py`:
   - parsers for the ZTF, Gaia epoch-photometry (raw or zipped DataLink answers) and
@@ -213,13 +272,17 @@ This stage vets a single dip with decision rules fixed in advance (`verdict()`):
 - Anonymous Gaia archive access is limited to 60 s and 50,000 rows per query, 5 jobs at
   a time and 50 DataLink sources per request. Very large DR4 queries need many ranges and
   can be slow on release day.
+- The RV-scatter bound assumes a single sinusoid and the DR3 bright-star error model. RV
+  variability can come at any period, so it excludes a planet-only system; it does not
+  prove that the transit signal itself is an eclipsing binary. Gaia's transit periods
+  are often aliases.
 
 ## Run
 
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -231,9 +294,14 @@ python forecast.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 --m2
 python vet_event.py --tic 41898425 --ra 21.734801 --dec -41.059717 --t0 3192.263 \
     --dur-h 8 --pred-dur-h 11.68 --sector 69 --period 196.6738 --period-sd 0.8175 \
     --exp-depth 0.0105 --data-dir data --out-dir out                 # vet one event
+python transit_rv_screen.py --schema gaiadr3 --out-dir out            # Gaia transits x Gaia RVs
+python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.46023065 \
+    --k-rv 19.695569 --k-rv-err 1.3143485 --e-rv 0.2008897 --p-phot 0.8513754 \
+    --m1 0.9556862 --r1 1.1634727 --data-dir data --out-dir out      # vet a short-period SB1
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
+python transit_rv_screen.py --schema gaiadr4 --out-dir out            # DR4's 1,007 candidates
 ```
 
 (The DR4 table and column names come from the pre-release documentation. They will be
@@ -273,6 +341,15 @@ checked against the published datamodel on release day.)
   predictions about it, written before it ran.
 - `findings/2026-11-17-v4-amendment.md` (0.4.1): the Gaia archive's new anonymous limits,
   the archival scan fix and the forecast test fix. No prediction changed.
+- `findings/2026-11-17-dr3-transit-rv-screen.md` (0.5.0, preliminary):
+  - Gaia's own RVS data show that 9 of the 41 new Gaia DR3 transit candidates carry a
+    companion heavier than any planet (8 firm, 1 marginal). One is a double-lined
+    binary of two near-equal ~1 M☉ stars.
+  - Gaia alone recovers the mass of the transiting WASP-18 b: 10.5 ± 0.8 M_Jup.
+  - One new candidate, Gaia DR3 1622997463177004928, has an SB1 orbit with P = 0.460 d
+    and m2 sin i = 0.071 M☉, at the brown-dwarf / star boundary.
+- `findings/2026-11-17-tic207399049-prereg.md`: fixed rules and predictions for the TESS
+  vetting of that star, written before its light curves were read.
 
 ## Prior art checked (2026-11-17)
 
@@ -286,7 +363,8 @@ checked against the published datamodel on release day.)
 - Czavalinga et al. 2023, A&A 670, A75: close binaries with tertiary companions found in
   Gaia DR3 orbits (eclipsing pairs with outer orbits).
 - Panahi et al. 2022 (arXiv:2205.10197): Gaia DR3 photometric transit candidates checked
-  in TESS. That starts from Gaia photometry, not from astrometric orbits.
+  in TESS. That starts from Gaia photometry, not from astrometric orbits, and the
+  candidates were not vetted with Gaia's RVS data.
 - arXiv:2608.06453 (2026): spectroscopic follow-up of 227 Gaia DR3 binaries with high
   inferred companion masses. TESS light curves show some of them to be hierarchical
   triples (an inner eclipsing pair inside the astrometric orbit). That agrees with our
@@ -299,6 +377,8 @@ checked against the published datamodel on release day.)
 - Long-period transiting brown dwarfs found by TESS and radial velocities (for example
   TOI-5575b, arXiv:2507.09461; the four new long-period ones in A&A 2026, aa58244-25)
   were not found from Gaia astrometric orbits.
+- Transiting brown dwarfs with P < 1 d that we found all orbit M dwarfs: NGTS-7Ab
+  (arXiv:1906.08219), TOI-263b (arXiv:2103.11150) and ZTF J2020+5033 (arXiv:2307.15729).
 
 ## Credits and licence
 
@@ -306,8 +386,8 @@ By MV2 of Munim, Inc. (mv2@munimtech.com). Made with AI agents working in his na
 Code: Apache-2.0. Results and text: CC BY 4.0.
 Data: ESA Gaia DR3 (Gaia Collaboration), including epoch photometry, served by the ESA
 Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-SPOC and
-QLP light curves, TESScut); the TESS Input Catalog; the NASA Exoplanet Archive TOI table;
-the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and VizieR (CDS) with
-the AAVSO VSX catalogue; TESS pointings from the TESS Science Center and tess-point
-(tessgi). Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol (pyasassn)
-and tess-point.
+QLP light curves, TESScut); the TESS Input Catalog; ExoFOP-TESS and the NASA Exoplanet
+Archive TOI table; the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and
+VizieR (CDS) with the AAVSO VSX catalogue; TESS pointings from the TESS Science Center and
+tess-point (tessgi). Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol
+(pyasassn) and tess-point.
