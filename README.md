@@ -30,6 +30,13 @@ From 0.7.0 it uses the eclipses to test Gaia itself (`calib_eclipse_rate.py`): a
 within (R1 + R2)/a of edge-on must eclipse, so the eclipses TESS does and does not see
 measure how good Gaia DR3's inclinations and their errors really are.
 
+From 0.10.0 it asks a stellar-physics question with those systems: **are M dwarfs in
+0.5-5-day orbits larger than stellar models predict?** `eblm_fit.py` fits a physical
+eclipse model to the TESS light curve of every Gaia-weighed eclipsing low-mass companion.
+`eblm_infl.py` (0.11.0) compares the radii with the Baraffe et al. (2015) models. It tests
+the claim of Swayne et al. (2024) that M dwarfs in binaries with P < 5 d are inflated by
+about 6%, a claim that rests on five systems. EBLM XIX (2026) left that period range out.
+
 **Prior work (corrected 2026-11-17).** Earlier versions of this README said we had found
 no systematic search that starts from Gaia astrometric orbits and predicts TESS eclipses.
 That was wrong. **Théo Chopard-Vilhem published one on 2026-10-13**: *"Eclipsing binaries
@@ -60,12 +67,41 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
 - Eclipses are ground truth for Gaia's inclinations. If DR3's errors near 90° are too
   small, every eclipse or transit forecast made from them (DR4 included) needs the
   correction.
+- Gaia SB1 orbits plus TESS eclipses weigh and size M dwarfs without new spectroscopy.
+  DR4 can turn the few dozen short-period systems known today into hundreds, enough to
+  settle whether close orbits inflate M dwarfs.
 
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
 
-## Status (2026-11-17, 0.9.0)
+## Status (2026-11-17, 0.11.0)
 
+- **0.11.0: the short-period inflation test, against real models, pre-registered.**
+  - **Prior-art correction.** The 0.10.0 pre-registration said the short-period regime
+    was untested. EBLM XIX (Davis et al. 2026) did leave out every P < 5 d binary, but
+    **Swayne et al. 2024 (EBLM XI)** had already reported about 6% inflation for P < 5 d,
+    from 5 systems with P = 2.8-4.3 d. Our sample is mostly 0.5-3 d, so it is a larger,
+    shorter-period test of their claim, not a first look.
+  - **Reference model.** The rough main-sequence table used by eblm_screen and eblm_fit
+    is 3.2-3.7% larger than the BHAC15 5-Gyr isochrone at 0.2-0.4 M☉, as large as the
+    effect being tested. `eblm_infl.py` re-scores every radius against BHAC15 (1, 5 and
+    10 Gyr).
+  - Tests H1 (median inflation; INFLATED if the 95% lower bound > +3%) and H2 (Spearman
+    trend with period) are fixed in
+    `findings/2026-11-17-short-period-inflation-prereg.md`, before any eblm_fit result
+    exists.
+- **0.10.0: EBLM v1 graded; eblm_fit.**
+  - The TESS stage of the Gaia-only EBLM screen is graded
+    (`findings/2026-11-17-eblm-v1-results.md`). **E2 fails as run:** eblm_screen 0.1.0
+    called BoxLeastSquares without flux errors, so its SNR was 1-3 even for 10% eclipses,
+    and all 19 stars got NO_ECLIPSE although 17 show clear eclipses. E1, E3 and E8 pass.
+    E7 very probably fails, because VSX has imported Gaia DR3's eclipsing binaries, so
+    these systems are known variables. What is new is the Gaia-weighed masses and radii.
+  - `eblm_fit.py` replaces that stage with a limb-darkened eclipse model and measures the
+    primary's radius from the light curve. Its predictions G1-G6 are in
+    `findings/2026-11-17-eblm-fit-prereg.md`. The job is queued.
+  - The Sector 69 dip on TIC 41898425 is rejected as a PDC artefact
+    (`findings/2026-11-17-vet-41898425-results.md`).
 - **0.9.0: forecast graded; deep eclipses and Kepler.**
   - The pre-registered forecast (job gaia-forecast-v2) is graded in
     `findings/2026-11-17-forecast-results.md`. **F1, F2, F3 and F5 pass; F4 fails**:
@@ -117,7 +153,8 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
 - Which eclipsing systems are new is being checked against the Chopard-Vilhem deposit,
   SIMBAD, VSX and the TESS EB catalogue (`xmatch_prior.py`). None is called new until
   then.
-- Next: Gaia DR4 on 2 December 2026.
+- Next: the queued jobs (inclination calibration, eblm_fit, self-lensing, deepcheck,
+  cross-match), then Gaia DR4 on 2 December 2026.
 
 ## Method
 
@@ -394,9 +431,45 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
    - a pre-registered `verdict()`: NO_ECLIPSE, TWIN_AT_2P, HOT_COMPANION,
      LUMINOUS_COMPANION, MASS_TENSION_HEAVIER/LIGHTER, or
      [BD_]EBLM_{CONSISTENT, LARGE_RADIUS, SMALL_RADIUS}.
+   - **0.1.0 has a bug here** (no flux errors passed to BLS); use `eblm_fit.py`.
 6. **Catalogues.** SIMBAD, VSX and the TESS EB catalogue (Prša et al. 2022).
 7. **Outputs.** `sb1_eb_classified.csv`, `eblm_like.csv`, `eblm_tess_vet.csv` / `.json`,
    `eblm_summary.json` and `eblm_plots/`.
+
+### Eclipse-model fits (`eblm_fit.py`, 0.10.0)
+
+Same Gaia sample and TESS light curves as eblm_screen, with a new TESS stage:
+1. BLS with real flux errors, used only to find the phase of the primary eclipse.
+2. A physical model fitted to 1,000 phase bins:
+   - circular orbit;
+   - quadratic limb darkening (approximate TESS-band coefficients from Teff);
+   - exact ring-integrated occultation of the primary;
+   - the companion's occultation, whose depth also dilutes the transit;
+   - harmonics to 3rd order (ellipsoidal, reflection, beaming);
+   - exposure smoothing.
+   - The free parameters (phase, k, b, a/R1) are fitted by Nelder-Mead, with the linear
+     part solved exactly at each step.
+3. Detection from the χ² gain over a harmonics-only model (`snr_fit`).
+4. The inclination from b and a/R1. The true companion mass from the SB1 mass function.
+   R1 from a/R1 and Kepler's law, with FLAME R1 as a cross-check. R2 = k R1.
+5. Odd/even transit amplitudes, the ellipsoidal amplitude against the prediction, and the
+   companion's brightness temperature against an irradiation-aware ceiling.
+6. Pre-registered verdicts and grades G1-G6.
+
+### Inflation against stellar models (`eblm_infl.py`, 0.11.0)
+
+Post-processing of `eblm_fit_results.csv`:
+1. Downloads the BHAC15 isochrones (Baraffe et al. 2015, `BHAC15_iso.2mass`) and records
+   the source. A transcribed fallback is flagged if the download fails.
+2. Inflation = R2 / R_BHAC15(m2) − 1 at 1, 5 and 10 Gyr, with R1 from FLAME (primary) or
+   from the light curve.
+3. A pre-registered main set: clean EBLM verdicts, b < 0.8, snr_fit ≥ 30, a FLAME mass,
+   0.08-0.6 M☉, and light-curve and FLAME R1 within 20% of each other.
+4. **H1:** the median with a bootstrap 95% interval (INFLATED if the lower bound is above
+   +3%). **H2:** the Spearman correlation with period, with a one-sided permutation p.
+   Also period bins, confounders and a plot.
+5. Outputs: `infl_summary.json`, `infl_table.csv`, `infl_report.md` and
+   `infl_vs_period.png`.
 
 ## Checks (all run as unit tests)
 
@@ -492,6 +565,11 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - the circular and eccentric conjunction limits;
   - the Roche lobe, the Planck ratio and its inverse;
   - the twin flag, the population statistics and every verdict rule.
+- `eblm_infl.py` (0.11.0), worked by hand: the BHAC15 parser on a two-age excerpt; the
+  interpolation (0.2585 R☉ at 0.25 M☉, 5 Gyr) and off-grid masses and ages; average
+  ranks with ties and Spearman ρ = 2/√5; the permutation p for perfect trends; the
+  bootstrap median; every H1 label, including the +3% boundary; every main-set cut; and
+  an end-to-end summary whose median (0.11), ρ (−1) and period-bin counts are known.
 - `xmatch_prior.py` (0.6.2):
   - Gaia ids are found in any text file but the decimals of a float are not;
   - TIC ids from `TIC 123` text and from tic columns;
@@ -566,9 +644,18 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 - `eblm_screen.py`:
   - FLAME masses and radii assume a single star.
   - Short-period SB1 eccentricities are often spurious.
-  - The main-sequence radius relation is approximate (±10%).
+  - The main-sequence radius relation is approximate. It is 3-4% larger than BHAC15 at
+    0.2-0.4 M☉; use `eblm_infl.py` for any inflation number.
   - Gaia's Gaussian eclipse depths come from sparse sampling. The TESS stage reports the
     TESS / Gaia depth ratio for that reason.
+- `eblm_fit.py` / `eblm_infl.py`:
+  - circular orbits only;
+  - no metallicity (BHAC15 is solar; Swayne et al. 2024 find about −9% inflation per
+    dex);
+  - Gaia DR3 K for broad-lined F/A primaries can be biased (Fitzpatrick et al. 2025 found
+    only 3 of 8 Gaia K values agreeing within 1σ);
+  - no per-system parameter errors yet, so the tests use medians and ranks;
+  - Gaia's sparse photometry favours deep eclipses, and so possibly large companions.
 - `calib_eclipse_rate.py`: the v4 dip catalogue keeps about 20 dips per star, preferring
   dips inside windows, so its false-alarm control under-counts; coverage means a
   conjunction landed on data, not that the search would have found the eclipse there.
@@ -578,7 +665,7 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate test_calib_support test_selflens test_deepcheck
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_eblm_fit test_eblm_infl test_xmatch_prior test_calib_eclipse_rate test_calib_support test_selflens test_deepcheck
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -597,6 +684,8 @@ python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.4
     --k-rv 19.695569 --k-rv-err 1.3143485 --e-rv 0.2008897 --p-phot 0.8513754 \
     --m1 0.9556862 --r1 1.1634727 --data-dir data --out-dir out      # vet a short-period SB1
 python eblm_screen.py --schema gaiadr3 --n-tess 20 --data-dir data --out-dir out  # SB1 x EB
+python eblm_fit.py --schema gaiadr3 --n-tess 200 --data-dir data --out-dir out    # eclipse fits
+python eblm_infl.py --results out/eblm_fit_results.csv --out-dir out  # inflation vs BHAC15
 python xmatch_prior.py --targets findings/2026-11-17-dr3-strong-matches.csv \
     --data-dir data --out-dir out                                    # what is already known
 # Gaia inclinations vs eclipses (0.7.1): rebuild the v4 prior table, check it, then test
@@ -660,6 +749,8 @@ checked against the published datamodel on release day.)
     search. A 418.6-d DR3 orbit in the Kepler field is not KIC 12254688 (it is a K dwarf).
 - `findings/2026-11-17-vet-41898425-prereg.md`: the fixed rules and predictions for
   vetting that event.
+- `findings/2026-11-17-vet-41898425-results.md` (0.10.0): the event is rejected as a PDC
+  artefact; V1-V3 pass.
 - `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
   - TESS's Year 9 pointings (to September 2027) do not cover the best target, so only
     the ground can test its 2027 windows.
@@ -696,15 +787,26 @@ checked against the published datamodel on release day.)
     binary and two eclipses, near-equal eclipses make up 52% of those with
     f(M) < 0.003 M☉, against 22–24% at larger f(M). This is a Gaia-internal flag for
     diluted SB1 amplitudes.
-  - **73 single-shallow-eclipse systems** are Gaia-only EBLM candidates. In five of the
-    six lowest-mass ones, Gaia's ellipsoidal amplitude matches the one predicted from
-    the Gaia SB1 mass to 0–14%. Every eclipse checked by hand falls at the transit
-    conjunction.
+  - **73 single-shallow-eclipse systems** are Gaia-only EBLM candidates (169 by the
+    code's own rule in 0.10.0). In five of the six lowest-mass ones, Gaia's ellipsoidal
+    amplitude matches the one predicted from the Gaia SB1 mass to 0–14%. Every eclipse
+    checked by hand falls at the transit conjunction.
   - **Lowest masses:** m2 sin i = 0.12 M☉ (TIC 346363735, P = 0.515 d, an F star filling
     ~91% of its Roche lobe) and 0.17 M☉ (two systems).
   - **No brown dwarf.** No companion of brown-dwarf mass is seen to eclipse in DR3.
   - **Radii.** Gaia's depths imply radii 1.1–1.7× the main sequence; the TESS test is
     pre-registered.
+- `findings/2026-11-17-eblm-v1-results.md` (0.10.0): the TESS stage graded. The BLS bug
+  (E2 fails as run), the classic EBLM light curves (HIP 2964, TIC 35044762, TIC 426763538,
+  TIC 276386308), six companions brighter than their mass suggests, and why these are
+  known variables (E7).
+- `findings/2026-11-17-eblm-fit-prereg.md` (0.10.0): eblm_fit's method, verdicts and
+  predictions G1-G6.
+- `findings/2026-11-17-short-period-inflation-prereg.md` (0.11.0): **are M dwarfs in
+  0.5-5-day orbits inflated?** The prior-art correction (Swayne et al. 2024), the BHAC15
+  reference, the main set and tests H1-H2, written before any eblm_fit result.
+- `data/eblm-v1/`: outputs of the eblm_screen TESS stage (CC BY 4.0), including the
+  classified SB1 × EB sample and six fold plots.
 - `findings/2026-11-17-dr3-full-search-results.md` (0.6.2): **the graded full DR3
   search**, with the prior-art correction.
   - 24,157 near-edge-on orbits; 287 targets reached TESS, 277 with data.
@@ -776,7 +878,7 @@ checked against the published datamodel on release day.)
 - arXiv:2310.07936: Gaia DR3 SB1s with substellar-mass companions matched to TOIs and the
   TESS EB catalogue; three transiting low-mass secondaries confirmed.
 - Rowan et al. 2022 (arXiv:2212.02509): masses and radii of Gaia spectroscopic binaries
-  that are ASAS-SN eclipsing binaries.
+  that are ASAS-SN eclipsing binaries (128 Gaia SB2 orbits, not SB1).
 - Jayasinghe et al. 2022 (arXiv:2207.05086): vetting of high-mass-function Gaia SB1s.
 - El-Badry 2024 (arXiv:2403.12146) and Merle et al. 2023: diluted K for double-lined
   binaries fitted with SB1 solutions.
@@ -814,6 +916,18 @@ checked against the published datamodel on release day.)
   (arXiv:1906.08219), TOI-263b (arXiv:2103.11150) and ZTF J2020+5033 (arXiv:2307.15729).
 - The EBLM project (Maxted, Triaud & Martin 2023 review; EBLM XVIII, arXiv:2511.23430):
   M dwarfs eclipsing F/G/K stars, found in WASP photometry and CORALIE RVs.
+- **M-dwarf radius inflation in EBLM binaries (checked for 0.10.0-0.11.0):**
+  - Swayne et al. 2024, EBLM XI (MNRAS 528, 5703; arXiv:2312.11339): 23 M dwarfs with
+    CHEOPS and TESS. About 6% inflation for P < 5 d (5 systems, 2.8-4.3 d) against ≤ 3%
+    at longer periods, and a −9%/dex metallicity trend.
+  - Fitzpatrick et al. 2025, EBLM XIV (arXiv:2502.09267): 19 systems with TESS, some with
+    Gaia DR3 K; 2.6 ± 1.1% inflation; only two systems with P < 3 d; no period test.
+  - Davis et al. 2026, EBLM XIX (arXiv:2610.18338): 66 systems, 50 high-quality ones, all
+    with P > 5 d (shorter periods removed because of synchronised-rotation activity);
+    0.3 ± 1.6%. EBLM XX (arXiv:2610.18339) validates the SB1 method.
+  - Çakırlı, Özdarcan & Hoyman 2025 (MNRAS 544, 4336): 8 systems, P = 4.2-25.6 d, no
+    clear inflation.
+  - Baraffe et al. 2015 (A&A 577, A42): the BHAC15 models used as the reference.
 - TESS EB catalogues: Prša et al. 2022 (sectors 1–26) and the TESS Ten Thousand catalogue
   (arXiv:2506.05631).
 
@@ -829,5 +943,5 @@ the Villanova Kepler Eclipsing Binary Catalog; the Zwicky Transient Facility (IR
 ASAS-SN Sky Patrol; SIMBAD and VizieR (CDS) with the AAVSO VSX catalogue and the TESS EB
 catalogue (Prša et al. 2022); TESS pointings from the TESS Science Center and tess-point
 (tessgi); the Chopard-Vilhem (2026) Zenodo deposit (CC BY 4.0) for the prior-work
-cross-match. Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol
-(pyasassn) and tess-point.
+cross-match; the BHAC15 stellar models (Baraffe et al. 2015). Uses numpy, astropy,
+astroquery, lightkurve, matplotlib, skypatrol (pyasassn) and tess-point.
