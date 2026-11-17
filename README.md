@@ -9,7 +9,10 @@ the `nss_two_body_orbit` table, as `Orbital`, `OrbitalTargetedSearch*`,
 An orbit seen nearly edge-on should show an eclipse, at a time the Gaia orbit predicts:
 the conjunction. For a dark brown-dwarf or giant-planet companion, that eclipse is a
 transit. This project turns each near-edge-on Gaia orbit into predicted conjunction
-windows and checks TESS light curves at those times.
+windows and checks TESS light curves at those times. From 0.4.0 it also checks archival
+ground-based and Gaia photometry (ZTF, ASAS-SN, Gaia DR3 epoch photometry), and it
+publishes forecasts of future transit windows, both those TESS will observe and those
+only the ground can see, before the data exist.
 
 Earlier work mostly went the other way:
 - Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits.
@@ -37,6 +40,14 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
    |cos *i*| below a cut. The archive applies the cut itself, with cos *i* computed in
    ADQL by `gaia_orbits.cosi_adql()`. The download includes the correlation vector, the
    reference epoch and, from 0.3.0, the spectroscopic constants C and H.
+   - From 0.4.0 a dropped connection while downloading the result is retried. The
+     astroquery fallback also writes array columns (`corr_vec`) correctly; before, it
+     crashed on them, and that is what stopped the first full DR3 run.
+   - **0.4.1:** since October 2026 the Gaia ESA Archive gives anonymous users 60 s and
+     at most 50,000 rows per query, and that limit stopped the second full DR3 run. Large
+     queries are now split into source_id ranges (`--tap-chunks`, default 16). A range
+     that times out or hits the row cap is split four ways again. Each range goes to the
+     ESA archive, then to the ARI Heidelberg Gaia mirror (DR3), then to astroquery.
 2. **Orbit elements.** Convert the Thiele-Innes constants to *a0*, *i*, ω (modulo π)
    and Ω.
 3. **Monte Carlo over the catalogue errors.**
@@ -74,6 +85,56 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
      window with no dip is a constraint);
    - `events.csv`, plots, `windows/*.png` (with `--window-plots`) and `report.md`.
 
+### Archival test (`archival.py`)
+
+This stage searches all public photometry that needs no login: Gaia DR3 epoch photometry,
+ZTF (IRSA), ASAS-SN Sky Patrol v2 and TESS. It looks for a transit **inside the joint
+(period, transit time) posterior of the Gaia orbit**, and measures how much of that
+posterior the data already exclude.
+
+1. **Posterior.** The Monte Carlo draws are carried to a reference epoch in the middle of
+   the data, which gives the means, widths and P–T correlation.
+2. **Detrending.** A running median that skips ±D around each point, so a transit is not
+   removed along with the trend. Each light curve is weighted by its robust scatter.
+3. **Box search.** Over ±3.5σ in P and ±3.5 conditional σ in T, for durations D0 (the
+   predicted central duration) and 0.6 D0. SNR = Σ w·d / √Σ w.
+4. **Threshold.** The larger of 6 and the maximum over 30 null runs. In each null run the
+   residuals are cyclically shifted within each light curve. FAP = (1 + #null ≥ obs) / 31.
+5. **Injection–recovery.** Transits are injected at (P, T) draws from the Gaia posterior,
+   with impact parameter uniform in 0–0.9, at several depths. The recovery fraction R
+   updates the transit probability: p (1 − R) / (1 − p R).
+6. **Outputs.** `archival_results.csv`, `archival_report.md`, and
+   `archival/<id>_<conj>.json` / `.png` (the SNR against period, and the folded data at
+   the best cell).
+
+0.4.1 makes two fixes here. Boxes at the edge of the transit-time grid now see all their
+points (before, the fast scan could overstate their SNR; its brute-force test caught
+this). The Gaia DataLink request uses the archive's new structure name,
+`DATAMODEL_STANDARD` (formerly `INDIVIDUAL`).
+
+### Forecast (`forecast.py`)
+
+This stage publishes falsifiable predictions before the observations exist.
+
+- **TESS sectors 108-134 (September 2026 to late 2028).**
+  - It lists every sector in which the star lands on a CCD (tess-point 0.9.5 pointing
+    table).
+  - For each one it gives the Monte Carlo probability that the transit conjunction
+    falls inside the sector, and the expected number of transits TESS will record.
+  - Year 9 dates are the TESS Science Center's provisional dates. Year 10 boundaries
+    are midpoints between the sector mid-times and are flagged as approximate.
+- **Ground windows.** Every transit window from 2026-12-01 to 2027-12-01, with its
+  centre, robust 1σ and 95% range.
+- **Outputs.** `<prefix>_stars.csv`, `<prefix>_tess_sectors.csv`,
+  `<prefix>_windows.csv`, `<prefix>_summary.json` and `<prefix>_report.md`.
+
+### Gaia DR4 preparation (`dr4_datamodel.py`)
+
+ESA published a draft DR4 data model (pre-release, 2026-06-26). This script downloads it
+and extracts what the release-day run needs: the `nss_two_body_orbit` columns (the
+`corr_vec` order and the `t_periastron` reference), `gaia_exoplanet_candidates`,
+`nss_masses`, `vari_planetary_transit`, and the epoch-photometry time origin.
+
 ## Checks (all run as unit tests)
 
 - The conjunction times equal the minima of the projected separation (brute force).
@@ -87,6 +148,28 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
   The opposite sign is rejected in every eccentric system.
 - The correlated sampler reproduces the input correlations.
 - An offline end-to-end run of the Gaia ranking stage, on a cached CSV.
+- `table_to_csv` round-trips masked values and array columns such as `corr_vec` through
+  `read_csv_text`.
+- Chunked queries (0.4.1), against a fake archive that truncates at a row cap and aborts
+  large ranges:
+  - the ranges cover every source_id exactly once;
+  - results merge under one header;
+  - capped or aborted ranges are split and the answer is complete;
+  - plain network errors are not split.
+- `archival.py`:
+  - parsers for the ZTF, Gaia epoch-photometry (raw or zipped DataLink answers) and
+    ASAS-SN formats, including the time conversions and the rejection of flagged and
+    saturated points;
+  - the fast grid scan equals a brute-force evaluation of the same cells, for both the
+    narrow-window and the full-phase branches, including a box at the grid edge;
+  - an injected 3% transit in irregular ground-like data is found at the right period and
+    phase, and pure noise gives no detection;
+  - a 1% dip survives the detrending of a spotted-star light curve.
+- `forecast.py`:
+  - the sector table is contiguous and agrees with tess-point's mid-times;
+  - the probability that a conjunction falls in a sector is exact on test cases;
+  - forecast windows bracket the central predictions;
+  - an offline end-to-end run with a stubbed pointing table.
 
 ## Limits (honest list)
 
@@ -99,17 +182,30 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
 - A dip that matches a predicted window is a **candidate**, not a discovery. It still
   needs vetting: pixel-level centroids, nearby stars, known variables in VSX, SIMBAD and
   the TOI/CTOI lists, and the shape of the event.
+- The archival injections are added after detrending, so they slightly overstate the
+  sensitivity. The trend skips ±D around each point, which keeps this effect small.
+  Ground photometry of bright stars (G ≲ 12.5 in ZTF) can be affected by saturation.
+- The forecast ignores TESS's data gaps at perigee (about 7% of each sector). TESS
+  pointings are provisional and can change.
+- Anonymous Gaia archive access is limited to 60 s and 50,000 rows per query, 5 jobs at
+  a time and 50 DataLink sources per request. Very large DR4 queries need many ranges and
+  can be slow on release day.
 
 ## Run
 
 ```
 pip install -r requirements.txt
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search
+pip install "tess-point>=0.9.5"                                      # forecast only
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
     --cosi-max 0.3 --min-p-ecl 0 --window-plots --data-dir data --out-dir out
-python run_search.py --schema gaiadr4 --data-dir data --out-dir out   # DR4, from 2026-12-02
+python archival.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 \
+    --data-dir data --out-dir out                                    # archival test
+python forecast.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 --m2-max 1 \
+    --data-dir data --out-dir out                                    # forecast
+python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
 ```
@@ -136,6 +232,14 @@ checked against the published datamodel on release day.)
     The next windows are 2026-11-16, 2027-01-28 and 2027-04-12 (±6.5 d).
 - `findings/2026-11-17-watchlist-prereg.md`: predictions for the TESS check of the
   25-star watch list.
+- `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
+  - TESS's Year 9 pointings (to September 2027) do not cover the best target, so only
+    the ground can test its 2027 windows.
+  - Gaia flags the star as VARIABLE (SOLAR_LIKE, 8.7 mmag scatter in 57 G epochs).
+- `findings/2026-11-17-forecast-prereg.md`: what the forecast publishes and five
+  predictions about it, written before it ran.
+- `findings/2026-11-17-v4-amendment.md` (0.4.1): the Gaia archive's new anonymous limits,
+  the archival scan fix and the forecast test fix. No prediction changed.
 
 ## Prior art checked (2026-11-17)
 
@@ -150,13 +254,26 @@ checked against the published datamodel on release day.)
   Gaia DR3 orbits (eclipsing pairs with outer orbits).
 - Panahi et al. 2022 (arXiv:2205.10197): Gaia DR3 photometric transit candidates checked
   in TESS. That starts from Gaia photometry, not from astrometric orbits.
+- arXiv:2608.06453 (2026): spectroscopic follow-up of 227 Gaia DR3 binaries with high
+  inferred companion masses. TESS light curves show some of them to be hierarchical
+  triples (an inner eclipsing pair inside the astrometric orbit). That agrees with our
+  finding that DR3 astrometric orbits with Gaia eclipses are triples. It does not
+  predict eclipses from the astrometric orbits.
+- arXiv:2512.04606 (A&A 2026): HD 128717 B / Gaia-6 B, a long-period brown dwarf found by
+  Gaia astrometry and confirmed with radial velocities; no transit search.
 - github.com/coracle-us/gaia-dr4: searches DR4 epoch astrometry for outer companions of
   known transiting giant planets. That is the opposite direction to this project.
+- Long-period transiting brown dwarfs found by TESS and radial velocities (for example
+  TOI-5575b, arXiv:2507.09461; the four new long-period ones in A&A 2026, aa58244-25)
+  were not found from Gaia astrometric orbits.
 
 ## Credits and licence
 
 By MV2 of Munim, Inc. (mv2@munimtech.com). Made with AI agents working in his name.
 Code: Apache-2.0. Results and text: CC BY 4.0.
-Data: ESA Gaia DR3 (Gaia Collaboration), NASA TESS via MAST (SPOC, TESS-SPOC and QLP
-light curves), the TESS Input Catalog, and the NASA Exoplanet Archive TOI table. Uses
-numpy, astropy, astroquery, lightkurve and matplotlib.
+Data: ESA Gaia DR3 (Gaia Collaboration), including epoch photometry, served by the ESA
+Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-SPOC and
+QLP light curves); the TESS Input Catalog; the NASA Exoplanet Archive TOI table; the
+Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; TESS pointings from the TESS
+Science Center and tess-point (tessgi). Uses numpy, astropy, astroquery, lightkurve,
+matplotlib, skypatrol (pyasassn) and tess-point.
