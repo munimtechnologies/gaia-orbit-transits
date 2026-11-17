@@ -76,12 +76,19 @@ class TestConjunction(unittest.TestCase):
 # computed independently by an ADQL query on the Gaia archive (2026-11-17), with
 # omega = (atan2(B-F, A+G) + atan2(-B-F, A-G)) / 2 and Kepler's equation in closed
 # form; values are rounded to 1e-4 d. Times are compared as a set, modulo P.
+# For the AstroSpectroSB1 rows, c/h_thiele_innes (AU) and "adql_t_rv" (the transit
+# time from omega_rv = atan2(C, H), f = pi/2 - omega_rv, computed in ADQL on the
+# archive, 2026-11-17) were added in 0.3.0; "transit_t" is the astrometric
+# conjunction (from adql_t) that the RV omega picks.
 DR3_ROWS = [
     {"source_id": 2960647744567925632, "nss_solution_type": "AstroSpectroSB1",
      "a_thiele_innes": 0.036382854236142376, "b_thiele_innes": -0.3151243446510355,
      "f_thiele_innes": 0.08772005510178042, "g_thiele_innes": -0.13873646638714984,
      "eccentricity": 0.6757623573545173, "period": 98.25555037153,
-     "t_periastron": -31.228462551158923, "adql_t": (366.9909, 453.0342), "adql_cosi": 0.1831},
+     "t_periastron": -31.228462551158923, "adql_t": (366.9909, 453.0342), "adql_cosi": 0.1831,
+     "c_thiele_innes": 0.0214630, "c_thiele_innes_error": 0.00609629,
+     "h_thiele_innes": -0.0295566, "h_thiele_innes_error": 0.00680217,
+     "adql_t_rv": 355.385, "transit_t": 453.0342},
     {"source_id": 3309006602007842048, "nss_solution_type": "OrbitalTargetedSearchValidated",
      "a_thiele_innes": 0.18393184844326121, "b_thiele_innes": -0.2197559460392094,
      "f_thiele_innes": 1.197511643787416, "g_thiele_innes": 0.6044573801761476,
@@ -91,7 +98,10 @@ DR3_ROWS = [
      "a_thiele_innes": -0.23443925307867822, "b_thiele_innes": -0.12755815901973852,
      "f_thiele_innes": 0.4197439620532465, "g_thiele_innes": 0.14232874617020358,
      "eccentricity": 0.47566114441492535, "period": 406.5013768822883,
-     "t_periastron": 189.08043233042088, "adql_t": (860.9515, 182.8270), "adql_cosi": 0.0758},
+     "t_periastron": 189.08043233042088, "adql_t": (860.9515, 182.8270), "adql_cosi": 0.0758,
+     "c_thiele_innes": -0.0501770, "c_thiele_innes_error": 0.00979076,
+     "h_thiele_innes": -0.0519131, "h_thiele_innes_error": 0.0101054,
+     "adql_t_rv": 890.437, "transit_t": 860.9515},
     {"source_id": 393581461455623296, "nss_solution_type": "AstroSpectroSB1",
      "a_thiele_innes": 0.08254147190319085, "b_thiele_innes": 0.41155537948814036,
      "f_thiele_innes": 0.03236568224919485, "g_thiele_innes": -0.00649125533317565,
@@ -101,8 +111,16 @@ DR3_ROWS = [
      "a_thiele_innes_error": 0.028047005, "b_thiele_innes_error": 0.026270581,
      "f_thiele_innes_error": 0.03527139, "g_thiele_innes_error": None,
      "eccentricity_error": None, "period_error": 0.118722215,
-     "t_periastron_error": 0.5764451},
+     "t_periastron_error": 0.5764451,
+     # C is served but not meaningful for circular solutions; omega = 0, H > 0
+     "c_thiele_innes": -0.0257056, "c_thiele_innes_error": None,
+     "h_thiele_innes": 0.0167755, "h_thiele_innes_error": 0.00484414,
+     "adql_t_rv": 400.3748, "transit_t": 400.3748},
 ]
+
+
+def _dmod(a, b, P):
+    return abs(np.mod(a - b + P / 2, P) - P / 2)
 
 
 class TestAgainstGaiaArchive(unittest.TestCase):
@@ -139,6 +157,132 @@ class TestAgainstGaiaArchive(unittest.TestCase):
         # old behaviour (G held fixed) would spread omega; check it no longer does
         dw = np.mod(s["omega"] - s["omega"][0] + np.pi / 2, np.pi) - np.pi / 2
         self.assertLess(np.max(np.abs(dw)), 1e-9)
+
+
+# Gaia DR3 EclipsingSpectro solutions (eclipses + single-lined RV fitted together by
+# the NSS pipeline) joined with gaiadr3.vari_eclipsing_binary (eclipse times from the
+# separate variability pipeline). Queried on the Gaia archive, 2026-11-17.
+# Columns: source_id, period (d), eccentricity, arg_periastron (deg), t_periastron
+# (d from J2016.0), tp1 = reference_time + derived_primary_ecl_phase / frequency
+# - 2191.5 (deepest eclipse, d from J2016.0; Gaia time is BJD - 2455197.5).
+# 1963575553568406528 is left out: its two eclipses are equally deep (0.458 and
+# 0.440 mag), so "primary" is arbitrary (its other eclipse matches, phase 0.0006).
+ECLIPSING_SPECTRO = [
+    # circular (Gaia fixed e = 0, omega = 0)
+    (5592279626810866816, 1.0175483226776123, 0.0, 0.0, 0.1350814253091812, 30.911449674690175),
+    (289944136822295552, 0.5279802083969116, 0.0, 0.0, 0.05223703011870384, 60.37395721201074),
+    (6183905457652903040, 0.7788470983505249, 0.0, 0.0, 0.29819223284721375, 136.79304817458433),
+    (520587625832477824, 2.1000421047210693, 0.0, 0.0, -0.021207597106695175, 32.002786852764984),
+    (5374894907999920768, 0.573470413684845, 0.0, 0.0, 0.08163893222808838, 37.50121153410555),
+    (5587423633706300288, 2.0517420768737793, 0.0, 0.0, 0.286638468503952, 72.61120628636309),
+    (4324609893265605888, 0.6433572769165039, 0.0, 0.0, -0.1773567646741867, -49.55353503593187),
+    (6156224603884943360, 0.8097625374794006, 0.0, 0.0, -0.21962645649909973, 65.57445773787731),
+    (6267913819672876160, 0.7969892621040344, 0.0, 0.0, 0.21520046889781952, -154.99807388471095),
+    (1823758498214886912, 0.725960910320282, 0.0, 0.0, -0.32403770089149475, -32.08267813500515),
+    # eccentric (omega fitted)
+    (2072115497495386368, 0.8061097860336304, 0.01926628313958645, 75.36218311308882,
+     0.1602512001991272, 30.826150718246936),
+    (4575893582048929536, 2.986567497253418, 0.00428655743598938, 242.81300642789986,
+     -0.5640784502029419, 84.78140221426884),
+    (498657664552495744, 1.1577541828155518, 0.005317854695022106, 110.08336096638944,
+     0.4070581793785095, 48.969718161478795),
+    (3041948353046851968, 2.6077027320861816, 0.03322817385196686, 88.26921207822943,
+     1.1645307540893555, -1.434677918496618),
+    (5566666915748470912, 1.0495829582214355, 0.10662038624286652, 269.91025199755137,
+     0.1036873459815979, -3.5682455249038867),
+    (5946797527472646272, 1.9953004121780396, 0.0011306977830827236, 25.160009260644546,
+     -0.6488774418830872, 149.37035373973413),
+    (861690393720718720, 0.6709580421447754, 0.03437914699316025, 272.07211615288713,
+     -0.019584456458687782, 6.351663525312688),
+    (416422509855555584, 0.6735261082649231, 0.010285554453730583, 268.624810395755,
+     0.1730348914861679, 73.25282730172103),
+]
+
+
+def _phase_diff(a, b):
+    d = np.mod(a - b, 1.0)
+    return min(d, 1.0 - d)
+
+
+class TestTransitConvention(unittest.TestCase):
+    def test_deeper_eclipse_at_pi_over_2_minus_omega(self):
+        for sid, P, e, wdeg, tp, tp1 in ECLIPSING_SPECTRO:
+            obs = np.mod((tp1 - tp) / P, 1.0)
+            pred = float(go.transit_phase(e, np.radians(wdeg)))
+            self.assertLess(_phase_diff(obs, pred), 0.02, msg=f"{sid}: obs {obs} pred {pred}")
+
+    def test_opposite_sign_convention_is_rejected(self):
+        # omega -> -omega (f = pi/2 + omega) would put the eclipse elsewhere
+        rejected = 0
+        for sid, P, e, wdeg, tp, tp1 in ECLIPSING_SPECTRO:
+            if e == 0.0:
+                continue
+            obs = np.mod((tp1 - tp) / P, 1.0)
+            alt = float(go.transit_phase(e, -np.radians(wdeg)))
+            if _phase_diff(obs, alt) > 0.1:
+                rejected += 1
+        self.assertGreaterEqual(rejected, 7)
+
+
+class TestTransitLabel(unittest.TestCase):
+    def test_rv_transit_time_matches_adql(self):
+        for r in DR3_ROWS:
+            if "adql_t_rv" not in r:
+                continue
+            t = go.rv_transit_time(r, ref_btjd=389.0)
+            self.assertIsNotNone(t)
+            self.assertLess(_dmod(t["t_transit_rv_btjd"], r["adql_t_rv"], r["period"]), 0.05,
+                            msg=str(r["source_id"]))
+
+    def test_label_picks_expected_conjunction(self):
+        for r in DR3_ROWS:
+            lab = go.transit_label(r, ref_btjd=389.0)
+            if "transit_t" not in r:
+                self.assertEqual(lab["transit_conj"], "")
+                continue
+            t1, t2 = go.central_conjunctions(r, ref_btjd=389.0)
+            chosen = t1 if lab["transit_conj"] == "t1" else t2
+            self.assertLess(_dmod(chosen, r["transit_t"], r["period"]), 2e-3,
+                            msg=str(r["source_id"]))
+            self.assertTrue(lab["rv_consistent"])
+
+    def test_circular_sb1_transit_quarter_period(self):
+        r = DR3_ROWS[3]
+        w, snr = go.rv_omega(r)
+        self.assertEqual(w, 0.0)
+        self.assertAlmostEqual(snr, 0.0167755 / 0.00484414, places=4)
+        lab = go.transit_label(r, ref_btjd=389.0)
+        self.assertLess(lab["rv_offset_d"], 0.01)
+        tq = r["t_periastron"] + 389.0 + r["period"] / 4
+        self.assertLess(_dmod(lab["t_transit_rv_btjd"], tq, r["period"]), 1e-6)
+
+    def test_unconstrained_omega_gets_no_label(self):
+        # C/H of Gaia DR3 4422729073976768640: C is 0.02 sigma, omega_rv unconstrained
+        r = dict(DR3_ROWS[0], c_thiele_innes=-0.00228324, c_thiele_innes_error=0.129001,
+                 h_thiele_innes=-0.0454697, h_thiele_innes_error=0.00763896)
+        self.assertGreater(go.rv_omega_sd(r), 2.0)
+        lab = go.transit_label(r, ref_btjd=389.0)
+        self.assertEqual(lab["transit_conj"], "")
+        self.assertGreater(lab["rv_omega_sd_rad"], 2.0)
+        # the labelled rows are well constrained
+        self.assertLess(go.rv_omega_sd(DR3_ROWS[0]), 0.2)
+        self.assertLess(go.rv_omega_sd(DR3_ROWS[2]), 0.2)
+        self.assertEqual(go.rv_omega_sd(DR3_ROWS[3]), 0.0)
+        # circular solution with H not significant: no label
+        r3 = dict(DR3_ROWS[3], h_thiele_innes_error=0.02)
+        self.assertEqual(go.transit_label(r3, ref_btjd=389.0)["transit_conj"], "")
+
+    def test_rv_omega_signs(self):
+        # C = a1 sin w sin i, H = a1 cos w sin i
+        for w in (0.3, 1.9, -2.5, -0.7):
+            row = {"c_thiele_innes": 0.1 * np.sin(w), "h_thiele_innes": 0.1 * np.cos(w),
+                   "c_thiele_innes_error": 0.01, "h_thiele_innes_error": 0.01,
+                   "eccentricity": 0.3, "eccentricity_error": 0.01,
+                   "g_thiele_innes_error": 0.01}
+            got, snr = go.rv_omega(row)
+            self.assertAlmostEqual(got, w, places=9)
+            self.assertAlmostEqual(snr, 10.0, places=6)
+        self.assertTrue(np.isnan(go.rv_omega({"a_thiele_innes": 1.0})[0]))
 
 
 class TestCorrelations(unittest.TestCase):

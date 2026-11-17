@@ -12,10 +12,13 @@ Steps
  2. For each orbit run a Monte Carlo over the catalogue errors and correlations:
     probability that the companion can eclipse/transit, predicted conjunction
     times (and the next ones after --predict-from), rough masses (dark companion).
+    For AstroSpectroSB1 solutions the spectroscopic C/H constants say which
+    conjunction is the transit (0.3.0, see gaia_orbits.transit_label).
  3. Rank and, for the top targets, find the TIC ID, download TESS light curves
     (SPOC 2-min, TESS-SPOC, QLP), run a single-event dip search, and score each
     dip against the predicted conjunction windows.
- 4. Write CSVs, plots of the best events and a report.
+ 4. Write CSVs, plots of the best events (and, with --window-plots, of every
+    predicted window that TESS covered) and a report.
 """
 import argparse
 import csv
@@ -31,7 +34,7 @@ import numpy as np
 import dipsearch as ds
 import gaia_orbits as go
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 TAP = "https://gea.esac.esa.int/tap-server/tap"
 
 NSS_QUERY = """
@@ -39,6 +42,7 @@ SELECT n.source_id, n.nss_solution_type, n.bit_index, n.corr_vec, n.period, n.pe
  n.t_periastron, n.t_periastron_error, n.eccentricity, n.eccentricity_error,
  n.a_thiele_innes, n.a_thiele_innes_error, n.b_thiele_innes, n.b_thiele_innes_error,
  n.f_thiele_innes, n.f_thiele_innes_error, n.g_thiele_innes, n.g_thiele_innes_error,
+ n.c_thiele_innes, n.c_thiele_innes_error, n.h_thiele_innes, n.h_thiele_innes_error,
  n.parallax AS nss_parallax, n.parallax_error AS nss_parallax_error,
  n.significance, n.goodness_of_fit,
  g.ra, g.dec, g.phot_g_mean_mag, g.bp_rp, g.ruwe, g.ref_epoch
@@ -172,11 +176,17 @@ def prior_for_row(row, n, rng, predict_from=None):
         "t_conj1_btjd": t1c, "t_conj2_btjd": t2c,
         "used_corr": bool(s["used_corr"]), "circular": bool(s["circular"]),
     }
+    # 0.3.0: which conjunction is the transit (AstroSpectroSB1 only)
+    out.update(go.transit_label(row))
     if predict_from is not None:
         for key, tc in (("t1", t1c), ("t2", t2c)):
             tn, sig = go.predict_next(s, key, tc, float(row["period"]), predict_from)
             out[f"next{key[1]}_btjd"] = tn
             out[f"next{key[1]}_sd_d"] = sig
+        if out["transit_conj"]:
+            k = out["transit_conj"][1]
+            out["next_transit_btjd"] = out[f"next{k}_btjd"]
+            out["next_transit_sd_d"] = out[f"next{k}_sd_d"]
     return out, s, g
 
 
@@ -332,6 +342,63 @@ def plot_event(path, title, binned, raw, ev, windows):
     plt.close(fig)
 
 
+def covered_windows(bt, s, p, nsig=3.0, min_points=10):
+    """Predicted conjunction windows that fall in the binned TESS times bt.
+
+    Returns a list of dicts: conj ('t1'/'t2'), centre (BTJD, MC median), sd (d),
+    n_in_1sd (binned points within 1 sigma), n_in_3sd, is_rv_transit.
+    """
+    out = []
+    if bt.size == 0:
+        return out
+    P = float(p["period_d"])
+    for key, tc in (("t1", p["t_conj1_btjd"]), ("t2", p["t_conj2_btjd"])):
+        k0 = int(np.floor((bt.min() - tc) / P)) - 1
+        k1 = int(np.ceil((bt.max() - tc) / P)) + 1
+        for k in range(k0, k1 + 1):
+            tn = tc + k * P
+            off = go.phase_offsets(s, key, tn)
+            med = float(np.median(off))
+            c = tn - med
+            sd = max(float(1.4826 * np.median(np.abs(off - med))), 0.05)
+            if sd > P / 4:
+                continue  # phase unconstrained there
+            n3 = int(np.sum(np.abs(bt - c) < nsig * sd))
+            if n3 < min_points:
+                continue
+            out.append({"conj": key, "centre": c, "sd": sd,
+                        "n_in_1sd": int(np.sum(np.abs(bt - c) < sd)), "n_in_3sd": n3,
+                        "is_rv_transit": key == p.get("transit_conj", "")})
+    return out
+
+
+def plot_windows(path, title, binned, wins, max_panels=8):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    wins = sorted(wins, key=lambda w: (not w["is_rv_transit"], -w["n_in_1sd"]))[:max_panels]
+    if not wins:
+        return False
+    bt, bf = binned["t"], binned["f"]
+    fig, axes = plt.subplots(len(wins), 1, figsize=(9, 2.3 * len(wins)), squeeze=False)
+    for ax, w in zip(axes[:, 0], wins):
+        m = np.abs(bt - w["centre"]) < 3 * w["sd"] + 1.0
+        ax.plot(bt[m] - w["centre"], bf[m], ".", ms=2, color="k")
+        ax.axvspan(-w["sd"], w["sd"], color="orange" if w["is_rv_transit"] else "cyan",
+                   alpha=0.25)
+        ax.axvspan(-3 * w["sd"], 3 * w["sd"], color="0.9", alpha=0.4, zorder=0)
+        lab = " (RV-identified transit)" if w["is_rv_transit"] else ""
+        ax.set_title(f"{w['conj']}{lab}: centre BTJD {w['centre']:.2f} +- {w['sd']:.2f} d",
+                     fontsize=8)
+        ax.set_ylabel("flux", fontsize=8)
+    axes[-1, 0].set_xlabel("days from predicted conjunction")
+    fig.suptitle(title, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(path, dpi=90)
+    plt.close(fig)
+    return True
+
+
 # ---------------------------------------------------------------- main
 def write_csv(path, rows, fields=None):
     if not rows:
@@ -344,10 +411,13 @@ def write_csv(path, rows, fields=None):
             w.writerow(r)
 
 
-def build_nss_query(schema, gmax, cosi_server, targets_table=None):
+def build_nss_query(schema, gmax, cosi_server, targets_table=None, source_ids=None):
     extra = ""
     if targets_table:
         extra = f"\n AND n.source_id IN (SELECT source_id FROM {targets_table})"
+    if source_ids:
+        ids = ",".join(str(int(x)) for x in source_ids)
+        extra += f"\n AND n.source_id IN ({ids})"
     return NSS_QUERY.format(schema=schema, gmax=gmax, cosi=go.cosi_adql("n."),
                             cosi_server=cosi_server, extra=extra)
 
@@ -379,6 +449,10 @@ def main(argv=None):
     ap.add_argument("--targets-table", default=None,
                     help="only orbits whose source_id is in this archive table, e.g. "
                          "gaiadr4.gaia_exoplanet_candidates (DR4 release day)")
+    ap.add_argument("--source-ids", default=None,
+                    help="comma-separated Gaia source_ids (e.g. a watch list)")
+    ap.add_argument("--window-plots", action="store_true",
+                    help="plot every predicted conjunction window covered by TESS")
     ap.add_argument("--no-tess", action="store_true",
                     help="stop after the Gaia ranking (watch list only)")
     args = ap.parse_args(argv)
@@ -388,9 +462,14 @@ def main(argv=None):
         go.GAIA_REF_BTJD = args.ref_btjd
     else:
         go.GAIA_REF_BTJD = 936.875 if args.schema.lower().endswith("dr4") else 389.0
+    source_ids = None
+    if args.source_ids:
+        source_ids = sorted({int(x) for x in args.source_ids.replace(" ", "").split(",") if x})
     t_start = time.time()
     os.makedirs(args.out_dir, exist_ok=True)
     os.makedirs(os.path.join(args.out_dir, "plots"), exist_ok=True)
+    if args.window_plots:
+        os.makedirs(os.path.join(args.out_dir, "windows"), exist_ok=True)
     lk_dir = os.path.join(args.data_dir, "lk")
     os.makedirs(lk_dir, exist_ok=True)
     summary = {"version": VERSION,
@@ -399,10 +478,14 @@ def main(argv=None):
     tag = f"{args.schema}_nss_ti_g{args.gmax:g}_c{args.cosi_server:g}"
     if args.targets_table:
         tag += "_" + args.targets_table.replace(".", "-")
-    query = build_nss_query(args.schema, args.gmax, args.cosi_server, args.targets_table)
+    if source_ids:
+        tag += f"_ids{len(source_ids)}-{sum(source_ids) % 1000003}"
+    query = build_nss_query(args.schema, args.gmax, args.cosi_server, args.targets_table,
+                            source_ids)
     with open(os.path.join(args.out_dir, "nss_query.adql"), "w", encoding="utf-8") as fh:
         fh.write(query)
-    text = cached_query(os.path.join(args.data_dir, tag + "_v2.csv"), query)
+    # _v3: the query gained the spectroscopic C/H columns in 0.3.0
+    text = cached_query(os.path.join(args.data_dir, tag + "_v3.csv"), query)
     rows = read_csv_text(text)
     log("NSS rows (server-side near edge-on):", len(rows))
     try:
@@ -424,6 +507,8 @@ def main(argv=None):
     n_edge = 0
     n_corr = 0
     n_circ = 0
+    n_rv = 0
+    n_rv_consistent = 0
 
     def src_rng(sid):
         return np.random.default_rng([args.seed, int(sid) % (2 ** 32), int(sid) // (2 ** 32)])
@@ -455,6 +540,8 @@ def main(argv=None):
         pr = res[0]
         n_corr += int(pr["used_corr"])
         n_circ += int(pr["circular"])
+        n_rv += int(bool(pr["transit_conj"]))
+        n_rv_consistent += int(bool(pr["rv_consistent"]))
         by_id[key] = r
         rec = {"source_id": r["source_id"], "solution_type": r["nss_solution_type"],
                "ra": r["ra"], "dec": r["dec"], "gmag": r["phot_g_mean_mag"],
@@ -467,9 +554,12 @@ def main(argv=None):
     summary["near_edge_on"] = n_edge
     summary["mc_used_correlations"] = n_corr
     summary["circular_solutions"] = n_circ
+    summary["rv_transit_labelled"] = n_rv
+    summary["rv_transit_consistent"] = n_rv_consistent
     rows = None
     text = None
-    log("near edge-on:", n_edge, "with priors:", len(priors), "corr used:", n_corr)
+    log("near edge-on:", n_edge, "with priors:", len(priors), "corr used:", n_corr,
+        "RV-labelled:", n_rv)
     priors.sort(key=lambda p: -p["p_ecl"])
     write_csv(os.path.join(args.out_dir, "gaia_edge_on_priors.csv"), priors,
               sorted({k for p in priors for k in p}))
@@ -502,7 +592,7 @@ def main(argv=None):
         samples[p["source_id"]] = prior_for_row(by_id[key], args.mc, src_rng(p["source_id"]))[1]
     by_id.clear()
 
-    per_target, all_events = [], []
+    per_target, all_events, all_windows = [], [], []
     store = {}
     expected = 0.0
     expected_both = 0.0
@@ -516,7 +606,7 @@ def main(argv=None):
                "p_ecl": p["p_ecl"], "period_d": p["period_d"], "gmag": p["gmag"],
                "m2_dark": p["m2_dark"], "gaia_eb": p["gaia_eb"], "tic": "", "n_sectors": 0,
                "cov1": 0.0, "cov2": 0.0, "best_snr": 0.0, "best_t": "", "best_bf": "",
-               "status": ""}
+               "transit_conj": p.get("transit_conj", ""), "status": ""}
         try:
             tic = find_tic(p["ra"], p["dec"], p["gmag"], sid)
             if tic is None:
@@ -542,9 +632,24 @@ def main(argv=None):
             hw2 = max(p["dur2_h"] / 48.0, 1 / 48)
             rec["cov1"] = go.coverage_fraction(s, "t1", binned["t"], hw1)
             rec["cov2"] = go.coverage_fraction(s, "t2", binned["t"], hw2)
+            if rec["transit_conj"]:
+                rec["cov_transit"] = rec["cov1"] if rec["transit_conj"] == "t1" else rec["cov2"]
             # pre-registered definition (v1): p_ecl x best coverage
             expected += p["p_ecl"] * max(rec["cov1"], rec["cov2"])
             expected_both += p["p_ecl1"] * rec["cov1"] + p["p_ecl2"] * rec["cov2"]
+            wins = covered_windows(np.asarray(binned["t"]), s, p)
+            rec["n_windows_covered"] = len(wins)
+            for w in wins:
+                all_windows.append(dict(w, source_id=sid, tic=tic["tic"], period_d=p["period_d"],
+                                        class_=p["class"]))
+            if args.window_plots and wins:
+                try:
+                    plot_windows(os.path.join(args.out_dir, "windows", f"{sid}.png"),
+                                 f"Gaia {args.schema} {sid}  TIC {tic['tic']}  P={p['period_d']:.2f} d  "
+                                 f"m2(dark)={p['m2_dark']:.3f} Msun  cos i={p['cosi']:.3f}",
+                                 binned, wins)
+                except Exception as exc:
+                    log("window plot failed", sid, exc)
             for e in events:
                 best = None
                 for key, dkey in (("t1", "dur1_h"), ("t2", "dur2_h")):
@@ -559,7 +664,9 @@ def main(argv=None):
                           "frac_in_window": best["frac_in_window"],
                           "offset_d": best["median_offset_d"],
                           "offset_sd_d": best["offset_sd_d"],
-                          "pred_dur_h": p["dur1_h"] if best["conj"] == "t1" else p["dur2_h"]})
+                          "pred_dur_h": p["dur1_h"] if best["conj"] == "t1" else p["dur2_h"],
+                          "at_rv_transit_conj": (best["conj"] == rec["transit_conj"])
+                          if rec["transit_conj"] else ""})
                 all_events.append(e)
             if events:
                 top = max(events, key=lambda e: e["snr"])
@@ -601,8 +708,12 @@ def main(argv=None):
     ev_fields = ["score", "source_id", "tic", "class", "gmag", "period_d", "m2_dark", "p_ecl",
                  "gaia_eb", "t_center", "duration_h", "pred_dur_h", "depth_ppm", "snr",
                  "box_noise_ppm", "near_edge", "n_other_targets_same_time", "conj", "bf",
-                 "frac_in_window", "offset_d", "offset_sd_d", "seg_start", "seg_end"]
+                 "frac_in_window", "offset_d", "offset_sd_d", "at_rv_transit_conj",
+                 "seg_start", "seg_end"]
     write_csv(os.path.join(args.out_dir, "events.csv"), all_events, ev_fields)
+    write_csv(os.path.join(args.out_dir, "covered_windows.csv"), all_windows,
+              ["source_id", "tic", "class_", "period_d", "conj", "is_rv_transit", "centre",
+               "sd", "n_in_1sd", "n_in_3sd"])
 
     # plots for the best-scoring event per target
     done = set()
@@ -645,6 +756,8 @@ def main(argv=None):
         "expected_eclipses_covered": expected,
         "expected_eclipses_covered_both_conj": expected_both,
         "covered_either_conj_gt_0.5": sum(1 for r in ok if max(r["cov1"], r["cov2"]) > 0.5),
+        "windows_covered": len(all_windows),
+        "rv_transit_windows_covered": sum(1 for w in all_windows if w["is_rv_transit"]),
         "minutes": (time.time() - t_start) / 60,
     })
     with open(os.path.join(args.out_dir, "run_summary.json"), "w") as fh:
@@ -654,12 +767,13 @@ def main(argv=None):
              "Made by AI agents working for MV2 of Munim, Inc. Apache-2.0 code, CC BY 4.0 results.", "",
              "```", json.dumps(summary, indent=1, default=str), "```", "",
              "## Top events (score = SNR x conjunction-window match, penalised for edges and shared times)", "",
-             "| score | Gaia source_id | TIC | class | P (d) | t (BTJD) | dur (h) | depth (ppm) | SNR | conj | BF | offset (d) | Gaia EB |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+             "| score | Gaia source_id | TIC | class | P (d) | t (BTJD) | dur (h) | depth (ppm) | SNR | conj | RV transit? | BF | offset (d) | Gaia EB |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for e in all_events[:60]:
         lines.append(f"| {e['score']:.1f} | {e['source_id']} | {e['tic']} | {e['class']} | {e['period_d']:.2f} | "
                      f"{e['t_center']:.3f} | {e['duration_h']:.0f} | {e['depth_ppm']:.0f} | {e['snr']:.1f} | "
-                     f"{e['conj']} | {e['bf']:.1f} | {e['offset_d']:.2f}+-{e['offset_sd_d']:.2f} | {e['gaia_eb']} |")
+                     f"{e['conj']} | {e['at_rv_transit_conj']} | {e['bf']:.1f} | "
+                     f"{e['offset_d']:.2f}+-{e['offset_sd_d']:.2f} | {e['gaia_eb']} |")
     with open(os.path.join(args.out_dir, "report.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
     log("done", json.dumps(summary, default=str)[:2000])

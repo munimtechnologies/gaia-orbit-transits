@@ -22,6 +22,20 @@ dark companion one of them is the transit and the other the occultation.
     instead of holding G fixed while A, B, F vary.
   * Every sample's omega is aligned (modulo pi) with the central omega, so "t1" and
     "t2" always label the same conjunction across samples.
+
+0.3.0 (2026-11-17):
+  * AstroSpectroSB1 solutions also carry the spectroscopic Thiele-Innes constants
+    C = a1 sin(omega) sin(i) and H = a1 cos(omega) sin(i) (AU), which fix omega of
+    the primary without the pi ambiguity. The companion passes in front of the
+    primary (transit / primary eclipse) at true anomaly f = pi/2 - omega.
+    This convention was checked against the 155 Gaia DR3 EclipsingSpectro
+    solutions (RV omega and t_periastron) and the independent eclipse times in
+    gaiadr3.vari_eclipsing_binary: the deeper eclipse falls at f = pi/2 - omega in
+    every checked system (see findings/2026-11-17-sb1-transit-convention.md and
+    TestTransitConvention). `transit_label()` says which of t1/t2 is the transit.
+  * For circular AstroSpectroSB1 solutions (bit_index 65435) Gaia fixes omega = 0
+    and C is not meaningful (DR3 catalogue validation, arXiv:2206.05989), so the
+    sign of H decides: H > 0 -> transit at Tp + P/4.
 """
 import numpy as np
 
@@ -143,6 +157,17 @@ def conjunction_times(Tp, P, e, omega):
     return t1, t2, f1, f2
 
 
+def transit_phase(e, omega_rv):
+    """Phase after periastron (0..1) at which the companion passes in front of the
+    primary, for the primary's spectroscopic argument of periastron omega_rv (rad).
+
+    Standard RV convention (v = K [cos(omega + f) + e cos omega]): the primary is
+    farthest from the observer at omega + f = pi/2. Checked against Gaia DR3
+    EclipsingSpectro solutions (TestTransitConvention).
+    """
+    return true_to_mean(np.pi / 2 - _f(omega_rv), e) / (2 * np.pi)
+
+
 def ms_mass_radius(abs_g):
     g = _f(abs_g)
     return np.interp(g, _MG, _MASS), np.interp(g, _MG, _RAD)
@@ -186,7 +211,8 @@ def _nz(x):
 
 def _val(row, key, default=np.nan):
     try:
-        v = float(row.get(key, default))
+        v = row.get(key, default)
+        v = float(v) if v is not None and v != "" else default
     except (TypeError, ValueError):
         return default
     return v
@@ -336,6 +362,110 @@ def central_conjunctions(row, ref_btjd=None):
     t1, t2, _, _ = conjunction_times(_val(row, "t_periastron") + ref_btjd,
                                      _val(row, "period"), e, float(el["omega"]))
     return float(t1), float(t2)
+
+
+# ---------------------------------------------------------------- RV: which conjunction transits
+def rv_omega(row):
+    """(omega_rv, snr) of the primary from the spectroscopic Thiele-Innes C and H.
+
+    Only AstroSpectroSB1 solutions carry C and H. snr is the significance of the
+    (C, H) amplitude a1 sin i along its own direction (for circular solutions: of
+    H > 0). The precision of omega_rv itself is rv_omega_sd(). Returns (nan, 0)
+    when the row has no usable C/H.
+    """
+    H = _val(row, "h_thiele_innes")
+    if not np.isfinite(H):
+        return np.nan, 0.0
+    herr = _nz(row.get("h_thiele_innes_error"))
+    if is_circular_fixed(row):
+        # Gaia fixed omega = 0; C is not meaningful. H = a1 sin i > 0 for omega = 0.
+        w = 0.0 if H >= 0 else np.pi
+        return w, (abs(H) / herr if herr > 0 else np.nan)
+    C = _val(row, "c_thiele_innes")
+    if not np.isfinite(C):
+        return np.nan, 0.0
+    cerr = _nz(row.get("c_thiele_innes_error"))
+    amp = float(np.hypot(C, H))
+    if amp <= 0:
+        return np.nan, 0.0
+    err = float(np.hypot(C * cerr, H * herr)) / amp
+    return float(np.arctan2(C, H)), (amp / err if err > 0 else np.nan)
+
+
+def rv_omega_sd(row):
+    """1-sigma uncertainty (rad) of omega_rv = atan2(C, H) from the C/H errors
+    (C/H covariance ignored). 0 for circular solutions (omega fixed by Gaia; there
+    the sign of H, i.e. rv_omega's snr, is what matters); nan without C/H."""
+    H = _val(row, "h_thiele_innes")
+    if not np.isfinite(H):
+        return np.nan
+    if is_circular_fixed(row):
+        return 0.0
+    C = _val(row, "c_thiele_innes")
+    if not np.isfinite(C):
+        return np.nan
+    amp2 = C * C + H * H
+    if amp2 <= 0:
+        return np.nan
+    cerr = _nz(row.get("c_thiele_innes_error"))
+    herr = _nz(row.get("h_thiele_innes_error"))
+    return float(np.hypot(H * cerr, C * herr) / amp2)
+
+
+# a label is only given when omega_rv is known well enough to tell the two
+# conjunctions apart (they differ by pi in omega): sigma_omega < 0.6 rad, or for
+# circular solutions H > 0 at 2 sigma or more
+MAX_OMEGA_SD = 0.6
+MIN_CIRC_H_SNR = 2.0
+
+
+def rv_transit_time(row, ref_btjd=None):
+    """BTJD of a transit (companion in front of the primary) from the RV omega, or None."""
+    w, snr = rv_omega(row)
+    if not np.isfinite(w):
+        return None
+    if ref_btjd is None:
+        ref_btjd = _val(row, "ref_btjd", GAIA_REF_BTJD)
+        if not np.isfinite(ref_btjd):
+            ref_btjd = GAIA_REF_BTJD
+    e = 0.0 if is_circular_fixed(row) else _val(row, "eccentricity", 0.0)
+    e = 0.0 if not np.isfinite(e) else e
+    P = _val(row, "period")
+    t = _val(row, "t_periastron") + ref_btjd + float(transit_phase(e, w)) * P
+    return {"t_transit_rv_btjd": float(t), "omega_rv": float(w), "rv_omega_snr": snr}
+
+
+def transit_label(row, ref_btjd=None):
+    """Which central conjunction ('t1' or 't2') is the transit, from the RV omega.
+
+    Returns a dict with transit_conj ('' when unknown), t_transit_rv_btjd,
+    rv_offset_d (distance of the RV transit time from the chosen astrometric
+    conjunction, modulo P), rv_omega_snr and rv_consistent (offset < 0.1 P).
+    A large offset means the astrometric and spectroscopic omegas disagree; then
+    both windows should be kept.
+    """
+    out = {"transit_conj": "", "t_transit_rv_btjd": np.nan, "rv_offset_d": np.nan,
+           "rv_omega_snr": np.nan, "rv_omega_sd_rad": np.nan, "rv_consistent": False}
+    r = rv_transit_time(row, ref_btjd)
+    if r is None:
+        return out
+    wsd = rv_omega_sd(row)
+    out["rv_omega_sd_rad"] = wsd
+    out["rv_omega_snr"] = r["rv_omega_snr"]
+    if is_circular_fixed(row):
+        if not (np.isfinite(r["rv_omega_snr"]) and r["rv_omega_snr"] >= MIN_CIRC_H_SNR):
+            return out
+    elif not (np.isfinite(wsd) and wsd < MAX_OMEGA_SD):
+        return out
+    P = _val(row, "period")
+    t1, t2 = central_conjunctions(row, ref_btjd)
+    d1 = abs(np.mod(t1 - r["t_transit_rv_btjd"] + P / 2, P) - P / 2)
+    d2 = abs(np.mod(t2 - r["t_transit_rv_btjd"] + P / 2, P) - P / 2)
+    lab, off = ("t1", d1) if d1 <= d2 else ("t2", d2)
+    out.update({"transit_conj": lab, "t_transit_rv_btjd": r["t_transit_rv_btjd"],
+                "rv_offset_d": float(off), "rv_omega_snr": r["rv_omega_snr"],
+                "rv_consistent": bool(off < 0.1 * P)})
+    return out
 
 
 def eclipse_geometry(s, m1, r1, m2, r2):
