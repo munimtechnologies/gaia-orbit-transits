@@ -63,7 +63,7 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
 
-## Status (2026-11-17)
+## Status (2026-11-17, 0.7.1)
 
 - **Full DR3 search done** (`findings/2026-11-17-dr3-full-search-results.md`). Real
   eclipses land where Gaia's orbits predict them, some repeating at Gaia's period to
@@ -76,6 +76,19 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
   earlier statement that DR3 orbits predict "about three times more eclipses than TESS
   shows" is withdrawn until `calib_eclipse_rate.py` reports; its predictions are
   pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`.
+- **0.7.1:** the 15 MB prior table could not be published (our publish pipeline accepts at
+  most 2 MB), so the calibration job now rebuilds it bit for bit and checks it before
+  grading (`calib_support.py`, `findings/2026-11-17-calib-v2-amendment.md`). The
+  watch-list re-run with dipsearch 0.4.3 is graded: W2 passes, W1 and W3 fail, and a third
+  TESS artefact type (dips next to short data gaps) is documented
+  (`findings/2026-11-17-watchlist-v3-results.md`).
+- **0.8.0, new question: white-dwarf self-lensing at Gaia-predicted times.** About 3,145
+  Gaia DR3 astrometric orbits probably hold white dwarfs (Shahaf et al. 2024). When such
+  a white dwarf passes in front of its star, it magnifies it by a few thousand ppm for
+  hours to a day. `selflens.py` predicts when that should happen and searches TESS for
+  brightenings there. Pre-registered in `findings/2026-11-17-selflens-prereg.md`. The
+  wow if it works: the first self-lensing white dwarf found from a Gaia orbit, with its
+  mass measured both by lensing and by astrometry.
 - Which eclipsing systems are new is being checked against the Chopard-Vilhem deposit,
   SIMBAD, VSX and the TESS EB catalogue (`xmatch_prior.py`). None is called new until
   then.
@@ -107,6 +120,8 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
        primary;
      - the expected duration;
      - the next conjunctions after 2026-12-01.
+   - Each source's draws are seeded by the run seed and its source_id alone, so a
+     rerun with the same arguments reproduces the prior table exactly.
 4. **Which conjunction is the transit (0.3.0).** For `AstroSpectroSB1` solutions,
    ω_RV = atan2(C, H) has no π ambiguity, and the companion passes in front of the star
    at f = π/2 − ω_RV. `transit_label()` names that conjunction (`transit_conj`).
@@ -127,6 +142,9 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
      a one-bin spike. Boxes above 0.75 whose scatter is also > 3× the per-bin noise are
      dropped before de-duplication, so the box that sits inside a real dip still wins.
      Dips shorter than ~1.3 h are no longer reported.
+   - **Planned 0.4.4:** treat every gap longer than 0.1 d as an edge, and drop 0.25 d
+     on both sides of it. The v3 watch-list run showed dips right before and after short
+     gaps (TIC 322271767, TIC 231290240) that 0.4.3 does not remove.
    - Bin the light curves to 30 min and split them at gaps.
    - Detrend each piece with a running median three times as wide as the trial
      duration.
@@ -145,7 +163,8 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
 
 ### Gaia inclinations against TESS eclipses (`calib_eclipse_rate.py`, 0.7.0)
 
-Pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`.
+Pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`, amended
+(inputs only) in `findings/2026-11-17-calib-v2-amendment.md`.
 1. **Detection without the Bayes factor.** A dip counts as an eclipse if it has SNR ≥ 10
    and depth ≥ 500 ppm, is not at a segment edge or simultaneous with a dip in another
    target, and lies within 3σ + half its duration of a covered predicted conjunction
@@ -165,6 +184,31 @@ Pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`.
    eclipses the old BF rule missed.
 6. **Outputs:** `calib_report.md`, `calib_summary.json` (grades C1–C7) and
    `calib_targets.csv`.
+
+`calib_support.py` (0.7.1) checks that a rebuilt prior table reproduces the v4 targets
+(`repro`: exact p_ecl and m2_dark for at least 99% of them, none missing, none off by more
+than 0.02), writes the target rows as a small table, and turns the detections into a
+cross-match list for `xmatch_prior.py` (`seen`).
+
+### White-dwarf self-lensing pulses (`selflens.py`, 0.8.0)
+
+1. **Sample.** The Gaia DR3 astrometric binaries with probable white-dwarf companions of
+   Shahaf et al. (2024; updated Table A1, Zenodo 10.5281/zenodo.14799795, CC BY 4.0) that
+   have G < 15 and |cos i| < 0.2.
+2. **Pipeline.** The unchanged `run_search.py`, with three substitutions: only these stars
+   get priors; the companion radius is a white-dwarf radius (Nauenberg 1972), so the
+   crossing probability and duration are those of the pulse; and the TESS flux is
+   inverted (2 − f) so the box search finds brightenings. Strong original dips
+   (eclipses) are clipped instead of upward outliers, and the plots show 2 − f.
+3. **Prediction.** A = 2 (R_E/R1)² − (R_wd/R1)², with R_E² = 4 G M_wd a / c², at the
+   conjunction where the white dwarf is in front (Gaia's RV label for AstroSpectroSB1
+   solutions; both conjunctions otherwise).
+4. **Rule.** SNR ≥ 8, amplitude within a factor of 3 of A, duration within a factor of 3
+   of the prediction, not at an edge, not simultaneous with another target, inside
+   3σ + D/2 of a covered window. A control half a period away. Predictions L1–L4.
+5. **Outputs.** `selflens_targets.csv`, `selflens_candidates.csv`,
+   `selflens_control.csv`, `selflens_summary.json` and `shahaf_info.json`, plus the usual
+   run_search outputs.
 
 ### What is already known (`xmatch_prior.py`, 0.6.2)
 
@@ -348,6 +392,14 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - window matching, control phases, the repeat rule (HD 75767's 10.2488-d spacing; no
     TESS-orbit periods) and the artefact veto;
   - an offline end-to-end run on four synthetic targets.
+- `calib_support.py` (0.7.1): exact and near matches, a missing target, the 99% and 0.02
+  thresholds, the choice of solution type, the detection list with extra systems, and a
+  file round trip.
+- `selflens.py` (0.8.0), worked by hand: the white-dwarf radius (0.012445 R☉ at
+  0.6 M☉), Kepler's law (1 AU = 215.032 R☉), the Einstein radius (0.0405 R☉ for 0.6 M☉
+  at 322 R☉) and the pulse amplitude (3,126 ppm for a 1 R☉ star); window matching and
+  control shifts; and the full pulse rule on a synthetic target, where one event passes
+  and events that are too bright, too short, at an edge or at the wrong conjunction do not.
 - `vet_event.py`:
   - box depth with a sloped baseline;
   - repeat-epoch windows and covered period ranges, worked by hand;
@@ -417,9 +469,11 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   needs vetting: pixel-level centroids, nearby stars, known variables in VSX, SIMBAD and
   the TOI/CTOI lists, and the shape of the event.
 - Dips at the start or end of a TESS orbit are where scattered light is strongest. The
-  search flags them (`near_edge`), but it does not remove them. 0.4.3 removes the two
-  artefact types seen so far (floor ramps and single-bin spikes), not smooth
-  scattered-light trends or flux that falls to zero (seen on TIC 219744709).
+  search flags them (`near_edge`), but it does not remove them. 0.4.3 removes two
+  artefact types (floor ramps and single-bin spikes), not smooth scattered-light trends,
+  flux that falls to zero (seen on TIC 219744709), or dips right before or after data
+  gaps shorter than 0.5 d (seen on TIC 322271767 and TIC 231290240; fix planned in
+  0.4.4).
 - The dip search does not report dips shorter than ~1.3 h (0.4.3).
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
@@ -448,7 +502,7 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate test_calib_support test_selflens
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -467,7 +521,12 @@ python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.4
 python eblm_screen.py --schema gaiadr3 --n-tess 20 --data-dir data --out-dir out  # SB1 x EB
 python xmatch_prior.py --targets findings/2026-11-17-dr3-strong-matches.csv \
     --data-dir data --out-dir out                                    # what is already known
-python calib_eclipse_rate.py --data-dir data --out-dir out           # Gaia inclinations vs eclipses
+# Gaia inclinations vs eclipses (0.7.1): rebuild the v4 prior table, check it, then test
+python run_search.py --data-dir data --out-dir data/dr3-full-search-v4 --gmax 14.5 \
+    --cosi-max 0.2 --mc 600 --max-targets 400 --tap-chunks 16 --no-tess
+python calib_support.py repro --dir data/dr3-full-search-v4 --out-dir out
+python calib_eclipse_rate.py --data-dir data --out-dir out
+python selflens.py --data-dir data --out-dir out --gmax 15 --max-targets 250   # self-lensing
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
@@ -508,6 +567,13 @@ checked against the published datamodel on release day.)
     "artefacts gone" fails.
   - 0.4.3 pads the floor by 0.5 d and drops incoherent boxes. Predictions W1–W3 for
     the v3 re-run are written down before it runs.
+- `findings/2026-11-17-watchlist-v3-results.md` (0.7.1): the re-run with 0.4.3.
+  - **W2 passes** (the Sector 69 event on TIC 41898425 is still reported).
+  - **W1 fails:** the floor ramps are gone (deepest dips 5,532 and 3,552 ppm instead of
+    221,197 and 76,091), but a 9.8% 2-h "dip" on TIC 322271767 survives. It starts the
+    moment the data resume after a 0.3-d gap: a third artefact type.
+  - **W3 fails narrowly:** the floor pad also removes some good cadences, so one window
+    lost its coverage (65 instead of 66).
 - `findings/2026-11-17-vet-41898425-prereg.md`: the fixed rules and predictions for
   vetting that event.
 - `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
@@ -561,12 +627,23 @@ checked against the published datamodel on release day.)
   TIC 272540685 were missed by the v4 rule), what we read before writing it, the fixed
   detection rule and model, and predictions C1–C7 (expected: σ(cos i) too small by
   2–3×, timing errors about right).
+- `findings/2026-11-17-calib-v2-amendment.md` (0.7.1): the full prior table could not be
+  published (over 2 MB), so the calibration job rebuilds it with the same code and seeds.
+  The rebuild must reproduce the v4 targets exactly before anything is graded. Every
+  detection is cross-matched with SIMBAD, VSX, the TESS EB catalogue and the
+  Chopard-Vilhem deposit. A sensitivity check for gap-edge dips is stated in advance.
+  Predictions unchanged.
+- `findings/2026-11-17-selflens-prereg.md` (0.8.0): **can a Gaia orbit tell us when a
+  white dwarf will lens its star?** The sample, the pulse rule, the control and
+  predictions L1–L4 (expected: a few tenths of a detectable pulse in TESS, so most
+  likely an honest null and an upper limit), written before any data were read.
 - `data/dr3-full-search-v4/`: the raw outputs of that run (CC BY 4.0): every target with
   its eclipse probability and window coverage (`tess_targets.csv`), all 2,505 dips
   (`events.csv`), the 1,079 covered windows, the substellar list, the run summary and
-  the report. From 0.7.0 the full prior table of all 24,157 orbits
-  (`gaia_edge_on_priors.csv`: cos i and its Monte Carlo σ, masses, radii, eclipse
-  probabilities, durations and next conjunctions) is included too.
+  the report. The full prior table of all 24,157 orbits (`gaia_edge_on_priors.csv`,
+  15 MB) is too large for this repository. Rebuild it with the `run_search.py --no-tess`
+  command under Run; the target rows will be added as a small table once the calibration
+  job has checked them.
 
 ## Prior art checked (2026-11-17)
 
@@ -586,7 +663,8 @@ checked against the published datamodel on release day.)
   lists TIC 342194997 (P = 550.75 d, one 16.9% eclipse, credited to Chopard-Vilhem) and
   other single eclipses at Gaia-predicted conjunctions.
 - Holl et al. 2023, A&A 674, A10 (arXiv:2206.05439): Gaia DR3 orbits and a few TOI
-  coincidences.
+  coincidences. Its validation notes that Kepler-16 and several transit or eclipse
+  candidates got near-edge-on DR3 solutions; it does not measure an eclipse rate.
 - arXiv:2310.12380: rejects K2/TESS candidates using Gaia DR3 *spectroscopic* (SB1)
   orbits.
 - arXiv:2310.07936: Gaia DR3 SB1s with substellar-mass companions matched to TOIs and the
@@ -599,6 +677,8 @@ checked against the published datamodel on release day.)
 - Gaia Collaboration, Arenou et al. 2023 (arXiv:2206.05595): DR3 multiplicity overview.
 - Halbwachs et al. 2023, A&A 674, A9: the DR3 astrometric binary solutions, including the
   C/H constants.
+- arXiv:2407.16760: validation of DR3 orbital and acceleration solutions with wide
+  hierarchical triples (parallaxes and errors, not inclinations).
 - Czavalinga et al. 2023, A&A 670, A75: close binaries with tertiary companions found in
   Gaia DR3 orbits (eclipsing pairs with outer orbits).
 - Panahi et al. 2022 (arXiv:2205.10197): Gaia DR3 photometric transit candidates checked
