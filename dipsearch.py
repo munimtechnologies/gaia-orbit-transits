@@ -9,9 +9,18 @@ gaps, detrends each segment with a running median whose window is three times
 the trial duration (at least 0.5 d), and measures box depths. The noise of each
 box length is measured empirically (MAD of all box means in the segment), so
 red noise lowers the significance instead of producing false alarms.
+
+0.4.2: cadences with normalised flux below `flux_floor` (default 0.5) are dropped
+before binning. The 25-star watch-list run found QLP light curves of Sector 104
+in which the flux falls to ~10% at the start and end of each orbit (broken
+cadences that are not quality-flagged); every top-ranked "event" of that run was
+one of them. No companion to a main-sequence star that this project looks for
+can block half of the light, so the cut loses nothing (deep stellar eclipses are
+not the target; pass flux_floor=None to keep them).
 """
 import numpy as np
 
+VERSION = "0.4.2"
 DEFAULT_DURATIONS_H = (2.0, 4.0, 8.0, 16.0, 24.0)
 
 
@@ -61,14 +70,23 @@ def robust_sd(x):
 
 
 def search(t, f, durations_h=DEFAULT_DURATIONS_H, bin_width=1.0 / 48, snr_min=7.0,
-           gap=0.5, max_events=20, min_fill=0.75):
+           gap=0.5, max_events=20, min_fill=0.75, flux_floor=0.5):
     """Return (events, binned) where events is a list of dicts sorted by snr.
 
-    t in days, f normalised flux (median ~1).
+    t in days, f normalised flux (median ~1). Cadences with f < flux_floor are
+    dropped first (binned["n_below_floor"] counts them).
     """
+    t = np.asarray(t, float)
+    f = np.asarray(f, float)
+    n_floor = 0
+    if flux_floor is not None:
+        low = np.isfinite(f) & (f < flux_floor)
+        n_floor = int(low.sum())
+        t, f = t[~low], f[~low]
     bt, bf, bn = bin_lc(t, f, bin_width)
     events = []
-    binned = {"t": bt, "f": bf, "n": bn, "segments": segments(bt, gap)}
+    binned = {"t": bt, "f": bf, "n": bn, "segments": segments(bt, gap),
+              "n_below_floor": n_floor}
     if bt.size < 10:
         return events, binned
     cands = []

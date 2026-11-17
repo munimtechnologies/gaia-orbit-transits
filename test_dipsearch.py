@@ -59,5 +59,32 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(ev, [])
 
 
+class TestFluxFloor(unittest.TestCase):
+    """0.4.2: broken cadences (flux ~0.1, as in the Sector 104 QLP light curves)."""
+
+    def _broken(self):
+        rng = np.random.default_rng(7)
+        t, f = _sector(rng)
+        bad = np.abs(t - 1510.0) < 0.3
+        f[bad] = 0.1
+        return t, f, int(bad.sum())
+
+    def test_floor_drops_broken_cadences(self):
+        t, f, nbad = self._broken()
+        ev, binned = ds.search(t, f)
+        self.assertEqual(binned["n_below_floor"], nbad)
+        for e in ev:
+            if abs(e["t_center"] - 1510.0) < 0.5:
+                self.assertLess(e["depth_ppm"], 1e5)
+
+    def test_without_floor_artifact_dominates(self):
+        t, f, _ = self._broken()
+        ev, binned = ds.search(t, f, flux_floor=None)
+        self.assertEqual(binned["n_below_floor"], 0)
+        self.assertTrue(ev)
+        self.assertLess(abs(ev[0]["t_center"] - 1510.0), 0.5)
+        self.assertGreater(ev[0]["depth_ppm"], 1e5)
+
+
 if __name__ == "__main__":
     unittest.main()

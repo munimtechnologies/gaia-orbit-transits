@@ -70,6 +70,9 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
 5. **TESS light curves.** Look up the TIC ID (MAST) and download TESS light curves:
    SPOC 2-min first, then TESS-SPOC, then QLP, one per sector.
 6. **Dip search.**
+   - **0.4.2:** first drop cadences below half the median flux. In the watch-list run,
+     QLP light curves of Sector 104 fall to about 10% at the start and end of each orbit,
+     and those cadences are not quality-flagged.
    - Bin the light curves to 30 min and split them at gaps.
    - Detrend each piece with a running median three times as wide as the trial
      duration.
@@ -128,12 +131,22 @@ This stage publishes falsifiable predictions before the observations exist.
 - **Outputs.** `<prefix>_stars.csv`, `<prefix>_tess_sectors.csv`,
   `<prefix>_windows.csv`, `<prefix>_summary.json` and `<prefix>_report.md`.
 
-### Gaia DR4 preparation (`dr4_datamodel.py`)
+### Vetting one event (`vet_event.py`, 0.4.2)
 
-ESA published a draft DR4 data model (pre-release, 2026-06-26). This script downloads it
-and extracts what the release-day run needs: the `nss_two_body_orbit` columns (the
-`corr_vec` order and the `t_periastron` reference), `gaia_exoplanet_candidates`,
-`nss_masses`, `vari_planetary_transit`, and the epoch-photometry time origin.
+This stage vets a single dip with decision rules fixed in advance (`verdict()`):
+- **Products.** For every light-curve product of the star that covers the event, it
+  measures PDC, SAP, the background, both centroids and the quality flags in the same
+  box, against a straight-line local baseline.
+- **Systematics.** It measures the same box on the 15 nearest other SPOC / TESS-SPOC
+  stars in that sector.
+- **Pixels.** From a TESScut stamp it builds a background-subtracted 3×3 aperture light
+  curve and a difference image, and compares the difference-image centroid with the
+  star's position.
+- **Positive control.** The expected transit is injected at the event time and away
+  from it.
+- **Repeat epochs.** It checks t0 + kP for P within ±3σ of the Gaia period, records the
+  covered period range, and runs an injection check at each epoch.
+- **Catalogues.** A Gaia DR3 cone, SIMBAD and VSX (through VizieR).
 
 ## Checks (all run as unit tests)
 
@@ -156,6 +169,14 @@ and extracts what the release-day run needs: the `nss_two_body_orbit` columns (t
   - results merge under one header;
   - capped or aborted ranges are split and the answer is complete;
   - plain network errors are not split.
+- `dipsearch.py` (0.4.2): broken cadences at 10% flux are dropped and counted. Without
+  the floor they dominate the search.
+- `vet_event.py`:
+  - box depth with a sloped baseline;
+  - repeat-epoch windows and covered period ranges, worked by hand;
+  - the difference-image centroid;
+  - neighbour statistics;
+  - every verdict rule.
 - `archival.py`:
   - parsers for the ZTF, Gaia epoch-photometry (raw or zipped DataLink answers) and
     ASAS-SN formats, including the time conversions and the rejection of flagged and
@@ -182,6 +203,8 @@ and extracts what the release-day run needs: the `nss_two_body_orbit` columns (t
 - A dip that matches a predicted window is a **candidate**, not a discovery. It still
   needs vetting: pixel-level centroids, nearby stars, known variables in VSX, SIMBAD and
   the TOI/CTOI lists, and the shape of the event.
+- Dips at the start or end of a TESS orbit are where scattered light is strongest. The
+  search flags them (`near_edge`), but it does not remove them.
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
   Ground photometry of bright stars (G ≲ 12.5 in ZTF) can be affected by saturation.
@@ -196,7 +219,7 @@ and extracts what the release-day run needs: the `nss_two_body_orbit` columns (t
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -205,6 +228,9 @@ python archival.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 \
     --data-dir data --out-dir out                                    # archival test
 python forecast.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 --m2-max 1 \
     --data-dir data --out-dir out                                    # forecast
+python vet_event.py --tic 41898425 --ra 21.734801 --dec -41.059717 --t0 3192.263 \
+    --dur-h 8 --pred-dur-h 11.68 --sector 69 --period 196.6738 --period-sd 0.8175 \
+    --exp-depth 0.0105 --data-dir data --out-dir out                 # vet one event
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
@@ -232,6 +258,13 @@ checked against the published datamodel on release day.)
     The next windows are 2026-11-16, 2027-01-28 and 2027-04-12 (±6.5 d).
 - `findings/2026-11-17-watchlist-prereg.md`: predictions for the TESS check of the
   25-star watch list.
+- `findings/2026-11-17-watchlist-results.md` (0.4.2): the graded watch-list check.
+  - 24 of 25 stars have TESS data. Predictions 1 and 2b pass; 2a and 3 fail as written.
+  - Six of the seven dips with Bayes factor > 3 are broken QLP cadences in Sector 104.
+  - One edge-of-orbit dip on TIC 41898425 (Sector 69) is being vetted. It is not a
+    candidate yet.
+- `findings/2026-11-17-vet-41898425-prereg.md`: the fixed rules and predictions for
+  vetting that event.
 - `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
   - TESS's Year 9 pointings (to September 2027) do not cover the best target, so only
     the ground can test its 2027 windows.
@@ -273,7 +306,8 @@ By MV2 of Munim, Inc. (mv2@munimtech.com). Made with AI agents working in his na
 Code: Apache-2.0. Results and text: CC BY 4.0.
 Data: ESA Gaia DR3 (Gaia Collaboration), including epoch photometry, served by the ESA
 Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-SPOC and
-QLP light curves); the TESS Input Catalog; the NASA Exoplanet Archive TOI table; the
-Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; TESS pointings from the TESS
-Science Center and tess-point (tessgi). Uses numpy, astropy, astroquery, lightkurve,
-matplotlib, skypatrol (pyasassn) and tess-point.
+QLP light curves, TESScut); the TESS Input Catalog; the NASA Exoplanet Archive TOI table;
+the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and VizieR (CDS) with
+the AAVSO VSX catalogue; TESS pointings from the TESS Science Center and tess-point
+(tessgi). Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol (pyasassn)
+and tess-point.
