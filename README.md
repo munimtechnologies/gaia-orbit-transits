@@ -19,6 +19,12 @@ From 0.5.0 it also works in the other direction. It starts from Gaia's own photo
 transit candidates (`vari_planetary_transit`: 214 in DR3, 1,007 in DR4) and asks what
 Gaia's own radial velocities and orbits say about them (`transit_rv_screen.py`).
 
+From 0.6.0 it joins Gaia's single-lined spectroscopic orbits to Gaia's own eclipsing
+binaries at the same period (`eblm_screen.py`). The result is a Gaia-only mass, radius,
+conjunction and ellipsoidal check for every low-mass companion seen to eclipse. It also
+flags the commonest trap: near-equal eclipses with a tiny mass function, which signal a
+diluted SB1 amplitude.
+
 Earlier work mostly went the other way:
 - Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits.
 - arXiv:2310.12380 used Gaia spectroscopic orbits to reject transit candidates.
@@ -27,15 +33,18 @@ We have not found a systematic search that starts from the Gaia astrometric orbi
 predicts TESS eclipses for the whole catalogue (see *Prior art* below).
 
 Gaia DR4 is due on 2 December 2026. It will publish millions of orbits over a 5.5-year
-baseline, plus Gaia's first exoplanet catalogue. The pipeline is built to run on DR4 on
-release day (`--schema gaiadr4`).
+baseline, including 638,966 RVS SB1 orbits (`rvs_two_body_orbit`), plus Gaia's first
+exoplanet catalogue. The pipeline is built to run on DR4 on release day
+(`--schema gaiadr4`).
 
-**Why it matters if it works.** A companion that both transits and has an astrometric
-orbit has a measured true mass (from astrometry) and radius (from the transit). That
-pairing is very rare and valuable for a long-period brown dwarf or giant planet. A
-long-period eclipsing binary with a Gaia astrometric orbit is also a strong mass and
-radius benchmark. A Gaia transit with a Gaia orbit at the same period gives a mass, a
-radius and a period from one mission.
+**Why it matters if it works.**
+- A companion that both transits and has an astrometric orbit has a measured true mass
+  (from astrometry) and radius (from the transit). That pairing is very rare and
+  valuable for a long-period brown dwarf or giant planet.
+- A long-period eclipsing binary with a Gaia astrometric orbit is also a strong mass and
+  radius benchmark.
+- A Gaia transit or eclipse with a Gaia orbit at the same period gives a mass, a radius
+  and a period from one mission.
 
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
@@ -191,6 +200,36 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 5. **Verdict:** one of NO_ECLIPSE, PERIOD_CONFLICT, STELLAR_EB, MASS_TENSION or
    TRANSITING_{BROWN_DWARF_CANDIDATE, BD_OR_VLM_BOUNDARY, VLM_STAR}.
 
+### Gaia SB1 orbits × Gaia eclipsing binaries (`eblm_screen.py`, 0.6.0)
+
+1. **Sample.** SB1 orbits whose `vari_eclipsing_binary` period agrees within 1%, with
+   FLAME mass and radius (one archive query).
+2. **Eclipse-only depth.** Gaia's `derived_primary_ecl_depth` includes twice the
+   ellipsoidal amplitude, so the eclipse depth is the Gaussian depth (checked to 10⁻⁶ mag
+   on five stars).
+3. **Classes.**
+   - `twin_blend_suspect`: secondary ≥ 0.7 × primary and f(M) < 0.003 M☉, a diluted SB1 K.
+   - `eblm_like`: a single shallow eclipse (< 0.1 mag; secondary < 0.15 × primary or
+     none).
+   - `twin` and `other` for the rest.
+4. **Gaia-only physics.**
+   - m2 sin i (with its ±2σ range from K);
+   - R2 from the depth, and its ratio to an approximate main-sequence radius;
+   - the predicted ellipsoidal amplitude (Morris 1985) against Gaia's measured one;
+   - Roche-lobe filling (Eggleton 1983);
+   - the offset of the eclipse from the transit and occultation conjunctions (exact
+     Kepler, RV convention).
+5. **TESS test** of the N lowest-mass eblm_like systems:
+   - BLS within ±0.1% of the SB1 period;
+   - a harmonic out-of-eclipse model, with primary, secondary, odd and even depths;
+   - the companion's brightness temperature from the occultation;
+   - a pre-registered `verdict()`: NO_ECLIPSE, TWIN_AT_2P, HOT_COMPANION,
+     LUMINOUS_COMPANION, MASS_TENSION_HEAVIER/LIGHTER, or
+     [BD_]EBLM_{CONSISTENT, LARGE_RADIUS, SMALL_RADIUS}.
+6. **Catalogues.** SIMBAD, VSX and the TESS EB catalogue (Prša et al. 2022).
+7. **Outputs.** `sb1_eb_classified.csv`, `eblm_like.csv`, `eblm_tess_vet.csv` / `.json`,
+   `eblm_summary.json` and `eblm_plots/`.
+
 ## Checks (all run as unit tests)
 
 - The conjunction times equal the minima of the projected separation (brute force).
@@ -236,6 +275,14 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - a synthetic brown-dwarf eclipse with ellipsoidal and reflection terms, recovered
     within its errors;
   - every verdict rule.
+- `eblm_screen.py` (0.6.0), worked by hand on HIP 2964 (Gaia DR3 2346634757461218816):
+  - the mass function 4.1857 × 10⁻³ M☉ and m2 sin i = 0.2455 M☉;
+  - a = 6.056 R☉ and the ellipsoidal prediction 0.01357, against the 0.0117 Gaia measures;
+  - the eclipse 0.0022 in phase from the transit conjunction;
+  - the eclipse-only depth;
+  - the circular and eccentric conjunction limits;
+  - the Roche lobe, the Planck ratio and its inverse;
+  - the twin flag, the population statistics and every verdict rule.
 - `archival.py`:
   - parsers for the ZTF, Gaia epoch-photometry (raw or zipped DataLink answers) and
     ASAS-SN formats, including the time conversions and the rejection of flagged and
@@ -276,13 +323,19 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   variability can come at any period, so it excludes a planet-only system; it does not
   prove that the transit signal itself is an eclipsing binary. Gaia's transit periods
   are often aliases.
+- `eblm_screen.py`:
+  - FLAME masses and radii assume a single star.
+  - Short-period SB1 eccentricities are often spurious.
+  - The main-sequence radius relation is approximate (±10%).
+  - Gaia's Gaussian eclipse depths come from sparse sampling. The TESS stage reports the
+    TESS / Gaia depth ratio for that reason.
 
 ## Run
 
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -298,10 +351,12 @@ python transit_rv_screen.py --schema gaiadr3 --out-dir out            # Gaia tra
 python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.46023065 \
     --k-rv 19.695569 --k-rv-err 1.3143485 --e-rv 0.2008897 --p-phot 0.8513754 \
     --m1 0.9556862 --r1 1.1634727 --data-dir data --out-dir out      # vet a short-period SB1
+python eblm_screen.py --schema gaiadr3 --n-tess 20 --data-dir data --out-dir out  # SB1 x EB
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
 python transit_rv_screen.py --schema gaiadr4 --out-dir out            # DR4's 1,007 candidates
+python eblm_screen.py --schema gaiadr4 --no-tess --out-dir out        # DR4 SB1 x EB
 ```
 
 (The DR4 table and column names come from the pre-release documentation. They will be
@@ -350,6 +405,20 @@ checked against the published datamodel on release day.)
     and m2 sin i = 0.071 M☉, at the brown-dwarf / star boundary.
 - `findings/2026-11-17-tic207399049-prereg.md`: fixed rules and predictions for the TESS
   vetting of that star, written before its light curves were read.
+- `findings/2026-11-17-gaia-only-eblm.md` (0.6.0; Gaia stage plus TESS pre-registration):
+  - **Twin flag.** Among 1,408 Gaia DR3 SB1 orbits with a same-period Gaia eclipsing
+    binary and two eclipses, near-equal eclipses make up 52% of those with
+    f(M) < 0.003 M☉, against 22–24% at larger f(M). This is a Gaia-internal flag for
+    diluted SB1 amplitudes.
+  - **73 single-shallow-eclipse systems** are Gaia-only EBLM candidates. In five of the
+    six lowest-mass ones, Gaia's ellipsoidal amplitude matches the one predicted from
+    the Gaia SB1 mass to 0–14%. Every eclipse checked by hand falls at the transit
+    conjunction.
+  - **Lowest masses:** m2 sin i = 0.12 M☉ (TIC 346363735, P = 0.515 d, an F star filling
+    ~91% of its Roche lobe) and 0.17 M☉ (two systems).
+  - **No brown dwarf.** No companion of brown-dwarf mass is seen to eclipse in DR3.
+  - **Radii.** Gaia's depths imply radii 1.1–1.7× the main sequence; the TESS test is
+    pre-registered.
 
 ## Prior art checked (2026-11-17)
 
@@ -357,6 +426,13 @@ checked against the published datamodel on release day.)
   coincidences.
 - arXiv:2310.12380: rejects K2/TESS candidates using Gaia DR3 *spectroscopic* (SB1)
   orbits.
+- arXiv:2310.07936: Gaia DR3 SB1s with substellar-mass companions matched to TOIs and the
+  TESS EB catalogue; three transiting low-mass secondaries confirmed.
+- Rowan et al. 2022 (arXiv:2212.02509): masses and radii of Gaia spectroscopic binaries
+  that are ASAS-SN eclipsing binaries.
+- Jayasinghe et al. 2022 (arXiv:2207.05086): vetting of high-mass-function Gaia SB1s.
+- El-Badry 2024 (arXiv:2403.12146) and Merle et al. 2023: diluted K for double-lined
+  binaries fitted with SB1 solutions.
 - Gaia Collaboration, Arenou et al. 2023 (arXiv:2206.05595): DR3 multiplicity overview.
 - Halbwachs et al. 2023, A&A 674, A9: the DR3 astrometric binary solutions, including the
   C/H constants.
@@ -379,6 +455,8 @@ checked against the published datamodel on release day.)
   were not found from Gaia astrometric orbits.
 - Transiting brown dwarfs with P < 1 d that we found all orbit M dwarfs: NGTS-7Ab
   (arXiv:1906.08219), TOI-263b (arXiv:2103.11150) and ZTF J2020+5033 (arXiv:2307.15729).
+- The EBLM project (Maxted, Triaud & Martin 2023 review; EBLM XVIII, arXiv:2511.23430):
+  M dwarfs eclipsing F/G/K stars, found in WASP photometry and CORALIE RVs.
 
 ## Credits and licence
 
@@ -388,6 +466,6 @@ Data: ESA Gaia DR3 (Gaia Collaboration), including epoch photometry, served by t
 Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-SPOC and
 QLP light curves, TESScut); the TESS Input Catalog; ExoFOP-TESS and the NASA Exoplanet
 Archive TOI table; the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and
-VizieR (CDS) with the AAVSO VSX catalogue; TESS pointings from the TESS Science Center and
-tess-point (tessgi). Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol
-(pyasassn) and tess-point.
+VizieR (CDS) with the AAVSO VSX catalogue and the TESS EB catalogue (Prša et al. 2022);
+TESS pointings from the TESS Science Center and tess-point (tessgi). Uses numpy, astropy,
+astroquery, lightkurve, matplotlib, skypatrol (pyasassn) and tess-point.
