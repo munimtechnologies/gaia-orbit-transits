@@ -8,11 +8,20 @@ Conventions (Gaia DR3, Halbwachs et al. 2023):
   delta_dec   = A X + F Y
   delta_alpha* = B X + G Y
   X = cos E - e,  Y = sqrt(1 - e^2) sin E,  M = 2 pi (t - Tp) / P
-  Tp (t_periastron) is in days from the reference epoch J2016.0 = JD 2457389.0,
-  i.e. BTJD (BJD - 2457000) = t_periastron + 389.0 (TCB/TDB difference ignored).
+  Tp (t_periastron) is in days from gaia_source.ref_epoch (J2016.0 = JD 2457389.0
+  for DR3, i.e. BTJD = t_periastron + 389.0; TCB/TDB difference ignored).
 Astrometry alone fixes omega and Omega only modulo pi, so both conjunctions
 (true anomaly f = pi/2 - omega and 3 pi/2 - omega) are always considered: for a
 dark companion one of them is the transit and the other the occultation.
+
+0.2.0 (2026-11-17):
+  * Monte Carlo uses the full Gaia correlation matrix (corr_vec, column-major upper
+    triangle in the parameter order of the solution type) when it is available.
+  * Circular solutions (eccentricity and G not fitted, DR3 bit_index 8179/65435):
+    Gaia fixes omega = 0, so G = -A F / B. The sampler now imposes that constraint
+    instead of holding G fixed while A, B, F vary.
+  * Every sample's omega is aligned (modulo pi) with the central omega, so "t1" and
+    "t2" always label the same conjunction across samples.
 """
 import numpy as np
 
@@ -20,6 +29,19 @@ GAIA_REF_BTJD = 389.0
 RSUN_AU = 0.00465047
 MJUP_MSUN = 9.5458e-4
 YEAR_D = 365.25
+
+# Parameter order of corr_vec / bit_index (Gaia DR3 data model, nss_two_body_orbit).
+PARAM_ORDER = {
+    "orbital": ["ra", "dec", "parallax", "pmra", "pmdec", "a_thiele_innes",
+                "b_thiele_innes", "f_thiele_innes", "g_thiele_innes", "eccentricity",
+                "period", "t_periastron"],
+    "astrospectrosb1": ["ra", "dec", "parallax", "pmra", "pmdec", "a_thiele_innes",
+                        "b_thiele_innes", "f_thiele_innes", "g_thiele_innes",
+                        "c_thiele_innes", "h_thiele_innes", "center_of_mass_velocity",
+                        "eccentricity", "period", "t_periastron"],
+}
+SAMPLE_KEYS = ["a_thiele_innes", "b_thiele_innes", "f_thiele_innes", "g_thiele_innes",
+               "eccentricity", "period", "t_periastron"]
 
 # Rough main-sequence absolute-G relations (for ranking only, not for science claims).
 _MG = np.array([0.5, 1.5, 2.5, 3.5, 4.4, 5.0, 5.6, 6.2, 6.9, 7.6, 8.4, 9.2, 10.0,
@@ -54,7 +76,8 @@ def thiele_innes_to_elements(A, B, F, G):
     A, B, F, G = _f(A), _f(B), _f(F), _f(G)
     u = 0.5 * (A * A + B * B + F * F + G * G)
     v = A * G - B * F
-    disc = np.sqrt(np.clip(u * u - v * v, 0.0, None))
+    # u^2 - v^2 = ((A-G)^2 + (B+F)^2) ((A+G)^2 + (B-F)^2) / 4 >= 0 (no rounding below 0)
+    disc = 0.5 * np.sqrt(((A - G) ** 2 + (B + F) ** 2) * ((A + G) ** 2 + (B - F) ** 2))
     a2 = u + disc
     with np.errstate(invalid="ignore", divide="ignore"):
         cosi = np.where(a2 > 0, v / np.where(a2 > 0, a2, 1.0), np.nan)
@@ -71,6 +94,21 @@ def thiele_innes_to_elements(A, B, F, G):
     omega = np.mod(omega + shift, 2 * np.pi)
     return {"a": np.sqrt(a2), "cosi": cosi, "inc_deg": np.degrees(np.arccos(cosi)),
             "omega": omega, "Omega": Omega}
+
+
+def cosi_adql(prefix="n."):
+    """ADQL expression for cos i from the Thiele-Innes columns (server-side filter).
+
+    Same formula as thiele_innes_to_elements; the square root is written in factored
+    form so it can never go negative through rounding. Checked live against the Gaia
+    DR3 archive on 2026-11-17 (|cos i| < 0.2: 28,685 orbits with both forms).
+    """
+    A, B, F, G = (f"{prefix}{x}_thiele_innes" for x in "abfg")
+    u = f"0.5*({A}*{A}+{B}*{B}+{F}*{F}+{G}*{G})"
+    v = f"({A}*{G}-{B}*{F})"
+    disc = (f"0.5*SQRT((({A}-{G})*({A}-{G})+({B}+{F})*({B}+{F}))"
+            f"*(({A}+{G})*({A}+{G})+({B}-{F})*({B}-{F})))")
+    return f"{v}/({u}+{disc})"
 
 
 def solve_kepler(M, e, iters=40):
@@ -139,34 +177,165 @@ def classify(m2):
 
 
 def _nz(x):
-    x = float(x) if x is not None else np.nan
+    try:
+        x = float(x) if x is not None else np.nan
+    except (TypeError, ValueError):
+        return 0.0
     return 0.0 if not np.isfinite(x) else x
 
 
-def sample_orbit(row, n, rng):
-    """Monte Carlo samples of an orbit from a Gaia NSS row (independent errors).
+def _val(row, key, default=np.nan):
+    try:
+        v = float(row.get(key, default))
+    except (TypeError, ValueError):
+        return default
+    return v
 
-    row keys: period, period_error, t_periastron, t_periastron_error, eccentricity,
-    eccentricity_error, a/b/f/g_thiele_innes (+ _error).
+
+# ---------------------------------------------------------------- correlations
+def param_names(solution_type):
+    """corr_vec parameter order for an nss_solution_type, or None if unsupported."""
+    st = str(solution_type or "").strip().strip('"').lower()
+    if st.startswith("astrospectrosb1"):
+        return PARAM_ORDER["astrospectrosb1"]
+    if st.startswith("orbital"):
+        return PARAM_ORDER["orbital"]
+    return None
+
+
+def parse_corr_vec(x):
+    """corr_vec as served by the Gaia TAP CSV: '(0.11, -0.2, NaN, ...)' -> float array."""
+    if x is None:
+        return None
+    if isinstance(x, (list, tuple, np.ndarray)):
+        return np.asarray(x, dtype=float)
+    s = str(x).strip().strip('"').strip()
+    if not s or s.lower() in ("null", "nan", "--"):
+        return None
+    s = s.strip("()[]{}")
+    parts = [p for p in s.replace(";", ",").replace(" ", ",").split(",") if p.strip()]
+    out = []
+    for p in parts:
+        try:
+            out.append(float(p))
+        except ValueError:
+            out.append(np.nan)
+    return np.asarray(out, dtype=float)
+
+
+def corr_matrix(vec, n):
+    """Full n x n correlation matrix from Gaia's column-major upper-triangle vector.
+
+    Element order: (0,1), (0,2), (1,2), (0,3), (1,3), (2,3), ... NaN (parameter not
+    fitted) becomes 0.
     """
-    def draw(key):
-        mu = float(row[key])
-        sd = _nz(row.get(key + "_error"))
-        return mu + sd * rng.standard_normal(n)
+    vec = np.asarray(vec, dtype=float)
+    if vec.size != n * (n - 1) // 2:
+        raise ValueError(f"corr_vec has {vec.size} elements, expected {n * (n - 1) // 2}")
+    R = np.eye(n)
+    k = 0
+    for j in range(1, n):
+        for i in range(j):
+            c = vec[k]
+            R[i, j] = R[j, i] = c if np.isfinite(c) else 0.0
+            k += 1
+    return R
 
-    P = np.abs(draw("period"))
-    Tp = draw("t_periastron") + GAIA_REF_BTJD
-    e0 = row.get("eccentricity")
-    e0 = float(e0) if e0 is not None and np.isfinite(float(e0)) else 0.0
-    e = np.clip(e0 + _nz(row.get("eccentricity_error")) * rng.standard_normal(n), 0.0, 0.97)
-    A = draw("a_thiele_innes")
-    B = draw("b_thiele_innes")
-    F = draw("f_thiele_innes")
-    G = draw("g_thiele_innes")
+
+def _correlation_for_keys(row, keys):
+    names = param_names(row.get("nss_solution_type"))
+    vec = parse_corr_vec(row.get("corr_vec"))
+    if names is None or vec is None:
+        return None
+    try:
+        R = corr_matrix(vec, len(names))
+    except ValueError:
+        return None
+    idx = [names.index(k) for k in keys]
+    return R[np.ix_(idx, idx)]
+
+
+def _mvn(mu, sd, R, n, rng):
+    """n draws from N(mu, diag(sd) R diag(sd)); robust to non-PSD input."""
+    sd = np.asarray(sd, float)
+    C = np.asarray(R, float) * np.outer(sd, sd)
+    C = 0.5 * (C + C.T)
+    w, V = np.linalg.eigh(C)
+    L = V * np.sqrt(np.clip(w, 0.0, None))
+    z = rng.standard_normal((n, len(mu)))
+    return np.asarray(mu, float) + z @ L.T
+
+
+def is_circular_fixed(row):
+    """True when Gaia fitted a circular orbit with omega fixed to 0 (G and e not fitted)."""
+    return _nz(row.get("g_thiele_innes_error")) == 0.0 and \
+        _nz(row.get("eccentricity_error")) == 0.0 and \
+        abs(_nz(row.get("eccentricity"))) < 1e-3
+
+
+def sample_orbit(row, n, rng, ref_btjd=None):
+    """Monte Carlo samples of an orbit from a Gaia NSS row.
+
+    Uses the catalogue correlation matrix (corr_vec) when available, otherwise
+    independent Gaussian errors. row keys: nss_solution_type, corr_vec (optional),
+    period, t_periastron, eccentricity, a/b/f/g_thiele_innes and their _error.
+    ref_btjd: BTJD of the t_periastron reference epoch (default: row['ref_btjd'] or
+    the module-level GAIA_REF_BTJD).
+    """
+    if ref_btjd is None:
+        ref_btjd = _val(row, "ref_btjd", GAIA_REF_BTJD)
+        if not np.isfinite(ref_btjd):
+            ref_btjd = GAIA_REF_BTJD
+    mu = np.array([_val(row, k, 0.0) if k == "eccentricity" else _val(row, k)
+                   for k in SAMPLE_KEYS])
+    if not np.isfinite(mu[4]):
+        mu[4] = 0.0
+    sd = np.array([_nz(row.get(k + "_error")) for k in SAMPLE_KEYS])
+    R = _correlation_for_keys(row, SAMPLE_KEYS)
+    used_corr = R is not None
+    if R is None:
+        R = np.eye(len(SAMPLE_KEYS))
+    X = _mvn(mu, sd, R, n, rng)
+    A, B, F, G, e, P, Tp = (X[:, i] for i in range(7))
+    circular = is_circular_fixed(row)
+    if circular:
+        # Gaia convention for circular orbits: omega = 0  =>  G = -A F / B
+        with np.errstate(divide="ignore", invalid="ignore"):
+            G = np.where(np.abs(B) > 0, -A * F / B, G)
+        e = np.zeros(n)
+    P = np.abs(P)
+    Tp = Tp + ref_btjd
+    e = np.clip(e, 0.0, 0.97)
     el = thiele_innes_to_elements(A, B, F, G)
-    t1, t2, f1, f2 = conjunction_times(Tp, P, e, el["omega"])
+    # align omega of each sample with the central omega (mod pi): t1/t2 keep their meaning
+    Gc = mu[3]
+    if circular and abs(mu[1]) > 0:
+        Gc = -mu[0] * mu[2] / mu[1]
+    w_c = float(thiele_innes_to_elements(mu[0], mu[1], mu[2], Gc)["omega"])
+    dw = np.mod(el["omega"] - w_c + np.pi / 2, np.pi) - np.pi / 2
+    omega = w_c + dw
+    t1, t2, f1, f2 = conjunction_times(Tp, P, e, omega)
     return {"P": P, "Tp": Tp, "e": e, "a0": el["a"], "cosi": el["cosi"],
-            "omega": el["omega"], "t1": t1, "t2": t2, "f1": f1, "f2": f2}
+            "omega": omega, "t1": t1, "t2": t2, "f1": f1, "f2": f2,
+            "used_corr": used_corr, "circular": circular}
+
+
+def central_conjunctions(row, ref_btjd=None):
+    """Conjunction times (BTJD) from the catalogue central values (same labels as
+    sample_orbit's t1/t2)."""
+    if ref_btjd is None:
+        ref_btjd = _val(row, "ref_btjd", GAIA_REF_BTJD)
+        if not np.isfinite(ref_btjd):
+            ref_btjd = GAIA_REF_BTJD
+    A, B, F, G = (_val(row, f"{x}_thiele_innes") for x in "abfg")
+    if is_circular_fixed(row) and abs(B) > 0:
+        G = -A * F / B
+    e = _val(row, "eccentricity", 0.0)
+    e = 0.0 if not np.isfinite(e) else e
+    el = thiele_innes_to_elements(A, B, F, G)
+    t1, t2, _, _ = conjunction_times(_val(row, "t_periastron") + ref_btjd,
+                                     _val(row, "period"), e, float(el["omega"]))
+    return float(t1), float(t2)
 
 
 def eclipse_geometry(s, m1, r1, m2, r2):
@@ -220,6 +389,21 @@ def phase_offsets(samples, key, t_event):
     """Offset (days) of t_event from the nearest predicted conjunction, per sample."""
     P = samples["P"]
     return np.mod(t_event - samples[key] + P / 2, P) - P / 2
+
+
+def predict_next(samples, key, t_central, P_central, t_from):
+    """Next conjunction after t_from: (centre BTJD, robust 1-sigma in days).
+
+    t_central is the catalogue-central conjunction time for `key`. The spread is
+    the scatter of the Monte Carlo samples around the central prediction; a sigma
+    above P/4 means the phase is effectively unconstrained by then.
+    """
+    k = np.ceil((t_from - t_central) / P_central)
+    tn = t_central + k * P_central
+    off = phase_offsets(samples, key, tn)
+    med = float(np.median(off))
+    sig = float(1.4826 * np.median(np.abs(off - med)))
+    return float(tn - med), sig
 
 
 def window_match(samples, key, t_event, duration):

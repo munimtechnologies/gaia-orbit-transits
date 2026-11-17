@@ -1,15 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Search TESS for eclipses/transits of companions on Gaia DR3 astrometric orbits.
+"""Search TESS for eclipses/transits of companions on Gaia astrometric orbits.
 
 Part of gaia-orbit-transits by MV2 of Munim, Inc. (made with AI agents).
 Licence: Apache-2.0.
 
 Steps
- 1. Download every Gaia DR3 nss_two_body_orbit solution that has Thiele-Innes
-    constants (G < gmax) from the Gaia archive TAP service (cached in --data-dir).
- 2. Keep near edge-on orbits (|cos i| < cosi_max), and for each run a Monte Carlo
-    over the catalogue errors: probability that the companion can eclipse/transit,
-    predicted conjunction times, rough masses (dark-companion assumption).
+ 1. Download the Gaia nss_two_body_orbit solutions that have Thiele-Innes
+    constants, are brighter than --gmax and are near edge-on (|cos i| below
+    --cosi-server, computed by the archive itself), with their correlation
+    vectors (cached in --data-dir). DR3 now; DR4 (--schema gaiadr4) on release day.
+ 2. For each orbit run a Monte Carlo over the catalogue errors and correlations:
+    probability that the companion can eclipse/transit, predicted conjunction
+    times (and the next ones after --predict-from), rough masses (dark companion).
  3. Rank and, for the top targets, find the TIC ID, download TESS light curves
     (SPOC 2-min, TESS-SPOC, QLP), run a single-event dip search, and score each
     dip against the predicted conjunction windows.
@@ -29,30 +31,37 @@ import numpy as np
 import dipsearch as ds
 import gaia_orbits as go
 
+VERSION = "0.2.0"
 TAP = "https://gea.esac.esa.int/tap-server/tap"
 
 NSS_QUERY = """
-SELECT n.source_id, n.nss_solution_type, n.period, n.period_error,
+SELECT n.source_id, n.nss_solution_type, n.bit_index, n.corr_vec, n.period, n.period_error,
  n.t_periastron, n.t_periastron_error, n.eccentricity, n.eccentricity_error,
  n.a_thiele_innes, n.a_thiele_innes_error, n.b_thiele_innes, n.b_thiele_innes_error,
  n.f_thiele_innes, n.f_thiele_innes_error, n.g_thiele_innes, n.g_thiele_innes_error,
  n.parallax AS nss_parallax, n.parallax_error AS nss_parallax_error,
  n.significance, n.goodness_of_fit,
- g.ra, g.dec, g.phot_g_mean_mag, g.bp_rp, g.ruwe
+ g.ra, g.dec, g.phot_g_mean_mag, g.bp_rp, g.ruwe, g.ref_epoch
 FROM {schema}.nss_two_body_orbit AS n
 JOIN {schema}.gaia_source AS g ON g.source_id = n.source_id
 WHERE n.a_thiele_innes IS NOT NULL AND g.phot_g_mean_mag < {gmax}
+ AND ABS({cosi}) < {cosi_server}{extra}
 """
 
 EB_QUERY = """
 SELECT v.source_id FROM {schema}.vari_eclipsing_binary AS v
 JOIN {schema}.nss_two_body_orbit AS n ON n.source_id = v.source_id
-WHERE n.a_thiele_innes IS NOT NULL
+WHERE n.a_thiele_innes IS NOT NULL AND ABS({cosi}) < {cosi_server}
 """
 
 
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
+
+
+def ref_epoch_to_btjd(ref_epoch_jyr):
+    """Julian-year epoch (e.g. 2016.0) -> BTJD (BJD - 2457000)."""
+    return (float(ref_epoch_jyr) - 2000.0) * 365.25 + 2451545.0 - 2457000.0
 
 
 # ---------------------------------------------------------------- Gaia TAP
@@ -98,15 +107,19 @@ def tap_query(query):
         return buf.getvalue()
 
 
+STRING_COLS = ("nss_solution_type", "corr_vec")
+
+
 def read_csv_text(text):
     out = []
     for r in csv.DictReader(io.StringIO(text)):
         d = {}
         for k, v in r.items():
             k = k.strip().lower()
+            v = "" if v is None else v
             if k in ("source_id",):
                 d[k] = int(float(v)) if "e" in v.lower() else int(v)
-            elif k in ("nss_solution_type",):
+            elif k in STRING_COLS:
                 d[k] = v.strip().strip('"')
             else:
                 try:
@@ -130,32 +143,41 @@ def cached_query(path, query):
 
 
 # ---------------------------------------------------------------- ranking
-def prior_for_row(row, n, rng):
+def prior_for_row(row, n, rng, predict_from=None):
     plx = row.get("nss_parallax", np.nan)
     if not np.isfinite(plx) or plx <= 0:
         return None
     absg = row["phot_g_mean_mag"] + 5 * np.log10(plx / 100.0)
     m1, r1 = go.ms_mass_radius(absg)
     s = go.sample_orbit(row, n, rng)
+    G = row["g_thiele_innes"]
+    if go.is_circular_fixed(row) and abs(row["b_thiele_innes"]) > 0:
+        G = -row["a_thiele_innes"] * row["f_thiele_innes"] / row["b_thiele_innes"]
     el = go.thiele_innes_to_elements(row["a_thiele_innes"], row["b_thiele_innes"],
-                                     row["f_thiele_innes"], row["g_thiele_innes"])
+                                     row["f_thiele_innes"], G)
     m2 = float(go.companion_mass_dark(float(el["a"]), plx, row["period"], m1))
     r2 = float(go.companion_radius(m2))
     g = go.eclipse_geometry(s, float(m1), float(r1), m2, r2)
     p_ecl = float(np.mean(g["ecl1"] | g["ecl2"]))
-    t1c, t2c, _, _ = go.conjunction_times(row["t_periastron"] + go.GAIA_REF_BTJD,
-                                          row["period"], row.get("eccentricity") if np.isfinite(row.get("eccentricity", np.nan)) else 0.0,
-                                          el["omega"])
-    return {
+    t1c, t2c = go.central_conjunctions(row)
+    out = {
         "abs_g": float(absg), "m1": float(m1), "r1": float(r1), "m2_dark": m2,
         "r2": r2, "class": go.classify(m2), "cosi": float(el["cosi"]),
         "inc_deg": float(el["inc_deg"]),
         "cosi_sd": float(np.std(s["cosi"])), "a0_mas": float(el["a"]),
         "p_ecl": p_ecl,
+        "p_ecl1": float(np.mean(g["ecl1"])), "p_ecl2": float(np.mean(g["ecl2"])),
         "dur1_h": float(np.median(g["dur_central1"]) * 24),
         "dur2_h": float(np.median(g["dur_central2"]) * 24),
-        "t_conj1_btjd": float(t1c), "t_conj2_btjd": float(t2c),
-    }, s, g
+        "t_conj1_btjd": t1c, "t_conj2_btjd": t2c,
+        "used_corr": bool(s["used_corr"]), "circular": bool(s["circular"]),
+    }
+    if predict_from is not None:
+        for key, tc in (("t1", t1c), ("t2", t2c)):
+            tn, sig = go.predict_next(s, key, tc, float(row["period"]), predict_from)
+            out[f"next{key[1]}_btjd"] = tn
+            out[f"next{key[1]}_sd_d"] = sig
+    return out, s, g
 
 
 # ---------------------------------------------------------------- TESS
@@ -322,12 +344,22 @@ def write_csv(path, rows, fields=None):
             w.writerow(r)
 
 
+def build_nss_query(schema, gmax, cosi_server, targets_table=None):
+    extra = ""
+    if targets_table:
+        extra = f"\n AND n.source_id IN (SELECT source_id FROM {targets_table})"
+    return NSS_QUERY.format(schema=schema, gmax=gmax, cosi=go.cosi_adql("n."),
+                            cosi_server=cosi_server, extra=extra)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default="/data")
     ap.add_argument("--out-dir", default="/out")
     ap.add_argument("--gmax", type=float, default=14.5)
     ap.add_argument("--cosi-max", type=float, default=0.2)
+    ap.add_argument("--cosi-server", type=float, default=None,
+                    help="server-side |cos i| cut (default: --cosi-max)")
     ap.add_argument("--mc", type=int, default=600)
     ap.add_argument("--max-targets", type=int, default=400)
     ap.add_argument("--min-p-ecl", type=float, default=0.002)
@@ -339,27 +371,44 @@ def main(argv=None):
     ap.add_argument("--schema", default="gaiadr3",
                     help="Gaia archive schema (gaiadr3; gaiadr4 after 2026-12-02)")
     ap.add_argument("--ref-btjd", type=float, default=None,
-                    help="BTJD of the t_periastron reference epoch "
-                         "(default: 389.0 = J2016.0 for DR3, 936.875 = J2017.5 for DR4)")
+                    help="force the BTJD of the t_periastron reference epoch (default: "
+                         "from gaia_source.ref_epoch per row; 389.0 = J2016.0 for DR3)")
+    ap.add_argument("--predict-from", type=float, default=4375.5,
+                    help="BTJD after which to predict the next conjunctions "
+                         "(default 4375.5 = 2026-12-01)")
+    ap.add_argument("--targets-table", default=None,
+                    help="only orbits whose source_id is in this archive table, e.g. "
+                         "gaiadr4.gaia_exoplanet_candidates (DR4 release day)")
+    ap.add_argument("--no-tess", action="store_true",
+                    help="stop after the Gaia ranking (watch list only)")
     args = ap.parse_args(argv)
-    if args.ref_btjd is None:
-        args.ref_btjd = 936.875 if args.schema.lower().endswith("dr4") else 389.0
-    go.GAIA_REF_BTJD = args.ref_btjd
+    if args.cosi_server is None:
+        args.cosi_server = args.cosi_max
+    if args.ref_btjd is not None:
+        go.GAIA_REF_BTJD = args.ref_btjd
+    else:
+        go.GAIA_REF_BTJD = 936.875 if args.schema.lower().endswith("dr4") else 389.0
     t_start = time.time()
     os.makedirs(args.out_dir, exist_ok=True)
     os.makedirs(os.path.join(args.out_dir, "plots"), exist_ok=True)
     lk_dir = os.path.join(args.data_dir, "lk")
     os.makedirs(lk_dir, exist_ok=True)
-    rng = np.random.default_rng(args.seed)
-    summary = {"started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": vars(args)}
+    summary = {"version": VERSION,
+               "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": vars(args)}
 
-    text = cached_query(os.path.join(args.data_dir, f"{args.schema}_nss_ti_g{args.gmax:g}.csv"),
-                        NSS_QUERY.format(gmax=args.gmax, schema=args.schema))
+    tag = f"{args.schema}_nss_ti_g{args.gmax:g}_c{args.cosi_server:g}"
+    if args.targets_table:
+        tag += "_" + args.targets_table.replace(".", "-")
+    query = build_nss_query(args.schema, args.gmax, args.cosi_server, args.targets_table)
+    with open(os.path.join(args.out_dir, "nss_query.adql"), "w", encoding="utf-8") as fh:
+        fh.write(query)
+    text = cached_query(os.path.join(args.data_dir, tag + "_v2.csv"), query)
     rows = read_csv_text(text)
-    log("NSS rows with Thiele-Innes:", len(rows))
+    log("NSS rows (server-side near edge-on):", len(rows))
     try:
-        ebtext = cached_query(os.path.join(args.data_dir, f"{args.schema}_nss_ti_vari_eb.csv"),
-                              EB_QUERY.format(schema=args.schema))
+        ebtext = cached_query(os.path.join(args.data_dir, f"{args.schema}_nss_ti_vari_eb_c{args.cosi_server:g}.csv"),
+                              EB_QUERY.format(schema=args.schema, cosi=go.cosi_adql("n."),
+                                              cosi_server=args.cosi_server))
         gaia_eb = {r["source_id"] for r in read_csv_text(ebtext)}
     except Exception as exc:
         log("EB query failed", exc)
@@ -371,74 +420,103 @@ def main(argv=None):
         types[r["nss_solution_type"]] = types.get(r["nss_solution_type"], 0) + 1
     summary["solution_types"] = types
 
-    # central cos i for all, then MC for the near-edge-on subset
     priors, samples, by_id = [], {}, {}
     n_edge = 0
+    n_corr = 0
+    n_circ = 0
 
     def src_rng(sid):
         return np.random.default_rng([args.seed, int(sid) % (2 ** 32), int(sid) // (2 ** 32)])
 
     for r in rows:
+        if args.ref_btjd is not None:
+            r["ref_btjd"] = args.ref_btjd
+        else:
+            ep = r.get("ref_epoch", np.nan)
+            r["ref_btjd"] = ref_epoch_to_btjd(ep) if np.isfinite(ep) else go.GAIA_REF_BTJD
+        G = r["g_thiele_innes"]
+        if go.is_circular_fixed(r) and abs(r["b_thiele_innes"]) > 0:
+            G = -r["a_thiele_innes"] * r["f_thiele_innes"] / r["b_thiele_innes"]
         el = go.thiele_innes_to_elements(r["a_thiele_innes"], r["b_thiele_innes"],
-                                         r["f_thiele_innes"], r["g_thiele_innes"])
+                                         r["f_thiele_innes"], G)
         if not np.isfinite(float(el["cosi"])) or abs(float(el["cosi"])) >= args.cosi_max:
             continue
         if not np.isfinite(r.get("period", np.nan)) or not np.isfinite(r.get("t_periastron", np.nan)):
             continue
         n_edge += 1
+        key = (r["source_id"], r["nss_solution_type"])
         try:
-            res = prior_for_row(r, args.mc, src_rng(r["source_id"]))
+            res = prior_for_row(r, args.mc, src_rng(r["source_id"]), args.predict_from)
         except Exception as exc:
             log("prior failed", r.get("source_id"), exc)
             continue
         if res is None:
             continue
         pr = res[0]
-        by_id[r["source_id"]] = r
+        n_corr += int(pr["used_corr"])
+        n_circ += int(pr["circular"])
+        by_id[key] = r
         rec = {"source_id": r["source_id"], "solution_type": r["nss_solution_type"],
                "ra": r["ra"], "dec": r["dec"], "gmag": r["phot_g_mean_mag"],
-               "bp_rp": r.get("bp_rp"), "parallax": r["nss_parallax"],
+               "bp_rp": r.get("bp_rp"), "ruwe": r.get("ruwe"), "parallax": r["nss_parallax"],
                "period_d": r["period"], "period_err": r.get("period_error"),
                "ecc": r.get("eccentricity"), "significance": r.get("significance"),
-               "gaia_eb": r["source_id"] in gaia_eb}
+               "ref_btjd": r["ref_btjd"], "gaia_eb": r["source_id"] in gaia_eb}
         rec.update(pr)
         priors.append(rec)
     summary["near_edge_on"] = n_edge
+    summary["mc_used_correlations"] = n_corr
+    summary["circular_solutions"] = n_circ
     rows = None
     text = None
-    log("near edge-on:", n_edge, "with priors:", len(priors))
+    log("near edge-on:", n_edge, "with priors:", len(priors), "corr used:", n_corr)
     priors.sort(key=lambda p: -p["p_ecl"])
-    write_csv(os.path.join(args.out_dir, "gaia_edge_on_priors.csv"), priors)
+    write_csv(os.path.join(args.out_dir, "gaia_edge_on_priors.csv"), priors,
+              sorted({k for p in priors for k in p}))
 
-    # choose targets: substellar candidates first, then by eclipse probability
-    sub = [p for p in priors if p["class"] in ("planet", "brown-dwarf") and p["p_ecl"] >= args.min_p_ecl]
-    star = [p for p in priors if p["class"] == "star" and p["p_ecl"] >= args.min_p_ecl]
+    # choose targets: substellar candidates first, then by eclipse probability;
+    # one target per source (best solution)
+    seen = set()
+    sub, star = [], []
+    for p in priors:
+        if p["source_id"] in seen or p["p_ecl"] < args.min_p_ecl:
+            continue
+        seen.add(p["source_id"])
+        (sub if p["class"] in ("planet", "brown-dwarf") else star).append(p)
     targets = (sub + star)[:args.max_targets]
     summary["n_substellar_candidates"] = len(sub)
     summary["n_targets"] = len(targets)
     log("targets:", len(targets), "substellar:", len(sub))
+    write_csv(os.path.join(args.out_dir, "substellar_edge_on_candidates.csv"),
+              [p for p in priors if p["class"] in ("planet", "brown-dwarf")],
+              sorted({k for p in priors for k in p}))
+    if args.no_tess:
+        with open(os.path.join(args.out_dir, "run_summary.json"), "w") as fh:
+            json.dump(summary, fh, indent=1, default=str)
+        log("--no-tess: done")
+        return 0
+
     # same seeds as the ranking pass -> identical Monte Carlo samples
     for p in targets:
-        samples[p["source_id"]] = prior_for_row(by_id[p["source_id"]], args.mc,
-                                                src_rng(p["source_id"]))[1]
+        key = (p["source_id"], p["solution_type"])
+        samples[p["source_id"]] = prior_for_row(by_id[key], args.mc, src_rng(p["source_id"]))[1]
     by_id.clear()
-
-    # predicted conjunction windows for the near-edge-on substellar candidates (follow-up list)
-    write_csv(os.path.join(args.out_dir, "substellar_edge_on_candidates.csv"), sub)
 
     per_target, all_events = [], []
     store = {}
     expected = 0.0
+    expected_both = 0.0
     for ti, p in enumerate(targets):
         if (time.time() - t_start) / 60 > args.time_budget_min:
             log("time budget reached at target", ti)
             summary["stopped_at_target"] = ti
             break
         sid = p["source_id"]
-        rec = {"source_id": sid, "class": p["class"], "p_ecl": p["p_ecl"],
-               "period_d": p["period_d"], "gmag": p["gmag"], "m2_dark": p["m2_dark"],
-               "gaia_eb": p["gaia_eb"], "tic": "", "n_sectors": 0, "cov1": 0.0, "cov2": 0.0,
-               "best_snr": 0.0, "best_t": "", "best_bf": "", "status": ""}
+        rec = {"source_id": sid, "solution_type": p["solution_type"], "class": p["class"],
+               "p_ecl": p["p_ecl"], "period_d": p["period_d"], "gmag": p["gmag"],
+               "m2_dark": p["m2_dark"], "gaia_eb": p["gaia_eb"], "tic": "", "n_sectors": 0,
+               "cov1": 0.0, "cov2": 0.0, "best_snr": 0.0, "best_t": "", "best_bf": "",
+               "status": ""}
         try:
             tic = find_tic(p["ra"], p["dec"], p["gmag"], sid)
             if tic is None:
@@ -464,7 +542,9 @@ def main(argv=None):
             hw2 = max(p["dur2_h"] / 48.0, 1 / 48)
             rec["cov1"] = go.coverage_fraction(s, "t1", binned["t"], hw1)
             rec["cov2"] = go.coverage_fraction(s, "t2", binned["t"], hw2)
+            # pre-registered definition (v1): p_ecl x best coverage
             expected += p["p_ecl"] * max(rec["cov1"], rec["cov2"])
+            expected_both += p["p_ecl1"] * rec["cov1"] + p["p_ecl2"] * rec["cov2"]
             for e in events:
                 best = None
                 for key, dkey in (("t1", "dur1_h"), ("t2", "dur2_h")):
@@ -544,7 +624,7 @@ def main(argv=None):
             for k in range(-40, 41):
                 lo, hi = c + k * p["period_d"] - sd, c + k * p["period_d"] + sd
                 windows.append((lo, hi, "c1" if key == "t1" else "c2"))
-        title = (f"Gaia DR3 {sid}  TIC {e['tic']}  P={p['period_d']:.2f} d  class={p['class']} "
+        title = (f"Gaia {args.schema} {sid}  TIC {e['tic']}  P={p['period_d']:.2f} d  class={p['class']} "
                  f"m2(dark)={p['m2_dark']:.3f} Msun  p_ecl={p['p_ecl']:.2f}\n"
                  f"event t={e['t_center']:.3f} dur={e['duration_h']:.0f} h depth={e['depth_ppm']:.0f} ppm "
                  f"snr={e['snr']:.1f} conj={e['conj']} BF={e['bf']:.1f} offset={e['offset_d']:.2f}+-{e['offset_sd_d']:.2f} d")
@@ -563,17 +643,18 @@ def main(argv=None):
         "targets_with_events": len({e["source_id"] for e in all_events}),
         "events_bf_gt_10": sum(1 for e in all_events if e["bf"] > 10),
         "expected_eclipses_covered": expected,
+        "expected_eclipses_covered_both_conj": expected_both,
         "covered_either_conj_gt_0.5": sum(1 for r in ok if max(r["cov1"], r["cov2"]) > 0.5),
         "minutes": (time.time() - t_start) / 60,
     })
     with open(os.path.join(args.out_dir, "run_summary.json"), "w") as fh:
         json.dump(summary, fh, indent=1, default=str)
 
-    lines = ["# Gaia DR3 astrometric orbits x TESS: eclipse search", "",
+    lines = [f"# Gaia ({args.schema}) astrometric orbits x TESS: eclipse search", "",
              "Made by AI agents working for MV2 of Munim, Inc. Apache-2.0 code, CC BY 4.0 results.", "",
              "```", json.dumps(summary, indent=1, default=str), "```", "",
              "## Top events (score = SNR x conjunction-window match, penalised for edges and shared times)", "",
-             "| score | Gaia DR3 | TIC | class | P (d) | t (BTJD) | dur (h) | depth (ppm) | SNR | conj | BF | offset (d) | Gaia EB |",
+             "| score | Gaia source_id | TIC | class | P (d) | t (BTJD) | dur (h) | depth (ppm) | SNR | conj | BF | offset (d) | Gaia EB |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for e in all_events[:60]:
         lines.append(f"| {e['score']:.1f} | {e['source_id']} | {e['tic']} | {e['class']} | {e['period_d']:.2f} | "
