@@ -4,6 +4,18 @@ Graded 2026-11-17 (16:15–17:00 UTC) against `2026-11-17-prereg.md` (with the v
 amendments), written before any data were seen. gaia-orbit-transits 0.4.1 search code;
 this note ships with 0.6.2. MV2 of Munim, Inc.; made with AI agents. CC BY 4.0.
 
+> **Correction added in 0.7.0 (2026-11-17, 18:30 UTC).** The "strong match" rule below
+> needs a window-match Bayes factor (BF) above 10. That BF cannot exceed about
+> P / (2.5 σ_t), with σ_t the timing error of the predicted conjunction, so a
+> short-period system with σ_t ≈ 1 d can never count, however deep its eclipses. Two
+> eclipsing systems were missed this way: **HD 75767** (TIC 459056725, P = 10.25 d,
+> 7.7% eclipses at every conjunction, best BF 2.9; its eclipses are known from STEREO)
+> and **TIC 272540685** (P = 82.2 d, 14% eclipses at the RV-identified transit
+> conjunction, best BF 9.4). The P2 grade stands as graded (pre-registered rules are not
+> re-graded), but the reading "DR3 orbits predict about three times more eclipses than
+> TESS shows" is **withdrawn**. A BF-free test with a false-alarm control is
+> pre-registered in `2026-11-17-inclination-calibration-prereg.md`.
+
 ## First, a correction about prior art
 
 Our README said we had found no systematic search that starts from Gaia astrometric
@@ -47,11 +59,12 @@ called new.**
 | P4 | 0–2 substellar-class targets with strong matches; any are more likely luminous binaries | **0**. The best substellar-class dip (TIC 438849103, BF 8.4) is a flux jump at a data gap; two others fail SNR or the edge rule. | **pass** |
 
 P2 counts dips, and three of the 24 are not eclipses at the outer conjunction (below), so
-the eclipse rate is lower still: about 21 eclipsing systems against 74 expected. Possible
-reasons, not yet separated: eclipse probabilities overstated (the rough main-sequence
-radii, or Gaia inclination errors larger than quoted), shallow eclipses of faint
-companions missed at SNR 10, and windows only partly covered. That is a real limit on
-how well DR3 orbits predict eclipses, and it matters for the DR4 forecasts.
+the strong-match count of eclipsing systems is about 21 against 74 expected. *(0.7.0: the
+strong-match rule itself misses short-period eclipsers; see the correction at the top.
+The possible reasons we listed here — eclipse probabilities overstated by rough radii or
+by Gaia inclination errors larger than quoted, shallow eclipses missed, windows only
+partly covered — are now tested by `calib_eclipse_rate.py`, together with the rule's own
+blind spot.)*
 
 ## The method works where it can be timed exactly
 
@@ -115,11 +128,12 @@ The full list, with times, depths, offsets and our vetting status, is in
 1. The DR3 test of "Gaia orbits predict eclipses" is done twice now: by Chopard-Vilhem
    within 1° of edge-on, and here, pre-registered, out to ~11.5°. Both find real
    long-period eclipses where Gaia predicts them. Our pre-registered rate test fails
-   narrowly: DR3 orbits predict about three times more eclipses than TESS shows.
+   narrowly. *(0.7.0: how much of that shortfall is Gaia and how much is our BF rule is
+   the subject of the calibration test.)*
 2. **No brown dwarf or planet transits at a Gaia-predicted conjunction in DR3.** The
    substellar goal moves to Gaia DR4 (2 December 2026), with its 5.5-year orbits and
-   ~6 million solutions. The rate shortfall above should be used to temper the DR4
-   expectations, and is worth understanding before release day.
+   ~6 million solutions. The calibrated eclipse probabilities should be used for the DR4
+   expectations.
 3. Next job: **gaia-xmatch-v1** grades P3 and says which of the ~21 eclipsing systems
    (especially those beyond 1° from edge-on, or with P > 242 d) are not in the
    Chopard-Vilhem deposit, SIMBAD, VSX or the TESS EB catalogue. Only those can be

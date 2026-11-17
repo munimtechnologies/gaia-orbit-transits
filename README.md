@@ -25,6 +25,10 @@ conjunction and ellipsoidal check for every low-mass companion seen to eclipse. 
 flags the commonest trap: near-equal eclipses with a tiny mass function, which signal a
 diluted SB1 amplitude.
 
+From 0.7.0 it uses the eclipses to test Gaia itself (`calib_eclipse_rate.py`): an orbit
+within (R1 + R2)/a of edge-on must eclipse, so the eclipses TESS does and does not see
+measure how good Gaia DR3's inclinations and their errors really are.
+
 **Prior work (corrected 2026-11-17).** Earlier versions of this README said we had found
 no systematic search that starts from Gaia astrometric orbits and predicts TESS eclipses.
 That was wrong. **Théo Chopard-Vilhem published one on 2026-10-13**: *"Eclipsing binaries
@@ -34,8 +38,9 @@ DR3 orbits with G < 14 and inclination within 1° of 90°, and reports seven new
 binaries with periods of 26 to 242 days, plus forecasts. The idea and its first results
 are his. This project differs in sample size (24,157 orbits out to |cos i| < 0.2, about
 11.5° from edge-on), in pre-registering its predictions, in using Gaia RVs to say which
-conjunction is the transit, and in its brown-dwarf focus. Other earlier work went the
-other way: Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits, and
+conjunction is the transit, in its brown-dwarf focus and, from 0.7.0, in using the
+eclipses to calibrate Gaia's inclination errors. Other earlier work went the other way:
+Holl et al. 2023 matched a few TESS Objects of Interest to Gaia orbits, and
 arXiv:2310.12380 used Gaia spectroscopic orbits to reject transit candidates.
 
 Gaia DR4 is due on 2 December 2026. It will publish millions of orbits over a 5.5-year
@@ -51,6 +56,9 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
   radius benchmark.
 - A Gaia transit or eclipse with a Gaia orbit at the same period gives a mass, a radius
   and a period from one mission.
+- Eclipses are ground truth for Gaia's inclinations. If DR3's errors near 90° are too
+  small, every eclipse or transit forecast made from them (DR4 included) needs the
+  correction.
 
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
@@ -59,10 +67,16 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
 
 - **Full DR3 search done** (`findings/2026-11-17-dr3-full-search-results.md`). Real
   eclipses land where Gaia's orbits predict them, some repeating at Gaia's period to
-  within 0.03–0.07 d. There are about 21 eclipsing systems against 74 expected, so the
-  pre-registered rate test fails narrowly (24 strong matches, 25 needed). **No brown
-  dwarf or planet transits** at a predicted conjunction in DR3.
-- Which of those systems are new is being checked against the Chopard-Vilhem deposit,
+  within 0.03–0.07 d. The pre-registered rate test fails narrowly (24 strong matches, 25
+  needed). **No brown dwarf or planet transits** at a predicted conjunction in DR3.
+- **Correction (0.7.0).** The v4 "strong match" rule needed a window-match Bayes factor
+  above 10. That factor cannot exceed about P / (2.5 σ_t), so short-period systems with
+  timing errors of a day could never count. HD 75767 (P = 10.25 d; 7.7% eclipses known
+  since STEREO) and TIC 272540685 (P = 82.2 d; 14% eclipses) were missed this way. Our
+  earlier statement that DR3 orbits predict "about three times more eclipses than TESS
+  shows" is withdrawn until `calib_eclipse_rate.py` reports; its predictions are
+  pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`.
+- Which eclipsing systems are new is being checked against the Chopard-Vilhem deposit,
   SIMBAD, VSX and the TESS EB catalogue (`xmatch_prior.py`). None is called new until
   then.
 - Next: Gaia DR4 on 2 December 2026.
@@ -119,7 +133,8 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
    - Run box searches for durations of 2 to 24 h.
 7. **Score each dip** with a window match: the probability under the Gaia orbit that a
    conjunction falls within one duration of the dip, divided by the same probability for
-   a random time.
+   a random time. This score is capped at about P / (2.5 σ_t), so it ranks dips but must
+   not be used alone to decide whether a short-period system eclipses (see 0.7.0).
 8. **Outputs.**
    - `gaia_edge_on_priors.csv` (next-conjunction and next-transit predictions);
    - `substellar_edge_on_candidates.csv`;
@@ -127,6 +142,29 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
    - `covered_windows.csv` (0.3.0: every predicted window TESS covered; a covered
      window with no dip is a constraint);
    - `events.csv`, plots, `windows/*.png` (with `--window-plots`) and `report.md`.
+
+### Gaia inclinations against TESS eclipses (`calib_eclipse_rate.py`, 0.7.0)
+
+Pre-registered in `findings/2026-11-17-inclination-calibration-prereg.md`.
+1. **Detection without the Bayes factor.** A dip counts as an eclipse if it has SNR ≥ 10
+   and depth ≥ 500 ppm, is not at a segment edge or simultaneous with a dip in another
+   target, and lies within 3σ + half its duration of a covered predicted conjunction
+   (when that half-width is ≤ P/4). Short-period systems whose windows are wider than
+   that count when two clean dips repeat at n·P within 0.2 d + 3nσ_P.
+2. **Expected detections.** cos i ~ N(cos i_Gaia, (kσ)²); each conjunction eclipses
+   below lim = q (1 + e cos f) / (1 − e²), q = (R1 + R2)/a (recovered exactly from the
+   durations the search wrote). Both conjunctions share one inclination and are weighted
+   by their TESS coverage.
+3. **Fits.** k (σ(cos i) too small by k), f (a fraction of orbits wrong and randomly
+   oriented), s (radii scaled by s); profile-likelihood 95% intervals; the exact
+   Poisson-binomial probability of seeing so few eclipses if Gaia is right.
+4. **False-alarm control** half-way between the conjunctions, and **timing** z-scores of
+   every detected eclipse.
+5. **Bins** by solution type, period, G, significance, eccentricity and RUWE, and two
+   lists: eclipses predicted with p ≥ 0.8 but not seen (suspect inclinations), and
+   eclipses the old BF rule missed.
+6. **Outputs:** `calib_report.md`, `calib_summary.json` (grades C1–C7) and
+   `calib_targets.csv`.
 
 ### What is already known (`xmatch_prior.py`, 0.6.2)
 
@@ -298,6 +336,18 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
     the coherence cut and is rejected with it.
   - 0.4.3: coherence values worked by hand (0, 1, √3, and 0.84 for the TIC 322271767
     box). A 3-h flat dip and an 8-h V-shaped grazing dip are still recovered.
+- `calib_eclipse_rate.py` (0.7.0):
+  - the eclipse limits of HD 75767 worked by hand from the v4 table (lim = 0.05385 and
+    0.08653), and its eclipse probability 0.979 against the Monte Carlo's 0.983;
+  - circular limits equal (R1 + R2)/a exactly; out-of-range durations are clipped;
+  - the two-conjunction detection probability for every coverage case, the isotropic
+    limit, σ inflation and radius scaling (worked by hand);
+  - the exact Poisson-binomial CDF and the likelihood with a false-alarm rate;
+  - a simulated sample with σ inflated 2.5× is recovered (95% interval contains 2.5 and
+    excludes 1);
+  - window matching, control phases, the repeat rule (HD 75767's 10.2488-d spacing; no
+    TESS-orbit periods) and the artefact veto;
+  - an offline end-to-end run on four synthetic targets.
 - `vet_event.py`:
   - box depth with a sloped baseline;
   - repeat-epoch windows and covered period ranges, worked by hand;
@@ -357,8 +407,10 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   "substellar" rankings will be such binaries, so the eclipse depth, the colour and
   SIMBAD/VSX must be checked before any claim. In the full DR3 search, the 554-d system
   Gaia DR3 5267683998775216256 shows a 10% occultation, so its companion is luminous.
-- The predicted eclipse rate is about three times too high in DR3 (74 expected, ~21
-  seen). Until that is understood, treat the eclipse probabilities as upper limits.
+- How well DR3 eclipse probabilities are calibrated is the open question of 0.7.0. Until
+  `calib_eclipse_rate.py` reports, treat them as upper limits.
+- The window-match Bayes factor is capped at about P / (2.5 σ_t) (see 0.7.0). It ranks
+  dips; it does not decide whether a short-period system eclipses.
 - The transit label assumes that AstroSpectroSB1 C/H follow the same RV convention as
   the EclipsingSpectro solutions used to test it, as the Gaia DR3 documentation states.
 - A dip that matches a predicted window is a **candidate**, not a discovery. It still
@@ -387,13 +439,16 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   - The main-sequence radius relation is approximate (±10%).
   - Gaia's Gaussian eclipse depths come from sparse sampling. The TESS stage reports the
     TESS / Gaia depth ratio for that reason.
+- `calib_eclipse_rate.py`: the v4 dip catalogue keeps about 20 dips per star, preferring
+  dips inside windows, so its false-alarm control under-counts; coverage means a
+  conjunction landed on data, not that the search would have found the eclipse there.
 
 ## Run
 
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
@@ -412,6 +467,7 @@ python vet_short_period.py --tic 207399049 --gaia 1622997463177004928 --p-rv 0.4
 python eblm_screen.py --schema gaiadr3 --n-tess 20 --data-dir data --out-dir out  # SB1 x EB
 python xmatch_prior.py --targets findings/2026-11-17-dr3-strong-matches.csv \
     --data-dir data --out-dir out                                    # what is already known
+python calib_eclipse_rate.py --data-dir data --out-dir out           # Gaia inclinations vs eclipses
 python run_search.py --schema gaiadr4 --tap-chunks 64 --data-dir data --out-dir out   # DR4
 python run_search.py --schema gaiadr4 --targets-table gaiadr4.gaia_exoplanet_candidates \
     --cosi-max 1.0 --data-dir data --out-dir out                     # Gaia exoplanet candidates
@@ -496,13 +552,21 @@ checked against the published datamodel on release day.)
     eclipse lengths match Gaia's eccentricity and ω. Whether it is new is being checked.
   - The 550-d K-dwarf system TIC 342194997 is recovered; it was reported first by
     Chopard-Vilhem (2026).
+  - Its reading of the shortfall ("about three times more eclipses predicted than
+    seen") is withdrawn in 0.7.0 (see below).
 - `findings/2026-11-17-dr3-strong-matches.csv`: the 24 strong matches, with times,
   depths, offsets and vetting status.
+- `findings/2026-11-17-inclination-calibration-prereg.md` (0.7.0): **are Gaia DR3
+  inclinations good enough to predict eclipses?** The BF-cap correction (HD 75767 and
+  TIC 272540685 were missed by the v4 rule), what we read before writing it, the fixed
+  detection rule and model, and predictions C1–C7 (expected: σ(cos i) too small by
+  2–3×, timing errors about right).
 - `data/dr3-full-search-v4/`: the raw outputs of that run (CC BY 4.0): every target with
   its eclipse probability and window coverage (`tess_targets.csv`), all 2,505 dips
   (`events.csv`), the 1,079 covered windows, the substellar list, the run summary and
-  the report. The full prior table (`gaia_edge_on_priors.csv`) is not included; rerun
-  `run_search.py --no-tess` to rebuild it.
+  the report. From 0.7.0 the full prior table of all 24,157 orbits
+  (`gaia_edge_on_priors.csv`: cos i and its Monte Carlo σ, masses, radii, eclipse
+  probabilities, durations and next conjunctions) is included too.
 
 ## Prior art checked (2026-11-17)
 
@@ -511,6 +575,13 @@ checked against the published datamodel on release day.)
   Gaia DR3 astrometric orbits; 1,726 orbits, seven new EBs with P = 26–242 d, forecasts.
   The first systematic search of this kind. Missed by our earlier prior-art checks and
   added on 2026-11-17.
+- **Makarov 2025, ApJL (arXiv:2502.20553):** by Monte Carlo of the Thiele-Innes
+  constants, a nearly edge-on high-SNR DR3 orbit has a strongly underestimated
+  inclination error (3.65° against the quoted 1.6°) but no significant bias. A
+  simulation; no eclipse test. The 0.7.0 calibration tests this with real eclipses.
+- **Wraight et al. 2012, MNRAS 427, 2298; Griffin & Fuhrmann 2013, MNRAS 430, 1390:**
+  STEREO eclipses of HD 75767 (~0.1 mag), which show its 10.25-d companion is an M dwarf,
+  not a white dwarf. Used as a positive control in 0.7.0.
 - github.com/alejandrozarco/tess-candidates-2026 (v1.3, 2026-10-19; not peer reviewed):
   lists TIC 342194997 (P = 550.75 d, one 16.9% eclipse, credited to Chopard-Vilhem) and
   other single eclipses at Gaia-predicted conjunctions.
@@ -537,8 +608,11 @@ checked against the published datamodel on release day.)
   inferred companion masses. TESS light curves show some of them to be hierarchical
   triples (an inner eclipsing pair inside the astrometric orbit). That agrees with our
   finding that DR3 astrometric orbits with Gaia eclipses are triples.
-- arXiv:2307.10812: oscillating red giants in Gaia DR3 binaries; notes that Gaia's
-  sampling rarely detects long-period eclipsing binaries itself.
+- arXiv:2307.10812: oscillating red giants in Gaia DR3 binaries; used DR3 inclinations to
+  find two new eclipsing giants; notes that Gaia's sampling rarely detects long-period
+  eclipsing binaries itself.
+- Yamaguchi, El-Badry et al. 2024 (arXiv:2410.13939, PASP): a TESS search for
+  self-lensing white-dwarf binaries, using Gaia DR3 orbits to check candidates.
 - arXiv:2512.04606 (A&A 2026): HD 128717 B / Gaia-6 B, a long-period brown dwarf found by
   Gaia astrometry and confirmed with radial velocities; no transit search.
 - github.com/coracle-us/gaia-dr4: searches DR4 epoch astrometry for outer companions of
