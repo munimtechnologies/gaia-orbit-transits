@@ -19,12 +19,24 @@ Steps
     dip against the predicted conjunction windows.
  4. Write CSVs, plots of the best events (and, with --window-plots, of every
     predicted window that TESS covered) and a report.
+
+0.4.0: the Gaia TAP result download is retried (a dropped connection killed the
+first full DR3 run), and the astroquery fallback writes array columns such as
+corr_vec as '(a, b, ...)' strings instead of crashing (table_to_csv).
+
+0.4.1: since October 2026 the Gaia ESA Archive gives anonymous users 1 minute per
+query (sync and async) and at most 50,000 rows; the second full DR3 run was aborted
+by that limit. Large queries are now split into source_id ranges (--tap-chunks); a
+range that times out or comes back with the row cap is split again, four ways,
+up to four levels deep. Each range is tried on the ESA archive, then on the ARI
+Heidelberg Gaia TAP mirror (DR3 tables, same schema), then through astroquery.
 """
 import argparse
 import csv
 import io
 import json
 import os
+import re
 import sys
 import time
 import traceback
@@ -34,8 +46,13 @@ import numpy as np
 import dipsearch as ds
 import gaia_orbits as go
 
-VERSION = "0.3.0"
+VERSION = "0.4.1"
 TAP = "https://gea.esac.esa.int/tap-server/tap"
+TAP_MIRRORS = [TAP, "https://gaia.ari.uni-heidelberg.de/tap"]
+# Gaia source_id = HEALPix level-12 index * 2^35 + ..., so every id is below this
+SOURCE_ID_MAX = 12 * 4 ** 12 * 2 ** 35
+ANON_ROW_CAP = 50000
+CHUNK_RE = re.compile(r"/\*CHUNK:([A-Za-z_][\w.]*)\*/")
 
 NSS_QUERY = """
 SELECT n.source_id, n.nss_solution_type, n.bit_index, n.corr_vec, n.period, n.period_error,
@@ -49,13 +66,13 @@ SELECT n.source_id, n.nss_solution_type, n.bit_index, n.corr_vec, n.period, n.pe
 FROM {schema}.nss_two_body_orbit AS n
 JOIN {schema}.gaia_source AS g ON g.source_id = n.source_id
 WHERE n.a_thiele_innes IS NOT NULL AND g.phot_g_mean_mag < {gmax}
- AND ABS({cosi}) < {cosi_server}{extra}
+ AND ABS({cosi}) < {cosi_server}{extra}/*CHUNK:n.source_id*/
 """
 
 EB_QUERY = """
 SELECT v.source_id FROM {schema}.vari_eclipsing_binary AS v
 JOIN {schema}.nss_two_body_orbit AS n ON n.source_id = v.source_id
-WHERE n.a_thiele_innes IS NOT NULL AND ABS({cosi}) < {cosi_server}
+WHERE n.a_thiele_innes IS NOT NULL AND ABS({cosi}) < {cosi_server}/*CHUNK:v.source_id*/
 """
 
 
@@ -69,15 +86,16 @@ def ref_epoch_to_btjd(ref_epoch_jyr):
 
 
 # ---------------------------------------------------------------- Gaia TAP
-def tap_async(query, timeout_s=3600):
+def tap_async(query, timeout_s=3600, download_tries=4, base=TAP):
     import requests
-    r = requests.post(TAP + "/async", data={"REQUEST": "doQuery", "LANG": "ADQL",
-                                            "FORMAT": "csv", "PHASE": "RUN",
-                                            "QUERY": query},
-                      allow_redirects=False, timeout=120)
+    data = {"REQUEST": "doQuery", "LANG": "ADQL", "FORMAT": "csv", "PHASE": "RUN",
+            "QUERY": query}
+    if base != TAP:
+        data["MAXREC"] = 3000000   # mirrors may default to a small row limit
+    r = requests.post(base + "/async", data=data, allow_redirects=False, timeout=120)
     loc = r.headers.get("Location")
     if loc and loc.startswith("/"):
-        loc = "https://gea.esac.esa.int" + loc
+        loc = base.split("/", 3)[0] + "//" + base.split("/", 3)[2] + loc
     if not loc:
         raise RuntimeError(f"TAP async: no job location (HTTP {r.status_code}): {r.text[:500]}")
     t0 = time.time()
@@ -92,23 +110,133 @@ def tap_async(query, timeout_s=3600):
             raise RuntimeError(f"TAP job {ph}: {err[:1000]}")
         if time.time() - t0 > timeout_s:
             raise RuntimeError("TAP job timed out")
-        time.sleep(5)
-    res = requests.get(loc + "/results/result", timeout=600)
-    res.raise_for_status()
-    return res.text
+        time.sleep(3)
+    # 0.4.0: the finished job's result stays on the server, so a dropped
+    # connection (IncompleteRead) is retried instead of failing the whole run
+    last = None
+    for attempt in range(download_tries):
+        try:
+            res = requests.get(loc + "/results/result", timeout=900)
+            res.raise_for_status()
+            return res.text
+        except Exception as exc:
+            last = exc
+            log("TAP result download failed, attempt", attempt + 1, exc)
+            time.sleep(15 * (attempt + 1))
+    raise RuntimeError(f"TAP result download failed {download_tries} times: {last}")
+
+
+def _num(x):
+    x = float(x)
+    return "NaN" if not np.isfinite(x) else repr(x)
+
+
+def _cell(v):
+    """One table cell as CSV text: masked/None -> '', arrays -> '(a, b, ...)'."""
+    if v is None or v is np.ma.masked:
+        return ""
+    if isinstance(v, bytes):
+        v = v.decode("utf-8", "replace")
+    if isinstance(v, (np.ndarray, list, tuple)) and np.ndim(v) > 0:
+        try:
+            arr = np.ma.filled(np.ma.asarray(v, dtype=float), np.nan).ravel()
+        except (TypeError, ValueError):
+            return str(list(np.asarray(v).ravel()))
+        return "(" + ", ".join(_num(x) for x in arr) + ")"
+    if isinstance(v, (bool, np.bool_)):
+        return str(bool(v))
+    if isinstance(v, (int, np.integer)):
+        return str(int(v))
+    if isinstance(v, (float, np.floating)):
+        return "" if not np.isfinite(v) else repr(float(v))
+    return str(v)
+
+
+def table_to_csv(tbl):
+    """CSV text from an astropy Table (or any object with .colnames and row access)
+    that tolerates masked values and array-valued columns such as corr_vec."""
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\n")
+    names = list(tbl.colnames)
+    w.writerow(names)
+    for row in tbl:
+        w.writerow([_cell(row[c]) for c in names])
+    return buf.getvalue()
 
 
 def tap_query(query):
+    """One ADQL query: ESA archive, then the ARI mirror (DR3 only), then astroquery."""
+    errors = []
+    for base in TAP_MIRRORS:
+        if base != TAP and "gaiadr3." not in query:
+            continue  # the mirror serves DR3; DR4 only from ESA until it is mirrored
+        try:
+            return tap_async(query, base=base)
+        except Exception as exc:
+            errors.append(f"{base}: {str(exc)[:300]}")
+            log("TAP failed at", base, str(exc)[:300])
     try:
-        return tap_async(query)
-    except Exception as exc:  # fall back to astroquery
-        log("raw TAP failed:", exc, "- trying astroquery")
         from astroquery.gaia import Gaia
         Gaia.ROW_LIMIT = -1
         tbl = Gaia.launch_job_async(query).get_results()
-        buf = io.StringIO()
-        tbl.write(buf, format="ascii.csv")
-        return buf.getvalue()
+        return table_to_csv(tbl)
+    except Exception as exc:
+        errors.append(f"astroquery: {str(exc)[:300]}")
+    raise RuntimeError("all TAP routes failed: " + " | ".join(errors))
+
+
+def chunk_bounds(n, lo=0, hi=SOURCE_ID_MAX):
+    """n contiguous inclusive source_id ranges covering [lo, hi)."""
+    n = max(1, int(n))
+    edges = [lo + (hi - lo) * k // n for k in range(n + 1)]
+    return [(edges[k], edges[k + 1] - 1) for k in range(n) if edges[k + 1] > edges[k]]
+
+
+def _csv_split(text):
+    lines = [ln for ln in (text or "").splitlines() if ln.strip()]
+    return (lines[0] if lines else None), lines[1:]
+
+
+SPLIT_HINTS = ("execution time", "row cap", "aborted", "timed out", "timeout", "quota")
+
+
+def _splittable(exc):
+    """Errors that a smaller source_id range can cure (time or row limits)."""
+    msg = str(exc).lower()
+    return any(h in msg for h in SPLIT_HINTS)
+
+
+def chunked_query(query, n_chunks=1, query_fn=None, row_cap=ANON_ROW_CAP, max_depth=4,
+                  lo=0, hi=SOURCE_ID_MAX, _depth=0):
+    """Run a query that carries a /*CHUNK:<id column>*/ marker over source_id ranges.
+
+    A range that fails (e.g. the 60-s anonymous limit) or returns row_cap rows (the
+    archive truncates silently) is split four ways and retried, max_depth levels deep.
+    Returns one CSV text with a single header line.
+    """
+    query_fn = query_fn or tap_query
+    m = CHUNK_RE.search(query)
+    if m is None:
+        return query_fn(query)
+    col = m.group(1)
+    header, rows = None, []
+    for a, b in chunk_bounds(n_chunks, lo, hi):
+        clause = "" if (a == 0 and b >= SOURCE_ID_MAX - 1) else f"\n AND {col} BETWEEN {a} AND {b}"
+        q = CHUNK_RE.sub(clause, query)
+        try:
+            h, rr = _csv_split(query_fn(q))
+            if len(rr) >= row_cap:
+                raise RuntimeError(f"row cap {row_cap} reached")
+        except Exception as exc:
+            if _depth >= max_depth or b - a < 4 or not _splittable(exc):
+                raise
+            log(f"range {a}-{b}: {str(exc)[:160]} - splitting")
+            h, rr = _csv_split(chunked_query(query, 4, query_fn, row_cap, max_depth,
+                                             a, b + 1, _depth + 1))
+        if header is None and h:
+            header = h
+        rows += rr
+    return "\n".join([header or ""] + rows) + "\n"
 
 
 STRING_COLS = ("nss_solution_type", "corr_vec")
@@ -119,6 +247,8 @@ def read_csv_text(text):
     for r in csv.DictReader(io.StringIO(text)):
         d = {}
         for k, v in r.items():
+            if k is None:
+                continue
             k = k.strip().lower()
             v = "" if v is None else v
             if k in ("source_id",):
@@ -134,15 +264,17 @@ def read_csv_text(text):
     return out
 
 
-def cached_query(path, query):
+def cached_query(path, query, chunks=1, query_fn=None):
     if os.path.exists(path) and os.path.getsize(path) > 100:
         log("cache hit", path)
         with open(path, encoding="utf-8") as fh:
             return fh.read()
-    log("querying Gaia archive ...")
-    text = tap_query(query)
-    with open(path, "w", encoding="utf-8") as fh:
+    log("querying Gaia archive ...", f"({chunks} source_id ranges)")
+    text = chunked_query(query, chunks, query_fn)
+    tmp = path + ".part"
+    with open(tmp, "w", encoding="utf-8") as fh:
         fh.write(text)
+    os.replace(tmp, path)
     return text
 
 
@@ -451,6 +583,8 @@ def main(argv=None):
                          "gaiadr4.gaia_exoplanet_candidates (DR4 release day)")
     ap.add_argument("--source-ids", default=None,
                     help="comma-separated Gaia source_ids (e.g. a watch list)")
+    ap.add_argument("--tap-chunks", type=int, default=16,
+                    help="split the Gaia query into this many source_id ranges (0.4.1)")
     ap.add_argument("--window-plots", action="store_true",
                     help="plot every predicted conjunction window covered by TESS")
     ap.add_argument("--no-tess", action="store_true",
@@ -483,15 +617,16 @@ def main(argv=None):
     query = build_nss_query(args.schema, args.gmax, args.cosi_server, args.targets_table,
                             source_ids)
     with open(os.path.join(args.out_dir, "nss_query.adql"), "w", encoding="utf-8") as fh:
-        fh.write(query)
+        fh.write(CHUNK_RE.sub("", query))
+    chunks = 1 if source_ids else args.tap_chunks
     # _v3: the query gained the spectroscopic C/H columns in 0.3.0
-    text = cached_query(os.path.join(args.data_dir, tag + "_v3.csv"), query)
+    text = cached_query(os.path.join(args.data_dir, tag + "_v3.csv"), query, chunks)
     rows = read_csv_text(text)
     log("NSS rows (server-side near edge-on):", len(rows))
     try:
         ebtext = cached_query(os.path.join(args.data_dir, f"{args.schema}_nss_ti_vari_eb_c{args.cosi_server:g}.csv"),
                               EB_QUERY.format(schema=args.schema, cosi=go.cosi_adql("n."),
-                                              cosi_server=args.cosi_server))
+                                              cosi_server=args.cosi_server), args.tap_chunks)
         gaia_eb = {r["source_id"] for r in read_csv_text(ebtext)}
     except Exception as exc:
         log("EB query failed", exc)

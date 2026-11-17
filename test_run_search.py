@@ -3,6 +3,7 @@
 import csv
 import json
 import os
+import re
 import shutil
 import tempfile
 import unittest
@@ -64,6 +65,7 @@ class TestHelpers(unittest.TestCase):
         self.assertIn("n.c_thiele_innes", q)
         self.assertIn("n.h_thiele_innes_error", q)
         self.assertNotIn("IN (SELECT", q)
+        self.assertIn("/*CHUNK:n.source_id*/", q)
         q4 = rs.build_nss_query("gaiadr4", 13, 1.0, "gaiadr4.gaia_exoplanet_candidates")
         self.assertIn("FROM gaiadr4.nss_two_body_orbit", q4)
         self.assertIn("IN (SELECT source_id FROM gaiadr4.gaia_exoplanet_candidates)", q4)
@@ -78,6 +80,13 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(rows[0]["nss_solution_type"], "Orbital")
         self.assertEqual(go.parse_corr_vec(rows[0]["corr_vec"]).size, 3)
         self.assertEqual(rows[0]["period"], 55.5)
+
+    def test_ari_corr_vec_braces(self):
+        # the ARI Heidelberg mirror writes corr_vec as {a,b,...}
+        text = 'source_id,nss_solution_type,corr_vec\n4116844801792861952,Orbital,"{-0.08,-0.70,0.25}"\n'
+        v = go.parse_corr_vec(rs.read_csv_text(text)[0]["corr_vec"])
+        self.assertEqual(v.size, 3)
+        self.assertAlmostEqual(v[1], -0.70)
 
     def test_covered_windows(self):
         r = dict(DR3_ROWS[3])
@@ -97,6 +106,171 @@ class TestHelpers(unittest.TestCase):
         # the other conjunction is P/2 = 36.7 d away: not covered by a 20-day stretch
         self.assertEqual(len(wins), 1)
         self.assertEqual(rs.covered_windows(np.empty(0), s, p), [])
+
+
+class _FakeArchive:
+    """Answers chunked queries from a list of source_ids, like an anonymous Gaia TAP:
+    results are truncated at `cap` rows, and ranges holding more than `abort_over`
+    rows raise the 60-s execution-time error."""
+
+    BETWEEN = re.compile(r"BETWEEN (\d+) AND (\d+)")
+
+    def __init__(self, ids, cap=10, abort_over=None, fail_all=None):
+        self.ids = sorted(ids)
+        self.cap = cap
+        self.abort_over = abort_over
+        self.fail_all = fail_all
+        self.queries = []
+
+    def __call__(self, q):
+        self.queries.append(q)
+        if self.fail_all:
+            raise RuntimeError(self.fail_all)
+        m = self.BETWEEN.search(q)
+        lo, hi = (int(m.group(1)), int(m.group(2))) if m else (0, rs.SOURCE_ID_MAX)
+        sel = [i for i in self.ids if lo <= i <= hi]
+        if self.abort_over is not None and len(sel) > self.abort_over:
+            raise RuntimeError("TAP job ABORTED: Maximum execution time (60 s) reached.")
+        sel = sel[:self.cap]
+        return "source_id,period\n" + "".join(f"{i},{i % 97}.5\n" for i in sel)
+
+
+class TestChunkedQuery(unittest.TestCase):
+    """0.4.1: anonymous Gaia archive limits (60 s, 50,000 rows) since October 2026."""
+    Q = "SELECT source_id, period FROM t AS n WHERE x < 1/*CHUNK:n.source_id*/"
+
+    def _ids(self, n, lo=0, hi=rs.SOURCE_ID_MAX, seed=1):
+        rng = np.random.default_rng(seed)
+        return sorted({int(x) for x in rng.integers(lo, hi, n, dtype=np.int64)})
+
+    def _got(self, text):
+        return sorted(r["source_id"] for r in rs.read_csv_text(text))
+
+    def test_bounds_cover_everything(self):
+        b = rs.chunk_bounds(16)
+        self.assertEqual(b[0][0], 0)
+        self.assertEqual(b[-1][1], rs.SOURCE_ID_MAX - 1)
+        for (a0, b0), (a1, _) in zip(b, b[1:]):
+            self.assertEqual(b0 + 1, a1)
+        self.assertEqual(rs.SOURCE_ID_MAX, 6917529027641081856)
+        self.assertGreater(rs.SOURCE_ID_MAX, 6917528997577384320)  # largest DR3 source_id
+
+    def test_merge_and_markers(self):
+        ids = self._ids(60)
+        fa = _FakeArchive(ids, cap=1000)
+        text = rs.chunked_query(self.Q, 16, fa)
+        self.assertEqual(self._got(text), ids)
+        self.assertEqual(len(fa.queries), 16)
+        for q in fa.queries:
+            self.assertNotIn("CHUNK", q)
+            self.assertIn("AND n.source_id BETWEEN", q)
+        self.assertEqual(text.splitlines()[0], "source_id,period")
+        self.assertEqual(sum(1 for ln in text.splitlines() if ln.startswith("source_id")), 1)
+
+    def test_single_chunk_has_no_clause(self):
+        fa = _FakeArchive([5, 7], cap=1000)
+        text = rs.chunked_query(self.Q, 1, fa)
+        self.assertEqual(self._got(text), [5, 7])
+        self.assertNotIn("BETWEEN", fa.queries[0])
+        self.assertNotIn("CHUNK", fa.queries[0])
+
+    def test_row_cap_splits(self):
+        ids = self._ids(40, 0, rs.SOURCE_ID_MAX // 16)   # all in the first of 16 ranges
+        fa = _FakeArchive(ids, cap=12)
+        text = rs.chunked_query(self.Q, 16, fa, row_cap=12)
+        self.assertEqual(self._got(text), ids)
+        self.assertGreater(len(fa.queries), 16)
+
+    def test_abort_splits(self):
+        ids = self._ids(30, seed=4)
+        fa = _FakeArchive(ids, cap=1000, abort_over=8)
+        text = rs.chunked_query(self.Q, 1, fa)
+        self.assertEqual(self._got(text), ids)
+
+    def test_network_error_is_not_split(self):
+        fa = _FakeArchive([1, 2], fail_all="Connection refused")
+        with self.assertRaises(RuntimeError):
+            rs.chunked_query(self.Q, 4, fa)
+        self.assertEqual(len(fa.queries), 1)
+
+    def test_empty_ranges(self):
+        fa = _FakeArchive([], cap=10)
+        text = rs.chunked_query(self.Q, 8, fa)
+        self.assertEqual(rs.read_csv_text(text), [])
+        self.assertEqual(text.splitlines()[0], "source_id,period")
+
+    def test_cached_query_uses_chunks(self):
+        tmp = tempfile.mkdtemp()
+        try:
+            ids = self._ids(25, seed=9)
+            fa = _FakeArchive(ids, cap=1000)
+            path = os.path.join(tmp, "q.csv")
+            t1 = rs.cached_query(path, self.Q, 8, fa)
+            self.assertEqual(len(fa.queries), 8)
+            t2 = rs.cached_query(path, self.Q, 8, fa)          # cache hit: no new queries
+            self.assertEqual(len(fa.queries), 8)
+            self.assertEqual(t1, t2)
+            self.assertFalse(os.path.exists(path + ".part"))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
+class _FakeTable:
+    """Minimal stand-in for an astropy Table: .colnames and iterable row dicts."""
+
+    def __init__(self, colnames, rows):
+        self.colnames = colnames
+        self._rows = rows
+
+    def __iter__(self):
+        return iter(self._rows)
+
+
+class TestTableToCsv(unittest.TestCase):
+    """0.4.0: the astroquery fallback crashed on the array column corr_vec."""
+
+    def _check(self, text):
+        rows = rs.read_csv_text(text)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["source_id"], 393581461455623296)
+        v = go.parse_corr_vec(rows[0]["corr_vec"])
+        self.assertEqual(v.size, 3)
+        self.assertAlmostEqual(v[0], 0.25)
+        self.assertTrue(np.isnan(v[1]))
+        self.assertAlmostEqual(v[2], -0.5)
+        self.assertEqual(rows[0]["nss_solution_type"], "AstroSpectroSB1")
+        self.assertAlmostEqual(rows[0]["period"], 73.3403)
+        self.assertTrue(np.isnan(rows[1]["period"]))
+        self.assertIsNone(go.parse_corr_vec(rows[1]["corr_vec"]))
+
+    def test_numpy_cells(self):
+        tbl = _FakeTable(["source_id", "nss_solution_type", "corr_vec", "period"], [
+            {"source_id": np.int64(393581461455623296), "nss_solution_type": b"AstroSpectroSB1",
+             "corr_vec": np.ma.array([0.25, 9.0, -0.5], mask=[False, True, False]),
+             "period": np.float64(73.3403)},
+            {"source_id": np.int64(12), "nss_solution_type": "Orbital",
+             "corr_vec": np.ma.masked, "period": np.ma.masked},
+        ])
+        self._check(rs.table_to_csv(tbl))
+
+    def test_astropy_table(self):
+        try:
+            from astropy.table import MaskedColumn, Table
+        except ImportError:
+            self.skipTest("astropy not installed")
+        tbl = Table()
+        tbl["source_id"] = np.array([393581461455623296, 12], dtype=np.int64)
+        tbl["nss_solution_type"] = ["AstroSpectroSB1", "Orbital"]
+        tbl["corr_vec"] = MaskedColumn(np.array([[0.25, 9.0, -0.5], [0.0, 0.0, 0.0]]),
+                                       mask=np.array([[False, True, False], [True, True, True]]))
+        tbl["period"] = MaskedColumn([73.3403, 0.0], mask=[False, True])
+        text = rs.table_to_csv(tbl)
+        rows = rs.read_csv_text(text)
+        self.assertEqual(rows[0]["source_id"], 393581461455623296)
+        v = go.parse_corr_vec(rows[0]["corr_vec"])
+        self.assertEqual(v.size, 3)
+        self.assertTrue(np.isnan(v[1]))
+        self.assertTrue(np.isnan(rows[1]["period"]))
 
 
 class TestRankingOffline(unittest.TestCase):
@@ -149,7 +323,8 @@ class TestRankingOffline(unittest.TestCase):
                 self.assertTrue(p["next_transit_btjd"])
             else:
                 self.assertEqual(p["transit_conj"], "")
-        self.assertTrue(os.path.exists(os.path.join(self.out, "nss_query.adql")))
+        with open(os.path.join(self.out, "nss_query.adql"), encoding="utf-8") as fh:
+            self.assertNotIn("CHUNK", fh.read())
 
 
 if __name__ == "__main__":
