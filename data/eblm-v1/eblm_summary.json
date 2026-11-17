@@ -1,0 +1,40 @@
+{
+ "version": "0.1.0",
+ "schema": "gaiadr3",
+ "n_sb1_eb_same_period": 1605,
+ "classes": {
+  "twin_blend_suspect": 78,
+  "twin": 290,
+  "eblm_like": 169,
+  "other": 1068
+ },
+ "twin_fraction_by_fm": {
+  "fm<0.003": {
+   "n": 149,
+   "twin": 78,
+   "twin_frac": 0.523
+  },
+  "0.003-0.03": {
+   "n": 559,
+   "twin": 118,
+   "twin_frac": 0.211
+  },
+  "fm>0.03": {
+   "n": 700,
+   "twin": 172,
+   "twin_frac": 0.246
+  }
+ },
+ "eblm_like": 167,
+ "eblm_like_in_simbad": 0,
+ "eblm_like_transit_phase": {
+  "n": 167,
+  "n_within_0.06": 147,
+  "n_near_occultation": 11
+ },
+ "eblm_like_ell_ratio_median": 0.9888880715698121,
+ "tess_verdicts": {
+  "NO_ECLIPSE": 19,
+  "NO_TESS_DATA": 1
+ }
+}
