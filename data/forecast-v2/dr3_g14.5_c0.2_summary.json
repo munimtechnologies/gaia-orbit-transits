@@ -1,0 +1,26 @@
+{
+ "version": "0.4.1",
+ "args": {
+  "data_dir": "/data",
+  "out_dir": "/out",
+  "source_ids": null,
+  "schema": "gaiadr3",
+  "gmax": 14.5,
+  "cosi_max": 0.2,
+  "m2_max": 0.1,
+  "mc": 1000,
+  "seed": 20261117,
+  "t_from": 4375.5,
+  "t_to": 4740.5,
+  "prefix": "dr3_g14.5_c0.2",
+  "tap_chunks": 16
+ },
+ "tess_point_ok": true,
+ "tess_point_version": "0.9.5.post1",
+ "max_sector_on_silicon": 134,
+ "stars": 359,
+ "stars_on_silicon_y9_y10": 202,
+ "expected_tess_transits_total": 1.612,
+ "ground_windows": 861,
+ "ground_windows_constrained": 791
+}

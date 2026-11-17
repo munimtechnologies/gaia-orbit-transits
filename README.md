@@ -13,7 +13,8 @@ transit. This project turns each near-edge-on Gaia orbit into predicted conjunct
 windows and checks TESS light curves at those times. From 0.4.0 it also checks archival
 ground-based and Gaia photometry (ZTF, ASAS-SN, Gaia DR3 epoch photometry), and it
 publishes forecasts of future transit windows, both those TESS will observe and those
-only the ground can see, before the data exist.
+only the ground can see, before the data exist. From 0.9.0 it also uses Kepler's four
+years of photometry for stars in the Kepler field.
 
 From 0.5.0 it also works in the other direction. It starts from Gaia's own photometric
 transit candidates (`vari_planetary_transit`: 214 in DR3, 1,007 in DR4) and asks what
@@ -63,8 +64,27 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
 
-## Status (2026-11-17, 0.8.1)
+## Status (2026-11-17, 0.9.0)
 
+- **0.9.0: forecast graded; deep eclipses and Kepler.**
+  - The pre-registered forecast (job gaia-forecast-v2) is graded in
+    `findings/2026-11-17-forecast-results.md`. **F1, F2, F3 and F5 pass; F4 fails**:
+    359 DR3 orbits with G < 14.5, |cos i| < 0.2 and a dark-companion mass below 0.1 M☉,
+    where we guessed 5-30. At face value, Gaia's probabilities give 1.6 transits or
+    eclipses in TESS Years 9-10 across all 359.
+  - Two stars pass the monitoring rule. **Gaia DR3 5440672572654653696** (a K7/M0 dwarf
+    at ~111 pc, P = 135.2 d) has its two conjunctions very probably inside TESS Sectors
+    110 and 111, which are being observed now (October-December 2026). **Gaia DR3
+    2102618458287057920** (an M dwarf at 68 pc, P = 165.7 d) is KIC 6436291, observed by
+    Kepler for four years.
+  - **A problem found in archival.py:** it drops residuals deeper than 8% as outliers,
+    which would throw away a 10-20% M-dwarf eclipse while injected test eclipses were
+    still "recovered". `deepcheck.py` keeps residuals up to 60% deep, adds Kepler data
+    and lists the deepest dips anywhere in the data. Its test of the 16 best targets is
+    pre-registered in `findings/2026-11-17-deepcheck-prereg.md` (K1-K4).
+  - One of those targets is the known brown-dwarf host LHS 1610. Radial velocities plus
+    Gaia give i = 114.5° there (Fitzmaurice et al. 2023), where Gaia alone gives about
+    93°.
 - **Full DR3 search done** (`findings/2026-11-17-dr3-full-search-results.md`). Real
   eclipses land where Gaia's orbits predict them, some repeating at Gaia's period to
   within 0.03–0.07 d. The pre-registered rate test fails narrowly (24 strong matches, 25
@@ -258,6 +278,26 @@ points (before, the fast scan could overstate their SNR; its brute-force test ca
 this). The Gaia DataLink request uses the archive's new structure name,
 `DATAMODEL_STANDARD` (formerly `INDIVIDUAL`).
 
+### Deep eclipses and Kepler (`deepcheck.py`, 0.9.0)
+
+archival.py drops every residual deeper than max(8σ, 8%). That is right for the ~1%
+transits expected around FGK stars, but a 0.1 M☉ companion in front of an M dwarf blocks
+10-20% of the light, and the injected test eclipses (added after the clip) would still
+be "recovered". deepcheck keeps archival.py's prior, posterior, search, null and
+injection steps unchanged, and:
+1. keeps residuals up to 60% deep (`prepare_deep`);
+2. adds Kepler long-cadence PDCSAP light curves (2009-2013) when the star was a Kepler
+   target (match within 5″, or within 10″ with Kp within 1 mag of G; BKJD → BTJD is
+   −2167 d), and runs a Kepler-only search as well as the combined one;
+3. lists the 8 deepest box dips anywhere in the data (`deepest_dips`), with each dip's
+   offset in σ from the predicted conjunction (`conj_offset`), so an eclipse at the
+   wrong phase, an unrelated eclipsing binary or an artefact is seen as well;
+4. looks Kepler targets up in the Kepler EB catalogue (Kirk et al. 2016, VizieR
+   J/AJ/151/68).
+
+Outputs: `deepcheck_results.csv`, `deepcheck_report.md`, `kepler_meta.json`, and
+`deepcheck/<id>_<conj>.json` with `_best.png` and `_fold.png`.
+
 ### Forecast (`forecast.py`)
 
 This stage publishes falsifiable predictions before the observations exist.
@@ -393,6 +433,15 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
     0.17-d gap are found with the 0.4.3 defaults and gone with `DR4_GAP_OPTIONS`; a 6-h
     2,000-ppm transit 1 d from the gap survives; a transit 0.3 d after a 0.2-d gap is
     flagged near an edge only with `edge_gap`.
+- `deepcheck.py` (0.9.0), on exact binary-fraction times:
+  - a 25% dip is lost by archival.prepare (495 of 500 points left) and kept by
+    prepare_deep (500);
+  - for shallow data, prepare_deep gives exactly what archival.prepare gives;
+  - a 1/16-deep, 15-point dip is found by `deepest_dips` at exactly t = 10, with the
+    depth worked by hand (0.0617 against 0.0625 after normalisation);
+  - conjunction offsets and their σ with and without the P–T correlation (3.25 and 0.75,
+    worked by hand);
+  - BKJD → BTJD = −2167 d and the Kepler match rule.
 - `calib_eclipse_rate.py` (0.7.0):
   - the eclipse limits of HD 75767 worked by hand from the v4 table (lim = 0.05385 and
     0.08653), and its eclipse probability 0.979 against the Monte Carlo's 0.983;
@@ -473,7 +522,9 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   SIMBAD/VSX must be checked before any claim. In the full DR3 search, the 554-d system
   Gaia DR3 5267683998775216256 shows a 10% occultation, so its companion is luminous.
 - How well DR3 eclipse probabilities are calibrated is the open question of 0.7.0. Until
-  `calib_eclipse_rate.py` reports, treat them as upper limits.
+  `calib_eclipse_rate.py` reports, treat them as upper limits. One published case: for
+  LHS 1610 (Gaia DR3 43574131143039104), Gaia alone gives i ≈ 93°, and Gaia plus radial
+  velocities gives 114.5° (+7.4/−10.0) (Fitzmaurice et al. 2023).
 - The window-match Bayes factor is capped at about P / (2.5 σ_t) (see 0.7.0). It ranks
   dips; it does not decide whether a short-period system eclipses.
 - The transit label assumes that AstroSpectroSB1 C/H follow the same RV convention as
@@ -495,6 +546,14 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
   Ground photometry of bright stars (G ≲ 12.5 in ZTF) can be affected by saturation.
+- **archival.py drops residuals deeper than 8%** (found in 0.9.0). Its results are
+  valid for predicted depths well below 8%. For deeper predicted eclipses (M-dwarf
+  hosts) use `deepcheck.py`. The queued pre-registered watch-list job keeps archival.py
+  0.4.1 unchanged; any star in it with a predicted depth above 8% will be re-checked
+  with deepcheck.
+- deepcheck's 60% clip still removes total eclipses deeper than 60%, and its Kepler
+  match rule can, in a crowded field, accept a neighbour within 5″ (the distance is
+  reported).
 - The forecast ignores TESS's data gaps at perigee (about 7% of each sector). TESS
   pointings are provisional and can change.
 - Anonymous Gaia archive access is limited to 60 s and 50,000 rows per query, 5 jobs at
@@ -519,13 +578,15 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
 ```
 pip install -r requirements.txt
 pip install "tess-point>=0.9.5"                                      # forecast only
-python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate test_calib_support test_selflens
+python -m unittest -v test_gaia_orbits test_dipsearch test_run_search test_archival test_forecast test_vet_event test_transit_rv_screen test_vet_short_period test_eblm_screen test_xmatch_prior test_calib_eclipse_rate test_calib_support test_selflens test_deepcheck
 python run_search.py --data-dir data --out-dir out                    # DR3
 python run_search.py --data-dir data --out-dir out --no-tess          # watch list only
 python run_search.py --source-ids 393581461455623296,2960647744567925632 --gmax 17 \
     --cosi-max 0.3 --min-p-ecl 0 --window-plots --data-dir data --out-dir out
 python archival.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 \
     --data-dir data --out-dir out                                    # archival test
+python deepcheck.py --source-ids 2102618458287057920,43574131143039104 --gmax 17 \
+    --cosi-max 0.3 --data-dir data --out-dir out                     # deep eclipses + Kepler
 python forecast.py --source-ids 393581461455623296 --gmax 17 --cosi-max 0.3 --m2-max 1 \
     --data-dir data --out-dir out                                    # forecast
 python vet_event.py --tic 41898425 --ra 21.734801 --dec -41.059717 --t0 3192.263 \
@@ -605,6 +666,20 @@ checked against the published datamodel on release day.)
   - Gaia flags the star as VARIABLE (SOLAR_LIKE, 8.7 mmag scatter in 57 G epochs).
 - `findings/2026-11-17-forecast-prereg.md`: what the forecast publishes and five
   predictions about it, written before it ran.
+- `findings/2026-11-17-forecast-results.md` (0.9.0): **the graded forecast.**
+  - F1, F2, F3 and F5 pass. F4 fails: run B kept 359 stars, not 5-30.
+  - Across those 359, Gaia's probabilities at face value give 1.6 expected TESS
+    transits or eclipses in Years 9-10. There are 861 ground windows in the year from
+    2026-12-01, 92% of them constrained.
+  - Gaia DR3 5440672572654653696 (P = 135.2 d) has both conjunctions very probably in
+    TESS Sectors 110-111 (October-December 2026).
+  - Gaia DR3 2102618458287057920 (KIC 6436291) can be tested with Kepler.
+  - The archival.py 8% clip problem is described.
+- `findings/2026-11-17-deepcheck-prereg.md` (0.9.0): the archival + Kepler test of the 16
+  best forecast targets, with predictions K1-K4, written before any light curve was read.
+  The notes added afterwards give the Gaia properties of six targets (all M dwarfs within
+  115 pc), identify LHS 1610 and KIC 6436291, and record that KIC 6436291 is not in the
+  Kepler EB catalogue.
 - `findings/2026-11-17-v4-amendment.md` (0.4.1): the Gaia archive's new anonymous limits,
   the archival scan fix and the forecast test fix. No prediction changed.
 - `findings/2026-11-17-dr3-transit-rv-screen.md` (0.5.0, preliminary):
@@ -667,6 +742,8 @@ checked against the published datamodel on release day.)
   15 MB) is too large for this repository. Rebuild it with the `run_search.py --no-tess`
   command under Run; the target rows will be added as a small table once the calibration
   job has checked them.
+- `data/forecast-v2/`: the forecast outputs (CC BY 4.0): run B (`dr3_g14.5_c0.2_*`, 359
+  stars, their TESS sectors and ground windows) and the watch list (`watchlist_*`).
 
 ## Prior art checked (2026-11-17)
 
@@ -679,6 +756,12 @@ checked against the published datamodel on release day.)
   constants, a nearly edge-on high-SNR DR3 orbit has a strongly underestimated
   inclination error (3.65° against the quoted 1.6°) but no significant bias. A
   simulation; no eclipse test. The 0.7.0 calibration tests this with real eclipses.
+- **Winters et al. 2018, AJ 155, 125** (arXiv:1801.07340) and **Fitzmaurice et al. 2023**
+  (arXiv:2310.07827): LHS 1610 b, a 10.6-d brown dwarf around an M5 dwarf at 9.7 pc. The
+  Gaia DR3 orbit plus TRES/HPF radial velocities give i = 114.5° (+7.4/−10.0) and 49.5
+  M_Jup, and Gaia's eccentricity (0.52) disagrees with the RVs (0.370).
+- **Kirk et al. 2016, AJ 151, 68:** the Kepler Eclipsing Binary Catalog (used to check
+  Kepler targets; the Villanova online version).
 - **Wraight et al. 2012, MNRAS 427, 2298; Griffin & Fuhrmann 2013, MNRAS 430, 1390:**
   STEREO eclipses of HD 75767 (~0.1 mag), which show its 10.25-d companion is an M dwarf,
   not a white dwarf. Used as a positive control in 0.7.0.
@@ -739,10 +822,12 @@ checked against the published datamodel on release day.)
 By MV2 of Munim, Inc. (mv2@munimtech.com). Made with AI agents working in his name.
 Code: Apache-2.0. Results and text: CC BY 4.0.
 Data: ESA Gaia DR3 (Gaia Collaboration), including epoch photometry, served by the ESA
-Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS via MAST (SPOC, TESS-SPOC and
-QLP light curves, TESScut); the TESS Input Catalog; ExoFOP-TESS and the NASA Exoplanet
-Archive TOI table; the Zwicky Transient Facility (IRSA); ASAS-SN Sky Patrol; SIMBAD and
-VizieR (CDS) with the AAVSO VSX catalogue and the TESS EB catalogue (Prša et al. 2022);
-TESS pointings from the TESS Science Center and tess-point (tessgi); the Chopard-Vilhem
-(2026) Zenodo deposit (CC BY 4.0) for the prior-work cross-match. Uses numpy, astropy,
-astroquery, lightkurve, matplotlib, skypatrol (pyasassn) and tess-point.
+Gaia Archive and the ARI Heidelberg Gaia mirror; NASA TESS and Kepler via MAST (SPOC,
+TESS-SPOC and QLP light curves, TESScut, Kepler PDCSAP light curves and the Kepler Input
+Catalog); the TESS Input Catalog; ExoFOP-TESS and the NASA Exoplanet Archive TOI table;
+the Villanova Kepler Eclipsing Binary Catalog; the Zwicky Transient Facility (IRSA);
+ASAS-SN Sky Patrol; SIMBAD and VizieR (CDS) with the AAVSO VSX catalogue and the TESS EB
+catalogue (Prša et al. 2022); TESS pointings from the TESS Science Center and tess-point
+(tessgi); the Chopard-Vilhem (2026) Zenodo deposit (CC BY 4.0) for the prior-work
+cross-match. Uses numpy, astropy, astroquery, lightkurve, matplotlib, skypatrol
+(pyasassn) and tess-point.
