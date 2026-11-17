@@ -13,6 +13,17 @@ def _sector(rng, sigma=1e-3, t0=1500.0):
     return t, f
 
 
+def _with_gap(rng, g0, glen, sigma=1e-3):
+    """_sector with the cadences between g0 and g0 + glen removed.
+    Returns t, f, tb (last cadence before the gap), ta (first after)."""
+    t, f = _sector(rng, sigma)
+    keep = ~((t > g0) & (t < g0 + glen))
+    t, f = t[keep], f[keep]
+    tb = float(t[t <= g0].max())
+    ta = float(t[t >= g0 + glen].min())
+    return t, f, tb, ta
+
+
 class TestBinning(unittest.TestCase):
     def test_bin_and_segments(self):
         t = np.arange(0, 2, 2 / 1440.0)
@@ -193,6 +204,139 @@ class TestCoherence(unittest.TestCase):
         self.assertTrue(ev)
         self.assertLess(abs(ev[0]["t_center"] - tc), 0.15)
         self.assertLessEqual(ev[0]["coherence"], 0.75)
+
+
+class TestGapMask(unittest.TestCase):
+    """0.4.4: the gap pad itself, on exact binary fractions (no float rounding)."""
+
+    def _t(self):
+        a = np.arange(0, 1, 0.0625)          # 0 .. 0.9375, 16 cadences
+        b = 1.25 + np.arange(0, 1, 0.0625)   # 1.25 .. 2.1875, 16 cadences
+        return np.concatenate([a, b])        # one gap: 0.9375 -> 1.25 (0.3125 d)
+
+    def test_gap_edges(self):
+        before, after = ds.gap_edges(self._t(), 0.1)
+        self.assertEqual(list(before), [0.9375])
+        self.assertEqual(list(after), [1.25])
+        before, after = ds.gap_edges(self._t(), 0.1, pad_ends=True)
+        self.assertEqual(list(before), [0.9375, 2.1875])
+        self.assertEqual(list(after), [0.0, 1.25])
+        # a gap shorter than gap_min is not a gap
+        self.assertEqual(ds.gap_edges(self._t(), 0.5)[0].size, 0)
+
+    def test_gap_mask_counts(self):
+        t = self._t()
+        drop, n = ds.gap_mask(t, 0.1, 0.25, pad_ends=False)
+        self.assertEqual(n, 1)
+        # before the gap: 0.6875 .. 0.9375 (5); after: 1.25 .. 1.5 (5)
+        self.assertEqual(int(drop.sum()), 10)
+        self.assertEqual(sorted(t[drop].tolist()),
+                         [0.6875, 0.75, 0.8125, 0.875, 0.9375,
+                          1.25, 1.3125, 1.375, 1.4375, 1.5])
+        # with the series ends: + 0 .. 0.25 (5) and 1.9375 .. 2.1875 (5)
+        drop, n = ds.gap_mask(t, 0.1, 0.25, pad_ends=True)
+        self.assertEqual((int(drop.sum()), n), (20, 1))
+        # order of the input does not matter
+        rng = np.random.default_rng(3)
+        p = rng.permutation(t.size)
+        dropp, _ = ds.gap_mask(t[p], 0.1, 0.25, pad_ends=True)
+        self.assertTrue(np.array_equal(dropp, drop[p]))
+        # no pad -> nothing dropped
+        self.assertEqual(int(ds.gap_mask(t, 0.1, 0.0)[0].sum()), 0)
+
+    def test_dr4_options_split_segments(self):
+        o = ds.DR4_GAP_OPTIONS
+        # every padded gap is at least 0.1 + 2 * 0.25 = 0.6 d > the 0.5-d segment gap
+        self.assertGreater(o["gap_min"] + 2 * o["gap_pad"], 0.5)
+
+
+class TestGapEdgeArtefacts(unittest.TestCase):
+    """0.4.4: the two gap-edge artefacts of gaia-watchlist-tess-v3."""
+
+    def _step(self):
+        # TIC 322271767-like: 2-h, 8% step down right after a 0.3-d gap
+        rng = np.random.default_rng(53)
+        t, f, tb, ta = _with_gap(rng, 1505.0, 0.3)
+        f[(t >= ta) & (t < ta + 2 / 24)] -= 0.08
+        return t, f, tb, ta
+
+    def _ramp(self):
+        # TIC 231290240-like: 0.7% ramp over the 4 h before a 0.17-d gap, level
+        # 0.1% higher after it
+        rng = np.random.default_rng(59)
+        t, f, tb, ta = _with_gap(rng, 1508.0, 0.17)
+        m = (t >= tb - 4 / 24) & (t <= tb)
+        f[m] -= 0.007 * (t[m] - (tb - 4 / 24)) / (4 / 24)
+        f[(t >= ta) & (t < 1513.0)] += 0.001
+        return t, f, tb, ta
+
+    def test_step_found_without_gap_pad(self):
+        t, f, tb, ta = self._step()
+        ev, binned = ds.search(t, f)                     # 0.4.3 defaults
+        self.assertEqual(binned["n_gap_dropped"], 0)
+        near = [e for e in ev if abs(e["t_center"] - ta) < 0.3]
+        self.assertTrue(near, "gap-edge step should appear with 0.4.3 defaults")
+        self.assertGreater(max(e["depth_ppm"] for e in near), 4e4)
+
+    def test_step_removed_by_gap_pad(self):
+        t, f, tb, ta = self._step()
+        ev, binned = ds.search(t, f, **ds.DR4_GAP_OPTIONS)
+        # gaps: the 0.3-d one and the 1-d mid-sector one
+        self.assertEqual(binned["n_gaps"], 2)
+        self.assertGreater(binned["n_gap_dropped"], 0)
+        for e in ev:
+            if abs(e["t_center"] - ta) < 0.5:
+                self.assertLess(e["depth_ppm"], 5000, e)
+
+    def test_ramp_found_without_gap_pad(self):
+        t, f, tb, ta = self._ramp()
+        ev, _ = ds.search(t, f)
+        near = [e for e in ev if abs(e["t_center"] - tb) < 0.4]
+        self.assertTrue(near, "pre-gap ramp should appear with 0.4.3 defaults")
+        self.assertGreater(max(e["depth_ppm"] for e in near), 1500)
+
+    def test_ramp_removed_by_gap_pad(self):
+        t, f, tb, ta = self._ramp()
+        ev, _ = ds.search(t, f, **ds.DR4_GAP_OPTIONS)
+        for e in ev:
+            if abs(e["t_center"] - tb) < 0.5:
+                self.assertLess(e["depth_ppm"], 1500, e)
+
+    def test_transit_one_day_from_gap_survives(self):
+        # 6-h, 2000 ppm flat transit 1 d after the 0.3-d gap
+        rng = np.random.default_rng(61)
+        t, f, tb, ta = _with_gap(rng, 1505.0, 0.3)
+        tc = ta + 1.0
+        f[np.abs(t - tc) < 3 / 24] -= 2e-3
+        ev, _ = ds.search(t, f, **ds.DR4_GAP_OPTIONS)
+        near = [e for e in ev if abs(e["t_center"] - tc) < 0.1]
+        self.assertTrue(near, ev)
+        best = max(near, key=lambda e: e["snr"])
+        self.assertGreater(best["snr"], 10)
+        # 4-h box ~2000 ppm, or 8-h box 6/8 x 2000 = 1500 ppm minus ~110 ppm of
+        # running-median pull (25% of the 1-d window is in transit)
+        self.assertGreater(best["depth_ppm"], 1000)
+        # nearest edge is the padded gap end, ~0.75 d away
+        self.assertGreater(best["edge_dist_d"], 0.5)
+        self.assertFalse(best["near_edge"])
+
+    def test_short_gap_counts_as_edge(self):
+        # 8-h, 3000 ppm transit 0.3 d after a 0.2-d gap, no pad: only edge_gap
+        # can flag it (the gap is shorter than the 0.5-d segment gap)
+        rng = np.random.default_rng(67)
+        t, f, tb, ta = _with_gap(rng, 1505.0, 0.2)
+        tc = ta + 0.3
+        f[np.abs(t - tc) < 4 / 24] -= 3e-3
+        ev, _ = ds.search(t, f)
+        near = [e for e in ev if abs(e["t_center"] - tc) < 0.15]
+        self.assertTrue(near)
+        self.assertFalse(near[0]["near_edge"])           # 0.4.3 behaviour
+        self.assertNotIn("edge_dist_d", near[0])
+        ev, _ = ds.search(t, f, edge_gap=0.1)
+        near = [e for e in ev if abs(e["t_center"] - tc) < 0.15]
+        self.assertTrue(near)
+        self.assertTrue(near[0]["near_edge"])
+        self.assertLess(near[0]["edge_dist_d"], 0.5)
 
 
 if __name__ == "__main__":

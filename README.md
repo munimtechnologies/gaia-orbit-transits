@@ -63,7 +63,7 @@ exoplanet catalogue. The pipeline is built to run on DR4 on release day
 Long-period transits are mostly single events in TESS, so the usual TOI process, which
 looks for repeating transits, tends to miss them. A Gaia orbit tells you when to look.
 
-## Status (2026-11-17, 0.7.1)
+## Status (2026-11-17, 0.8.1)
 
 - **Full DR3 search done** (`findings/2026-11-17-dr3-full-search-results.md`). Real
   eclipses land where Gaia's orbits predict them, some repeating at Gaia's period to
@@ -89,6 +89,11 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
   brightenings there. Pre-registered in `findings/2026-11-17-selflens-prereg.md`. The
   wow if it works: the first self-lensing white dwarf found from a Gaia orbit, with its
   mass measured both by lensing and by astrometry.
+- **0.8.1:** dipsearch 0.4.4 removes dips next to short data gaps, as an opt-in
+  (`DR4_GAP_OPTIONS`) so that the queued pre-registered jobs keep their 0.4.3 rules. No
+  known self-lensing binary has a usable Gaia DR3 orbit so far: KOI-3278's photocentre
+  orbit is only ~0.24 mas (RUWE 1.02, no solution)
+  (`findings/2026-11-17-dipsearch-044-and-selflens-control.md`).
 - Which eclipsing systems are new is being checked against the Chopard-Vilhem deposit,
   SIMBAD, VSX and the TESS EB catalogue (`xmatch_prior.py`). None is called new until
   then.
@@ -142,9 +147,12 @@ looks for repeating transits, tends to miss them. A Gaia orbit tells you when to
      a one-bin spike. Boxes above 0.75 whose scatter is also > 3× the per-bin noise are
      dropped before de-duplication, so the box that sits inside a real dip still wins.
      Dips shorter than ~1.3 h are no longer reported.
-   - **Planned 0.4.4:** treat every gap longer than 0.1 d as an edge, and drop 0.25 d
-     on both sides of it. The v3 watch-list run showed dips right before and after short
-     gaps (TIC 322271767, TIC 231290240) that 0.4.3 does not remove.
+   - **0.4.4 (opt-in):** with `search(t, f, **DR4_GAP_OPTIONS)`, every cadence within
+     0.25 d of a gap longer than 0.1 d (and of the series ends) is dropped, and every such
+     gap counts as an edge for `near_edge` (events get `edge_dist_d`). This removes the
+     dips seen right after and right before short gaps on TIC 322271767 and
+     TIC 231290240. The defaults are those of 0.4.3, so jobs registered with 0.4.3 run
+     unchanged; the DR4 search opts in.
    - Bin the light curves to 30 min and split them at gaps.
    - Detrend each piece with a running median three times as wide as the trial
      duration.
@@ -380,6 +388,11 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
     the coherence cut and is rejected with it.
   - 0.4.3: coherence values worked by hand (0, 1, √3, and 0.84 for the TIC 322271767
     box). A 3-h flat dip and an 8-h V-shaped grazing dip are still recovered.
+  - 0.4.4: the gap pad on exact binary fractions (10 cadences around one gap, 20 with
+    the series ends). A 2-h 8% step after a 0.3-d gap and a 4-h 0.7% ramp before a
+    0.17-d gap are found with the 0.4.3 defaults and gone with `DR4_GAP_OPTIONS`; a 6-h
+    2,000-ppm transit 1 d from the gap survives; a transit 0.3 d after a 0.2-d gap is
+    flagged near an edge only with `edge_gap`.
 - `calib_eclipse_rate.py` (0.7.0):
   - the eclipse limits of HD 75767 worked by hand from the v4 table (lim = 0.05385 and
     0.08653), and its eclipse probability 0.979 against the Monte Carlo's 0.983;
@@ -470,11 +483,15 @@ This stage vets one candidate with pre-registered rules (`verdict()`):
   the TOI/CTOI lists, and the shape of the event.
 - Dips at the start or end of a TESS orbit are where scattered light is strongest. The
   search flags them (`near_edge`), but it does not remove them. 0.4.3 removes two
-  artefact types (floor ramps and single-bin spikes), not smooth scattered-light trends,
-  flux that falls to zero (seen on TIC 219744709), or dips right before or after data
-  gaps shorter than 0.5 d (seen on TIC 322271767 and TIC 231290240; fix planned in
-  0.4.4).
+  artefact types (floor ramps and single-bin spikes), not smooth scattered-light trends
+  or flux that falls to zero (seen on TIC 219744709). Dips right before or after data
+  gaps shorter than 0.5 d (TIC 322271767, TIC 231290240) are removed only with the 0.4.4
+  option `DR4_GAP_OPTIONS`; the DR3 runs registered with 0.4.3 do not use it. The pad
+  costs 0.5 d of data per gap, which lowers window coverage a little.
 - The dip search does not report dips shorter than ~1.3 h (0.4.3).
+- The self-lensing search has no real positive control yet: no known self-lensing
+  binary has a usable Gaia DR3 orbit so far (see
+  `findings/2026-11-17-dipsearch-044-and-selflens-control.md`).
 - The archival injections are added after detrending, so they slightly overstate the
   sensitivity. The trend skips ±D around each point, which keeps this effect small.
   Ground photometry of bright stars (G ≲ 12.5 in ZTF) can be affected by saturation.
@@ -574,6 +591,12 @@ checked against the published datamodel on release day.)
     moment the data resume after a 0.3-d gap: a third artefact type.
   - **W3 fails narrowly:** the floor pad also removes some good cadences, so one window
     lost its coverage (65 instead of 66).
+- `findings/2026-11-17-dipsearch-044-and-selflens-control.md` (0.8.1):
+  - dipsearch 0.4.4's gap pad, why it is opt-in (three queued jobs were registered with
+    0.4.3), and its tests;
+  - KOI-3278 has no Gaia DR3 orbit (RUWE 1.02; its photocentre orbit is only ~0.24 mas),
+    and KIC 8145411 has position-only solutions, so neither can test the self-lensing
+    search. A 418.6-d DR3 orbit in the Kepler field is not KIC 12254688 (it is a K dwarf).
 - `findings/2026-11-17-vet-41898425-prereg.md`: the fixed rules and predictions for
   vetting that event.
 - `findings/2026-11-17-archival-prereg.md`: predictions for the archival test.
@@ -693,6 +716,10 @@ checked against the published datamodel on release day.)
   eclipsing binaries itself.
 - Yamaguchi, El-Badry et al. 2024 (arXiv:2410.13939, PASP): a TESS search for
   self-lensing white-dwarf binaries, using Gaia DR3 orbits to check candidates.
+- Yamaguchi et al. 2024 (arXiv:2405.00780): KIC 8145411, a self-lensing binary, is a
+  triple whose two stars have position-only Gaia DR3 solutions.
+- Kruse & Agol 2014 (KOI-3278) and Kawahara et al. 2018 (arXiv:1801.07874; KIC 3835482,
+  KIC 6233093, KIC 12254688, KIC 8145411): the five Kepler self-lensing binaries.
 - arXiv:2512.04606 (A&A 2026): HD 128717 B / Gaia-6 B, a long-period brown dwarf found by
   Gaia astrometry and confirmed with radial velocities; no transit search.
 - github.com/coracle-us/gaia-dr4: searches DR4 epoch astrometry for outer companions of

@@ -34,11 +34,31 @@ that the floor alone is not enough:
     still wins; dips shorter than ~1.3 h are no longer reported (no target of
     this project is that short: a brown dwarf on a > 10-day orbit transits for
     several hours).
+
+0.4.4: the 0.4.3 re-run (gaia-watchlist-tess-v3, findings/2026-11-17-watchlist-v3-
+results.md) found a third artefact type: dips right next to SHORT data gaps
+(0.1-0.5 d, i.e. inside one segment), from pointing and thermal settling around
+momentum dumps and downlinks. TIC 322271767: four bins at 0.93-0.80 right after
+a ~0.3-d gap; TIC 231290240: a 0.7% ramp over the 4 h before a ~0.17-d gap.
+  * `gap_mask`: cadences within `gap_pad` days before or after any gap longer
+    than `gap_min` days (and, with pad_ends, at the start and end of the series,
+    which are gap edges too) are dropped before binning. After the pad, every
+    such gap is at least gap_min + 2 * gap_pad days long, which is > 0.5 d for
+    the recommended values (0.1 + 0.5 = 0.6 d), so it also splits segments.
+  * `edge_gap`: any gap longer than edge_gap days in the binned series counts
+    as an edge for the `near_edge` flag (not only the 0.5-d segment gaps), and
+    the event gets `edge_dist_d`, its distance to the nearest edge.
+  The DEFAULTS DO NOT CHANGE (gap_pad=0, edge_gap=None): jobs that were
+  pre-registered with 0.4.3 and fetch this module from main (the inclination
+  calibration, the archival search, the self-lensing search) get identical
+  results. New searches opt in with **DR4_GAP_OPTIONS** (gap_min 0.1 d,
+  gap_pad 0.25 d, edge_gap 0.1 d), which the Gaia DR4 release-day search will use.
 """
 import numpy as np
 
-VERSION = "0.4.3"
+VERSION = "0.4.4"
 DEFAULT_DURATIONS_H = (2.0, 4.0, 8.0, 16.0, 24.0)
+DR4_GAP_OPTIONS = {"gap_min": 0.1, "gap_pad": 0.25, "edge_gap": 0.1, "pad_ends": True}
 
 
 def bin_lc(t, f, width=1.0 / 48):
@@ -110,6 +130,51 @@ def floor_mask(t, f, flux_floor=0.5, floor_pad=0.5):
     return drop, n_low
 
 
+def gap_edges(t, gap_min=0.1, pad_ends=False):
+    """(before, after): times of the last cadence before and the first cadence
+    after every gap longer than gap_min days in t (any order). With pad_ends,
+    the last cadence of the series counts as a 'before' edge and the first as an
+    'after' edge. Both arrays are sorted."""
+    t = np.asarray(t, float)
+    ts = np.sort(t[np.isfinite(t)])
+    if ts.size == 0:
+        return np.empty(0), np.empty(0)
+    gi = np.where(np.diff(ts) > gap_min)[0]
+    before, after = ts[gi], ts[gi + 1]
+    if pad_ends:
+        before = np.append(before, ts[-1])
+        after = np.append(after, ts[0])
+    return np.sort(before), np.sort(after)
+
+
+def gap_mask(t, gap_min=0.1, gap_pad=0.25, pad_ends=True):
+    """Boolean mask of cadences within gap_pad days before or after a gap longer
+    than gap_min days (see gap_edges). Returns (drop, n_gaps), n_gaps counting
+    internal gaps only. gap_pad <= 0 or gap_min None -> nothing dropped."""
+    t = np.asarray(t, float)
+    drop = np.zeros(t.size, bool)
+    if t.size == 0 or gap_min is None or not gap_pad or gap_pad <= 0:
+        return drop, 0
+    ok = np.isfinite(t)
+    before, after = gap_edges(t, gap_min, pad_ends)
+    n_gaps = int(before.size - (1 if pad_ends and before.size else 0))
+    if after.size:
+        # nearest 'after' edge at or before each cadence
+        pos = np.searchsorted(after, t, side="right") - 1
+        has = pos >= 0
+        dist = np.full(t.size, np.inf)
+        dist[has] = t[has] - after[pos[has]]
+        drop |= dist <= gap_pad
+    if before.size:
+        # nearest 'before' edge at or after each cadence
+        pos = np.searchsorted(before, t, side="left")
+        has = pos < before.size
+        dist = np.full(t.size, np.inf)
+        dist[has] = before[pos[has]] - t[has]
+        drop |= dist <= gap_pad
+    return drop & ok, n_gaps
+
+
 def box_coherence(resid_in_box, depth):
     """In-box standard deviation of the residuals divided by the box-mean depth
     (both in relative flux). inf if depth <= 0."""
@@ -121,27 +186,41 @@ def box_coherence(resid_in_box, depth):
 
 def search(t, f, durations_h=DEFAULT_DURATIONS_H, bin_width=1.0 / 48, snr_min=7.0,
            gap=0.5, max_events=20, min_fill=0.75, flux_floor=0.5, floor_pad=0.5,
-           coherence_max=0.75):
+           coherence_max=0.75, gap_min=0.1, gap_pad=0.0, edge_gap=None, pad_ends=True):
     """Return (events, binned) where events is a list of dicts sorted by snr.
 
     t in days, f normalised flux (median ~1). Cadences with f < flux_floor, and
     all cadences within floor_pad days of them, are dropped first
-    (binned["n_below_floor"], binned["n_floor_dropped"] count them). Boxes whose
-    in-box scatter is incoherent (see module doc) are dropped
-    (binned["n_incoherent"]); pass coherence_max=None to keep them.
+    (binned["n_below_floor"], binned["n_floor_dropped"] count them). With
+    gap_pad > 0, cadences within gap_pad days of a gap longer than gap_min days
+    are dropped too (binned["n_gap_dropped"] counts those not already dropped by
+    the floor; binned["n_gaps"] the gaps). Boxes whose in-box scatter is
+    incoherent (see module doc) are dropped (binned["n_incoherent"]); pass
+    coherence_max=None to keep them. With edge_gap set, gaps longer than
+    edge_gap days in the binned series are edges for near_edge, and each event
+    gets edge_dist_d. Use search(t, f, **DR4_GAP_OPTIONS) for new searches.
     """
     t = np.asarray(t, float)
     f = np.asarray(f, float)
     drop, n_floor = floor_mask(t, f, flux_floor, floor_pad)
     n_drop = int(drop.sum())
+    gdrop, n_gaps = gap_mask(t, gap_min, gap_pad, pad_ends)
+    n_gdrop = int((gdrop & ~drop).sum())
+    drop = drop | gdrop
     t, f = t[~drop], f[~drop]
     bt, bf, bn = bin_lc(t, f, bin_width)
     events = []
     binned = {"t": bt, "f": bf, "n": bn, "segments": segments(bt, gap),
               "n_below_floor": n_floor, "n_floor_dropped": n_drop,
+              "n_gap_dropped": n_gdrop, "n_gaps": n_gaps,
               "n_incoherent": 0}
     if bt.size < 10:
         return events, binned
+    if edge_gap is not None:
+        eb, ea = gap_edges(bt, edge_gap, pad_ends=False)
+        edge_times = np.sort(np.concatenate([eb, ea]))
+    else:
+        edge_times = np.empty(0)
     cands = []
     n_incoh = 0
     for (i0, i1) in binned["segments"]:
@@ -176,15 +255,21 @@ def search(t, f, durations_h=DEFAULT_DURATIONS_H, bin_width=1.0 / 48, snr_min=7.
                     continue
                 tc = 0.5 * (st[j] + st[j + k - 1])
                 edge = min(tc - st[0], st[-1] - tc)
-                cands.append({
+                cand = {
                     "t_center": float(tc), "duration_h": float(dh),
                     "depth_ppm": float(depth * 1e6),
                     "snr": float(snr[j]), "n_bins": int(k),
                     "box_noise_ppm": float(sd * 1e6),
                     "coherence": float(coh),
-                    "near_edge": bool(edge < max(D, 0.5)),
+                    "near_edge": False,
                     "seg_start": float(st[0]), "seg_end": float(st[-1]),
-                })
+                }
+                if edge_gap is not None:
+                    if edge_times.size:
+                        edge = min(edge, float(np.min(np.abs(edge_times - tc))))
+                    cand["edge_dist_d"] = float(edge)
+                cand["near_edge"] = bool(edge < max(D, 0.5))
+                cands.append(cand)
     binned["n_incoherent"] = n_incoh
     cands.sort(key=lambda c: -c["snr"])
     for c in cands:
