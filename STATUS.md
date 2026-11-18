@@ -1,4 +1,4 @@
-# gaia-orbit-transits: current status (2026-11-18, v0.21.0)
+# gaia-orbit-transits: current status (2026-11-18, v0.22.0)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
@@ -26,8 +26,8 @@ holds.
    - **0.21.0 adds the release-day code.** `dr4_fetch.py` does the DR4 cross-match and
      orbit fetch and checks every table and column in TAP_SCHEMA. `calib_dr4_run.py` runs
      the whole test.
-     - A DR3 dress rehearsal (job gaia-calibdr4-reh-v1) runs the same code with DR3 as the
-       "new" release. Every orbit must come back unchanged.
+     - A DR3 dress rehearsal (job gaia-calibdr4-reh-v1, queued) runs the same code with DR3
+       as the "new" release. Every orbit must come back unchanged.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** First results in
    0.19.0: `findings/2026-11-18-sb1-transit-results.md`.
    - TESS was searched at the Gaia period for 512 random DR3 SB1 orbits (P = 1–13 d,
@@ -46,6 +46,15 @@ holds.
      transit.
      - Amendment 1 (`findings/2026-11-18-dr4-sb1-reality-amendment-1.md`): DR4 epoch RVs
        are fetched through DataLink, with fixed epoch-counting rules.
+     - **0.22.0 adds the release-day code, `dr4_sb1_reality.py`**, and amendment 2
+       (`findings/2026-11-18-dr4-sb1-reality-amendment-2.md`), which fixes every rule the
+       code had to choose. The main one: DR4 has a second orbit table,
+       `rvs_two_body_orbit` (638,966 rows), next to `nss_two_body_orbit`. Orbits are read
+       from both, in a fixed order, so a real orbit in the second table is not miscounted
+       as "dropped". Other rules: K from Thiele-Innes C/H for combined solutions; how the
+       epoch-RV DataLink product is identified; the circular epoch-RV fit; the D3 statistic.
+     - A DR3 dress rehearsal (job gaia-sb1real-reh-v1, queued) must return all 6,434 S3
+       orbits CONFIRMED and show that the DataLink transport works.
    - Both leads point the same way: near the limits of DR3, a sizeable fraction of
      published orbits, or of their errors, cannot be taken at face value.
 3. **Are M dwarfs in 1–2-day orbits inflated?** Graded against BHAC15 in 0.21.0:
@@ -82,6 +91,8 @@ holds.
 - A query that silently drops columns changes the sample. Jobs now stop instead.
 - **Rehearse release-day code on the previous release.** Running the DR4 pipeline with DR3
   as "DR4" must return every orbit unchanged before the real data arrive.
+- **Read every table that can hold the thing you count.** A "dropped" orbit may simply live
+  in another table. If an orbit table exists but can't be read, the run stops.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX, the TESS EB catalogue (Prša et al. 2022), Gaia DR3 vari_eclipsing_binary,
@@ -92,17 +103,19 @@ ExoFOP, SIMBAD, the Chopard-Vilhem Zenodo deposits (10.5281/zenodo.22998328 and
 - ESA's DR4 contents page (read 2026-11-18) lists these tables:
   - `nss_two_body_orbit`: 5,901,111 rows, TAP, consolidated from several pipelines; plus a
     bright-source `_supp` table;
+  - `rvs_two_body_orbit`: 638,966 rows, TAP; spectroscopic-binary solutions from the Line
+    Integral Analysis modules;
   - `dr3_neighbourhood`: 2,448,832,159 rows, TAP; this is the DR3 → DR4 cross-match;
   - `nss_masses`: 4,323,300 rows; `nss_acceleration_astro`: 3,365,947 rows;
   - `rvs_epoch_parameters_single`, `epoch_astrometry` and `epoch_photometry`: **DataLink
     only**.
-- The draft data model (2026-06-26) also lists 638,966 RVS orbits, 2,392,500 eclipsing
-  binaries, 1,007 transit candidates and 6,224 compact-companion candidates.
+- The draft data model (2026-06-26) also lists 2,392,500 eclipsing binaries, 1,007 transit
+  candidates and 6,224 compact-companion candidates.
 - `dr4_datamodel.py` 0.2.0 (job gaia-dr4dm-v2, queued) extracts the full text, for the
   exact columns and the corr_vec order.
 - Pre-registered order:
-  1. the DR3 → DR4 orbit-survival tests: the SB1 reality test and the eclipse-deficit test
-     (`calib-dr4-prereg` + amendment 1);
+  1. the DR3 → DR4 orbit-survival tests: the SB1 reality test (`dr4_sb1_reality.py`) and
+     the eclipse-deficit test (`calib_dr4_run.py`);
   2. the SB1 transit-rate test (0.2.0 rules) on DR4's new RVS SB1 orbits;
   3. the inclination and timing calibration on DR4's own orbits;
   4. EBLM inflation on DR4 SB1 × eclipsing binaries, with the k-at-bound rule;
