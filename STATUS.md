@@ -1,73 +1,79 @@
-# gaia-orbit-transits: current status (2026-11-18, v0.18.0)
+# gaia-orbit-transits: current status (2026-11-18, v0.19.0)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
-data CC BY 4.0. This page is newer than the long README. Where they differ, this one
+data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
 ## Leads
-1. **Do Gaia DR3 inclinations hold up against real eclipses?**
+1. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** First results in
+   0.19.0: `findings/2026-11-18-sb1-transit-results.md`.
+   - TESS was searched at the Gaia period for 512 random DR3 SB1 orbits (P = 1–13 d,
+     G ≤ 13, minimum companion mass 5–105 M_Jup).
+   - It found 17 substellar-size hits, against 91.6 expected if every orbit were real and
+     7.5 expected false alarms.
+   - The reality fraction is **ρ = 0.10 (95% CI 0.03–0.22)**. The pre-registered H1 passes:
+     most of these orbits are not both real and truly that light.
+   - The hit rule was fooled by outlying data points. The false-alarm check (C2) and the
+     timing check (H3) failed, and every new candidate we inspected was outlier-driven.
+     The true ρ is therefore lower still, and **no new brown dwarf is claimed**.
+   - The only clean transit in the random sample is the known TOI-6218.01.
+   - A re-run with an outlier-proof median rule on ~2,600 stars is pre-registered
+     (`findings/2026-11-18-sb1-robust-prereg.md`, `sb1_robust.py`, jobs
+     gaia-sb1rob-k0…k7-v1, queued). The numpy checks of the median rule are in
+     `synthetic_check_sb1_robust.py`.
+   - **Gaia DR4 test, pre-registered 14 days before the release**
+     (`findings/2026-11-18-dr4-sb1-reality-prereg.md`). It asks *why* so few of these orbits
+     transit: are they noise orbits (they should vanish in DR4's 66-month data and epoch
+     RVs), or real signals from something other than a brown dwarf (they should persist in
+     DR4 and still not transit)?
+2. **Do Gaia DR3 inclinations hold up against real eclipses?**
    - Graded in 0.16.0: `findings/2026-11-18-calib-v3-results.md`.
    - Of 162 near-edge-on DR3 orbits that TESS covered, 50 eclipse, where Gaia's published
      errors predict 69 (p = 1.4 × 10⁻⁴).
    - The detected eclipses also scatter in time about 2–2.5 times more than Gaia's
-     propagated errors allow. That timing scatter can push real eclipses outside our ±3σ
-     windows and explain much of the deficit, so the "k = 2.3" inclination-error
-     inflation is **not yet claimed**.
+     propagated errors allow. That scatter can push real eclipses outside our ±3σ windows
+     and explain much of the deficit, so the "k = 2.3" inflation of the inclination errors
+     is **not yet claimed**.
    - A joint fit of both effects is pre-registered
      (`findings/2026-11-18-calib-window-prereg.md`, job gaia-calibw-v1, queued).
-2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?**
-   - About 21,000 DR3 SB1 orbits (G ≤ 13) have mass functions that allow a companion
-     below ~0.1 M☉. Geometry says 5–20% of the real ones must transit, yet only three were
-     found via the TOI list (Stevenson et al. 2023).
-   - `sb1_transit.py` measures the rate directly in TESS
-     (`findings/2026-11-18-sb1-transit-prereg.md`, jobs gaia-sb1tr-c0-v1 and -c1-v1,
-     queued).
 3. **Are M dwarfs in 1–2-day orbits inflated?** First results in 0.18.0:
    `findings/2026-11-18-eblm-fit-results.md`.
-   - Gaia DR3 SB1 orbits of stars that Gaia also sees eclipse, with companion masses from
-     Gaia and radii from TESS fits. 70 of 167 systems were fitted.
+   - The sample: Gaia DR3 SB1 orbits of stars that Gaia also sees eclipse. Companion masses
+     come from Gaia and radii from TESS fits. 70 of 167 systems were fitted.
    - The pre-registered population test came out **CONSISTENT**: median −0.5%,
      95% CI [−5.2%, +3.4%], 26 clean fits, against our rough mass-radius table. There is
      no large inflation at P ≈ 1–2 d.
-   - Six of the seven pass/fail checks passed. The stripped-companion prediction (G5)
-     failed: none was found.
-   - A hand preview of the sharper BHAC15 test gives about +2% in 14 well-measured
-     systems, likely too few to tell EBLM XIX's 0.3% from Swayne et al.'s 6%.
-   - That test (gaia-eblm-infl-v1) and the fits of the remaining 97 systems
-     (gaia-eblm-rest-a/b-v1, pre-registered in the same note) are queued.
+   - The sharper BHAC15 test (gaia-eblm-infl-v1) and the fits of the other 97 systems
+     (gaia-eblm-rest-a/b-v1) are queued.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
   (`findings/2026-11-18-selflens-vet-results.md`).
   - Of 19 brightenings, the pre-registered vet rejected 13, could not measure 4 and
-    passed 2. Both survivors fail physical checks, so no candidate is claimed:
-    - TIC 15761587's 0.9% brightening is 4–6σ larger than any pulse its Gaia companion
-      (≈0.57 M☉) can produce;
-    - TIC 425703690's excess is one of 15 similar features in its light curve.
-  - Four rule changes (an amplitude ceiling, a uniqueness test, a quadratic baseline and
-    per-star injection) are written down for the DR4 repeat.
+    passed 2. Both survivors fail physical checks (an amplitude ceiling and uniqueness),
+    so no candidate is claimed.
+  - Four rule changes are written down for the DR4 repeat.
 
 ## Corrected
-- **CD-48 897 (TIC 200743349) is not a new discovery of ours.**
-  - The open working paper *Eclipses by Appointment*
-    (github.com/Snowstar38/eclipses-by-appointment) listed it as confirmed (claim Q031)
-    by 2026-11-06. That was twelve days before our 0.12.0 report, which missed that
-    repository. Our independent eclipse fits passed their pre-registered tests.
-  - The ephemeris is T_min = BJD_TDB 2458392.73244(50) + 26.5329072(79) E. The next
-    eclipses (2026-11-19 ~21:58 UTC, 2026-12-16 ~10:47 UTC, 2027-01-11 ~23:36 UTC) are in
-    `findings/2026-11-18-ebchar-results.md`. We will not report it to VSX.
-- TOI-710.01 (already a TFOP false positive): the eclipses repeat every 72.082 d, a third
-  of the TOI period, matching Gaia's SB1 orbit within 2.8σ.
+- **CD-48 897 (TIC 200743349) is not a new discovery of ours.** The open working paper
+  *Eclipses by Appointment* (github.com/Snowstar38/eclipses-by-appointment) listed it
+  first (claim Q031). Its ephemeris and next eclipses are in
+  `findings/2026-11-18-ebchar-results.md`.
+- TOI-710.01 was already a TFOP false positive. Its eclipses repeat every 72.082 d, a third
+  of the TOI period, and match Gaia's SB1 orbit within 2.8σ.
 
 ## Refuted or closed
-- TIC 207399049 (`findings/2026-11-18-tic207399049-results.md`): refuted.
-- Archival dips at Gaia-predicted times for the 25-star watch list
-  (`findings/2026-11-18-archival-results.md`): 0 found where 0.28 were expected.
-- Two "stripped companion" candidates from the EBLM screen (HD 322627 and TYC 7626-466-1)
-  are more likely blends or triples than EL CVn systems. They are not pursued. The
-  70-system fit found no new one (G5).
+- TIC 207399049: refuted.
+- Archival dips for the 25-star watch list: 0 found, where 0.28 were expected.
+- Two "stripped companion" candidates are more likely blends or triples.
 
-## Prior-art sources we now check for every eclipsing system
+## Lessons the pipeline now encodes
+- **A box depth is a mean, so a few outliers can fake a transit.** Every fold search now
+  requires the in-box median to agree with the mean (`sb1_robust.py`). The DR4 versions of
+  the other searches still need the same check.
+- A query that silently drops columns changes the sample. Jobs now stop instead.
+
+## Prior-art sources we check for every eclipsing system
 AAVSO VSX, the TESS EB catalogue (Prša et al. 2022), Gaia DR3 vari_eclipsing_binary,
 ExoFOP, SIMBAD, the Chopard-Vilhem Zenodo deposits (10.5281/zenodo.22998328 and
 10.5281/zenodo.23342416) and the *Eclipses by Appointment* claim tables.
@@ -79,13 +85,14 @@ ExoFOP, SIMBAD, the Chopard-Vilhem Zenodo deposits (10.5281/zenodo.22998328 and
   - 2,392,500 eclipsing binaries;
   - 1,007 transit candidates;
   - 6,224 compact-companion candidates.
-- We are extracting the exact columns and corr_vec order from it (job gaia-dr4dm-v1).
+- DR4 also publishes epoch radial velocities (G_RVS ≤ 14).
+- The exact columns and corr_vec order are being extracted (job gaia-dr4dm-v1).
 - Pre-registered order:
-  1. EBLM inflation on DR4 SB1 × eclipsing binaries, with a new rule: a fit with k within
-     20% of its lower bound is NO_ECLIPSE;
-  2. the SB1 transit-rate test on DR4's RVS SB1 orbits;
-  3. the inclination and timing calibration repeated on DR4 orbits;
+  1. the DR3 → DR4 orbit-survival test plus the SB1 transit-rate test (0.2.0 rules), on
+     DR3's low-mass SB1 orbits and on DR4's new RVS SB1 orbits;
+  2. EBLM inflation on DR4 SB1 × eclipsing binaries, with the k-at-bound rule;
+  3. the inclination and timing calibration on DR4 orbits;
   4. the RV transit screen;
   5. exoplanet candidates;
   6. self-lensing with the four new rules;
-  7. the three Kepler self-lensing binaries with large DR3 RUWE.
+  7. the Kepler self-lensing positive controls.
