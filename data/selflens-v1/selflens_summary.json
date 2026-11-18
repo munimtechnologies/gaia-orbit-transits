@@ -1,0 +1,35 @@
+{
+ "version": "0.8.0",
+ "summary": {
+  "n_targets": 250,
+  "n_with_tess": 133,
+  "n_detectable": 26,
+  "expected_in_data": 9.267575,
+  "expected_detectable": 1.8658944444444445,
+  "median_amp_ppm": 4577.577350629207,
+  "n_candidates": 17,
+  "n_control": 5
+ },
+ "grades": {
+  "L1": {
+   "prediction": "expected detectable pulses in the TESS data < 2",
+   "value": 1.8658944444444445,
+   "pass": true
+  },
+  "L2": {
+   "prediction": "no target passes the pulse rule (null result)",
+   "value": 15,
+   "pass": false
+  },
+  "L3": {
+   "prediction": "at most one control hit (false alarms half a period away)",
+   "value": 5,
+   "pass": false
+  },
+  "L4": {
+   "prediction": "median predicted pulse amplitude 1,000-6,000 ppm",
+   "value": 4577.577350629207,
+   "pass": true
+  }
+ }
+}
