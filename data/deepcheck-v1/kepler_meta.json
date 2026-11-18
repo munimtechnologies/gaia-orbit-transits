@@ -1,0 +1,79 @@
+{
+ "2102618458287057920": {
+  "kepler_target": true,
+  "target_name": "kplr006436291",
+  "distance_arcsec": 0.0,
+  "n_products": 17,
+  "kepid": 6436291,
+  "kepmag": 13.649,
+  "quarters": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "n_points": 64797,
+  "match_ok": true,
+  "kepler_eb_catalogue": {
+   "error": "404 Client Error: Not Found for url: https://vizier.cds.unistra.fr/viz-bin/votable"
+  }
+ },
+ "5440672572654653696": {
+  "kepler_target": false
+ },
+ "5859356292621344640": {
+  "kepler_target": false
+ },
+ "1117674258493434624": {
+  "kepler_target": false
+ },
+ "1094180924823720832": {
+  "kepler_target": false
+ },
+ "1905661394212548224": {
+  "kepler_target": false
+ },
+ "1538418974318927488": {
+  "kepler_target": false
+ },
+ "2255242560688999040": {
+  "kepler_target": false
+ },
+ "1712614124767394816": {
+  "kepler_target": false
+ },
+ "1270263417048771456": {
+  "kepler_target": false
+ },
+ "1369929267019238144": {
+  "kepler_target": false
+ },
+ "2981815100045965440": {
+  "kepler_target": false
+ },
+ "577478114092768384": {
+  "kepler_target": false
+ },
+ "6478328150150225664": {
+  "kepler_target": false
+ },
+ "43574131143039104": {
+  "kepler_target": false
+ },
+ "1509074593817942400": {
+  "kepler_target": false
+ }
+}
