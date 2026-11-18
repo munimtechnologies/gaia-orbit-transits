@@ -5,11 +5,16 @@ Part of gaia-orbit-transits by MV2 of Munim, Inc. (made with AI agents). Licence
 
 ESA published a draft DR4 data model on 2026-06-26 (a zip). Our DR4 release-day code
 (2 December 2026) needs the exact column names of nss_two_body_orbit, the order of its
-corr_vec, and the columns of rvs_two_body_orbit, nss_masses, vari_eclipsing_binary,
-vari_planetary_transit, vari_compact_companion and the exoplanet-candidate table.
-This script downloads the zip, lists it, extracts the members for those tables (HTML is
-also converted to plain text, PDFs to text with pypdf when available), and writes the
-lines around every mention of the key fields to grep_context.txt.
+corr_vec, the epoch-RV DataLink tables, the DR3->DR4 cross-match table, and the columns of
+rvs_two_body_orbit, nss_masses, vari_eclipsing_binary, vari_planetary_transit and
+vari_compact_companion.
+
+0.2.0: job gaia-dr4dm-v1 showed the zip holds ONE ~2.9 MB PDF (plus a readme), so 0.1.0's
+400-block keyword grep hit its cap long before the NSS chapter. 0.2.0 therefore
+  * writes the full PDF text in parts of <= PART_CHARS characters (full_text_NN.txt),
+  * lists every table in the table of contents (toc_tables.txt),
+  * cuts the body section of each table into sections/<table>.txt,
+  * greps a focused key list without the 400 cap (grep_context.txt, <= 1.9 MB).
 """
 import argparse
 import html
@@ -22,18 +27,24 @@ import time
 import urllib.request
 import zipfile
 
+VERSION = "0.2.0"
 URL = ("https://anonftp.cosmos.esa.int/pub/GAIA_PUBLIC_DATA/Gaia_DR4/dr4-prerelease/"
        "gaia-dr4-prerelease-draft-data-model_2026-06-26.zip")
 TABLES = ["nss_two_body_orbit", "rvs_two_body_orbit", "nss_masses", "nss_acceleration_astro",
           "nss_multiple_orbits", "vari_eclipsing_binary", "vari_planetary_transit",
           "vari_compact_companion", "vari_microlensing", "gaia_exoplanet_candidates",
           "epoch_astrometry", "epoch_photometry", "rv_combined_orbital_solutions",
-          "nss_two_body_orbit_supp"]
-KEYS = ["corr_vec", "bit_index", "t_periastron", "inclination", "nss_solution_type",
-        "conjunction", "reference epoch", "J2017.5", "2457936.875", "a_thiele_innes",
-        "semi_amplitude_primary", "eclipse", "transit"]
+          "nss_two_body_orbit_supp", "rvs_epoch_parameters_single", "all_source_rvs",
+          "rvs_transit_description", "vari_rad_vel_statistics"]
+KEYS = ["corr_vec", "bit_index", "t_periastron", "nss_solution_type", "solution_type",
+        "conjunction", "J2017.5", "2457936.875", "dr3_source_id", "dr2_source_id",
+        "neighbourhood", "best_neighbour", "gaiadr3", "datalink", "epoch radial velocit",
+        "semi_amplitude", "transit_time", "rv_obs_time", "obs_time"]
 TEXT_EXT = (".html", ".htm", ".txt", ".xml", ".csv", ".json", ".tex", ".md", ".vot", ".rst")
-MAX_COPY = 2_000_000
+MAX_COPY = 1_900_000
+PART_CHARS = 1_500_000
+TOC_RE = re.compile(r"^\s*(\d+(?:\.\d+)+)\s+([a-z][a-z0-9_]+)\s*(?:\.\s*){3,}\s*(\d+)\s*$")
+HEAD_RE = re.compile(r"^\s*(\d+(?:\.\d+)+)\s+([a-z][a-z0-9_]+)\s*$")
 
 
 def strip_html(s):
@@ -61,8 +72,57 @@ def contexts(text, keys, width=3, limit=400):
                 continue
             used.update(block)
             out.append("\n".join(lines[j] for j in block))
-            if len(out) >= limit:
+            if limit and len(out) >= limit:
                 break
+    return out
+
+
+def split_parts(text, size=PART_CHARS):
+    """Split text into consecutive parts of at most `size` characters, breaking at a
+    newline where possible. Joining the parts gives the text back exactly."""
+    parts, i, n = [], 0, len(text)
+    while i < n:
+        j = min(i + size, n)
+        if j < n:
+            k = text.rfind("\n", i, j)
+            if k > i:
+                j = k + 1
+        parts.append(text[i:j])
+        i = j
+    return parts
+
+
+def toc_tables(text):
+    """[(section number, table name, page)] from table-of-contents lines."""
+    out, seen = [], set()
+    for ln in text.splitlines():
+        m = TOC_RE.match(ln)
+        if m and m.group(2) not in seen:
+            seen.add(m.group(2))
+            out.append((m.group(1), m.group(2), int(m.group(3))))
+    return out
+
+
+def sections(text, names, bounds=None):
+    """Body text of each named table: from its own heading line ('17.6 rvs_two_body_orbit')
+    to the next heading line. TOC lines (with dot leaders) are not headings. Only names in
+    `bounds` (default: `names`) count as headings, so a stray line like '3.4 mag' cannot cut
+    a section short. If a heading occurs more than once, the longest section is kept."""
+    bounds = set(bounds) if bounds else set(names)
+    lines = text.splitlines()
+    heads = []
+    for i, ln in enumerate(lines):
+        m = HEAD_RE.match(ln)
+        if m and m.group(2) in bounds:
+            heads.append((i, m.group(2)))
+    out = {}
+    for idx, (i, name) in enumerate(heads):
+        if name not in names:
+            continue
+        end = heads[idx + 1][0] if idx + 1 < len(heads) else len(lines)
+        body = "\n".join(lines[i:end])
+        if len(body) > len(out.get(name, "")):
+            out[name] = body
     return out
 
 
@@ -102,14 +162,20 @@ def download(url, tries=4):
     return None
 
 
+def _write(path, text):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(text)
+
+
 def run(zbytes, out_dir):
-    os.makedirs(os.path.join(out_dir, "dm"), exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     zf = zipfile.ZipFile(io.BytesIO(zbytes))
     infos = zf.infolist()
     with open(os.path.join(out_dir, "listing.txt"), "w", encoding="utf-8") as fh:
         for zi in infos:
             fh.write("%10d  %s\n" % (zi.file_size, zi.filename))
-    grep, picked, nested = [], [], []
+    grep, picked, nested, parts_written, toc_all, sec_all = [], [], [], [], [], {}
     for zi in infos:
         if zi.is_dir():
             continue
@@ -118,21 +184,34 @@ def run(zbytes, out_dir):
             nested.append(name)
         data = zf.read(zi)
         text = to_text(name, data)
+        if text is None:
+            continue
+        stem = safe(os.path.splitext(name)[0])
+        for k, part in enumerate(split_parts(text)):
+            fn = "full_%s_%02d.txt" % (stem, k)
+            _write(os.path.join(out_dir, "full", fn), part)
+            parts_written.append(fn)
         if wanted(name):
             picked.append(name)
-            if len(data) <= MAX_COPY and not name.lower().endswith((".html", ".htm")):
-                with open(os.path.join(out_dir, "dm", safe(name)), "wb") as fh:
-                    fh.write(data)
-            if text is not None:
-                with open(os.path.join(out_dir, "dm", safe(name) + ".txt"), "w", encoding="utf-8") as fh:
-                    fh.write(text[:MAX_COPY])
-        if text is not None:
-            for c in contexts(text, KEYS if not wanted(name) else ["corr_vec", "bit_index"]):
-                grep.append("=== %s\n%s" % (name, c))
-    with open(os.path.join(out_dir, "grep_context.txt"), "w", encoding="utf-8") as fh:
-        fh.write("\n\n".join(grep)[:MAX_COPY])
-    summary = {"members": len(infos), "picked": picked, "nested_zips": nested,
-               "grep_blocks": len(grep)}
+        toc = toc_tables(text)
+        toc_all.extend((name,) + t for t in toc)
+        names = set(TABLES) | {t[1] for t in toc}
+        for tname, body in sections(text, names, names).items():
+            if len(body) > len(sec_all.get(tname, "")):
+                sec_all[tname] = body
+        for c in contexts(text, KEYS, width=4, limit=0):
+            grep.append("=== %s\n%s" % (name, c))
+    for tname, body in sec_all.items():
+        _write(os.path.join(out_dir, "sections", safe(tname) + ".txt"), body[:MAX_COPY])
+    with open(os.path.join(out_dir, "toc_tables.txt"), "w", encoding="utf-8") as fh:
+        for row in toc_all:
+            fh.write("%s\t%s\t%s\tp%d\n" % row)
+    _write(os.path.join(out_dir, "grep_context.txt"), "\n\n".join(grep)[:MAX_COPY])
+    summary = {"version": VERSION, "members": len(infos), "picked": picked,
+               "nested_zips": nested, "grep_blocks": len(grep),
+               "full_text_parts": parts_written, "toc_tables": len(toc_all),
+               "sections": sorted(sec_all),
+               "wanted_sections_missing": sorted(t for t in TABLES if t not in sec_all)}
     with open(os.path.join(out_dir, "summary.json"), "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=1)
     return summary
@@ -147,15 +226,13 @@ def main(argv=None):
     data = download(a.url)
     if data is None:
         print("could not download", a.url)
-        return 1
+        return 2
     print("downloaded", len(data), "bytes", flush=True)
     s = run(data, a.out_dir)
-    # one level of nested zips (the data model may ship as a zip of zips)
     if s["nested_zips"]:
         zf = zipfile.ZipFile(io.BytesIO(data))
         for k, name in enumerate(s["nested_zips"][:10]):
             sub = os.path.join(a.out_dir, "nested%d" % k)
-            os.makedirs(sub, exist_ok=True)
             try:
                 print("nested", name, json.dumps(run(zf.read(name), sub)))
             except Exception as exc:
