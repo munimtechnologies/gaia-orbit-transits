@@ -1,0 +1,107 @@
+{
+ "version": "0.1.0",
+ "schema": "gaiadr3",
+ "n_sample": 1605,
+ "n_eblm_like": 167,
+ "stopped_by_time_budget": true,
+ "n_vetted": 70,
+ "verdicts": {
+  "MASS_TENSION_HEAVIER": 4,
+  "NO_ECLIPSE": 2,
+  "EBLM_GRAZING": 29,
+  "EBLM_SMALL_RADIUS": 3,
+  "NO_TESS_DATA": 2,
+  "EBLM_CONSISTENT": 22,
+  "MASS_TENSION_LIGHTER": 1,
+  "TWIN_AT_2P": 5,
+  "NO_TIC": 1,
+  "EBLM_LARGE_RADIUS": 1
+ },
+ "grades": {
+  "G1": {
+   "n_with_data": 67,
+   "n_detected": 65,
+   "pass": true
+  },
+  "G2": {
+   "n": 17,
+   "median_r1_lc_over_flame": 0.9884989895972462,
+   "pass": true
+  },
+  "G3": {
+   "n_clean_eblm": 26,
+   "pass": true
+  },
+  "G4": {
+   "inflation_lc_radius": {
+    "n": 26,
+    "median": -0.005162264585481191,
+    "ci95": [
+     -0.051971724696224963,
+     0.03420002914344966
+    ],
+    "label": "CONSISTENT"
+   },
+   "inflation_flame_radius": {
+    "n": 17,
+    "median": -0.02692095229569713,
+    "ci95": [
+     -0.07400274633813309,
+     0.03341875867706934
+    ],
+    "label": "CONSISTENT"
+   },
+   "P_lt_1.5d": {
+    "n": 12,
+    "median": -0.11929364323336467,
+    "ci95": [
+     -0.5719287552219021,
+     -0.02822889152239133
+    ],
+    "label": "INCONCLUSIVE"
+   },
+   "P_ge_1.5d": {
+    "n": 14,
+    "median": 0.05764071655844161,
+    "ci95": [
+     0.0012526638330530027,
+     0.1256840691029515
+    ],
+    "label": "INCONCLUSIVE"
+   },
+   "outcome": "CONSISTENT"
+  },
+  "G5": {
+   "n_too_luminous": 0,
+   "pass": false
+  },
+  "G6": {
+   "n_v1_vetted": 19,
+   "n_detected": 18,
+   "pass": true
+  },
+  "E6": {
+   "n": 5,
+   "n_large_radius": 0,
+   "verdicts": {
+    "4531797363284853888": "MASS_TENSION_HEAVIER",
+    "1458828115020019328": "EBLM_GRAZING",
+    "1866019155321938560": "EBLM_SMALL_RADIUS",
+    "2346634757461218816": "EBLM_CONSISTENT",
+    "4865466912871027200": "EBLM_GRAZING"
+   },
+   "pass": true
+  },
+  "E5_redo": {
+   "n": 65,
+   "median_tess_over_gaia_depth": 0.746138910501661,
+   "pass": true
+  },
+  "catalogues": {
+   "n_checked": 70,
+   "n_in_vsx": 54,
+   "n_in_tess_eb": 5
+  }
+ },
+ "minutes": 322.6517559607824
+}
