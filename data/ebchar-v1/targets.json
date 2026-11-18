@@ -1,0 +1,55 @@
+{
+ "note": "Ephemeris guesses from the gaia-orbit-tess-v4 event list (dipsearch boxes). Pre-registration: findings/2026-11-18-cd-48-897-prereg.md",
+ "targets": [
+  {
+   "name": "CD-48 897",
+   "tic": 200743349,
+   "gaia": "4749907416157959424",
+   "t0": 1392.7316,
+   "period": 26.5328,
+   "dur_d": 0.1,
+   "mask_half_d": 0.3,
+   "fit_half_window_d": 0.5,
+   "detrend_window_d": 1.5,
+   "conj2_phase": 0.73983,
+   "conj2_halfwidth_phase": 0.04,
+   "sec_mask_half_d": 0.8,
+   "p_gaia": 26.53686,
+   "p_gaia_err": 0.0034235,
+   "contam": 0.021,
+   "grade_vsx": true
+  },
+  {
+   "name": "TOI-710 (HD 70623) at one third of the TOI period",
+   "tic": 309402106,
+   "gaia": "5276085474501467648",
+   "t0": 1343.942146,
+   "period": 72.0819467,
+   "dur_d": 0.045,
+   "mask_half_d": 0.15,
+   "fit_half_window_d": 0.3,
+   "detrend_window_d": 1.0,
+   "p_gaia": 71.93136,
+   "p_gaia_err": 0.054,
+   "contam": 0.008,
+   "grade_vsx": false
+  },
+  {
+   "name": "UCAC4 117-030318",
+   "tic": 344750398,
+   "gaia": "5245186002318544768",
+   "t0": 3756.4933,
+   "period": 193.0426,
+   "dur_d": 0.33,
+   "mask_half_d": 0.6,
+   "fit_half_window_d": 1.2,
+   "detrend_window_d": 3.0,
+   "conj2_phase": 0.9442,
+   "conj2_halfwidth_phase": 0.025,
+   "p_gaia": 193.0426,
+   "p_gaia_err": 0.0896,
+   "contam": 0.41,
+   "grade_vsx": false
+  }
+ ]
+}
