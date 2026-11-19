@@ -1,0 +1,60 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-incfloor-v1",
+ "id": "4ba6e2bb3b07",
+ "field": "astrophysics",
+ "run": "20261119T130532Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-19T22:56:43.922914+00:00",
+ "finished_at": "2026-11-19T22:59:48.652943+00:00",
+ "duration_seconds": 184,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 60.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-python",
+   "cmd": "python fetch_incfloor_deps.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_inclination_floor",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python inclination_floor.py --fetch https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1rob-v1 --chunks 0-7 --out-dir /out",
+   "exit": 0,
+   "seconds": 6
+  }
+ ],
+ "out_files": [
+  "incfloor_bd_stars.csv",
+  "incfloor_report.md",
+  "incfloor_summary.json"
+ ],
+ "out_files_total": 3,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] {\"label\": \"MOSTLY_SPURIOUS\", \"n_sub\": 3, \"E_iso\": 407.70050465496644, \"central\": {\"E_pop\": 241.12852506066395, \"phi\": {\"rho\": 0.010367914784744118, \"ci95\": [0.0004921529830025068, 0.03428575307571933]}}, \"floor\": {\"E_pop\": 25.67387503510052, \"phi\": {\"rho\": 0.09737524999954539, \"ci95\": [0.004622291053974348, 0.3220111127922671]}}, \"r_star\": {\"flat_gamma0\": 0.000575116511785171, \"logflat_gamma-1\": 0.0018104556581871238}, \"a1_label\": \"SPURIOUS_UNLESS_DRY_DESERT\", \"missing\": []}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261119T130532Z-astrophysics\\incfloor)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
