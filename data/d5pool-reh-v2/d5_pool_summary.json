@@ -1,0 +1,43 @@
+{
+ "version": "0.1.0",
+ "schema": "dr3",
+ "rows_by_table": {
+  "gaiadr3.nss_two_body_orbit": 11937
+ },
+ "sources": 11937,
+ "sources_in_several_rows": 0,
+ "eligible_rows_sb1_transit_count": 6434,
+ "eligible_before_flags": 6434,
+ "rejected": {
+  "evolved": 1701,
+  "m2sini": 3802
+ },
+ "radius_flag_removed": {
+  "clamped": 1132,
+  "giant_cmd": 922,
+  "no_distance": 14
+ },
+ "eligible_unflagged": 4366,
+ "dr3_status": {
+  "IN_DR3": 4366
+ },
+ "all_new": false,
+ "pool": 0,
+ "pool_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "pool_by_class": {},
+ "pool_by_table": {},
+ "seed": "sb1_robust 0.2.0 seed 20261119",
+ "t_periastron_meta": {
+  "gaiadr3.nss_two_body_orbit": {
+   "unit": "d",
+   "description": "Periastron epoch",
+   "via": "tap_schema"
+  }
+ },
+ "rehearsal": {
+  "RH1_pool_reproduced": true,
+  "RH2_all_in_dr3": true,
+  "RH3_flags_counted": true
+ },
+ "finished": "2026-11-19T12:59:33Z"
+}

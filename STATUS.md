@@ -42,7 +42,19 @@ holds.
      secondary grade (A1) without them comes from the same combine job.
      - `dr4_d3_a1.py` 0.1.0 (0.26.0) applies the rule to the DR4 orbit-survival test.
      - **D5** (`findings/2026-11-19-dr4-sb1-reality-amendment-3.md`, `dr4_d5_rate.py`)
-       asks whether DR4's *new* low-mass SB1 orbits are purer than DR3's.
+       asks whether DR4's *new* low-mass SB1 orbits are purer than DR3's. **Its DR3 dress
+       rehearsal passed on 19 Nov** (`findings/2026-11-19-d5-pool-rehearsal-results.md`:
+       6,434 eligible rows reproduced, all 4,366 unflagged stars in DR3, flags add up).
+   - **Amendment 2, pre-registered 19 Nov** (`findings/2026-11-19-sb1-robust-amendment-2-inclination.md`,
+     code `inclination_floor.py` 0.1.0, job gaia-incfloor-v1 queued). Interim wording
+     ("fewer than ~2% describe a real brown-dwarf-mass companion") folds two things together:
+     orbits that are wrong, and right orbits of heavier stars seen nearly face-on, which never
+     transit. Brown dwarfs are rare in close orbits, so the second is a known, large effect.
+     The amendment computes, with the exact mass function and a grid of brown-dwarf and
+     stellar companion populations fixed in advance, the fraction φ of the orbits that are
+     right, and labels the result MOSTLY_SPURIOUS, SPURIOUS_UNLESS_DRY_DESERT or
+     FACE_ON_SUFFICIENT. **Until it is graded, our earlier phrase "most of these orbits are
+     not real" is not a supported claim.**
    - **Eclipsing companions found by the search:**
      - **TIC 71945261** (TYC 6340-23-1, chunk 7). **Fit graded 19 Nov**
        (`findings/2026-11-19-tic71945261-fit-results.md`): pre-registered label
@@ -91,6 +103,8 @@ holds.
   (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
+- **"Most brown-dwarf-mass orbits are not real" was premature.** Face-on stellar companions
+  were not modelled. See amendment 2 above.
 - **BD+65 286's variability and period were already published** (Green et al. 2023,
   ellipsoidal candidate). The claim is narrowed in
   `findings/2026-11-19-bd65-286-prior-art-addendum.md`.
@@ -121,6 +135,8 @@ holds.
   SPOC DV TCE list on MAST and credit any detection.
 - **Vet a comparison system like a candidate.** TOI-1251.01 was chosen as a "normal"
   comparison but was already in the TESS EB catalogue.
+- **A minimum mass is not a mass.** A missing-transit rate measures "real orbit AND near
+  edge-on"; separate the two with the companion population before calling orbits wrong.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -131,7 +147,8 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
-  2 December 12:00 CET.** Every DR3 rehearsal has to run before then.
+  2 December 12:00 CET.** Every DR3 rehearsal has to run before then. Done: wobble (passed),
+  D5 pool (passed). Queued: sb1real (DataLink), calib-dr4 v2, the pinned-fetch check.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it (0.28.0 code for the amendment-2 fix).
 - Tables: `nss_two_body_orbit` + `_supp`, `rvs_two_body_orbit`, `dr3_neighbourhood`,
