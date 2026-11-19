@@ -1,0 +1,1018 @@
+{
+ "version": "0.1.0",
+ "mode": "rehearse",
+ "source": "https://anonftp.cosmos.esa.int/pub/GAIA_PUBLIC_DATA/Gaia_DR4/dr4-prerelease/gaia-dr4-prerelease-epoch-astrometry_2026-06-26.zip",
+ "bytes": 625651,
+ "sha256": "07f0e8d9ac97a29ea376a0c7242de3124d2a08ad72aba0958d6575d94d35fa0b",
+ "zip_members": [
+  "GAIA_DR4_PRERELEASE_EPOCH_ASTROMETRY_RAW.xml",
+  "readme.txt"
+ ],
+ "tables": [
+  {
+   "index": 0,
+   "name": "None",
+   "nrows": 1008,
+   "fields": [
+    {
+     "name": "solution_id",
+     "unit": "",
+     "datatype": "long",
+     "arraysize": null,
+     "ucd": "meta.version"
+    },
+    {
+     "name": "source_id",
+     "unit": "",
+     "datatype": "long",
+     "arraysize": null,
+     "ucd": "meta.id;meta.main"
+    },
+    {
+     "name": "transit_id",
+     "unit": "",
+     "datatype": "long",
+     "arraysize": null,
+     "ucd": "meta.id.assoc"
+    },
+    {
+     "name": "ra0",
+     "unit": "deg",
+     "datatype": "double",
+     "arraysize": null,
+     "ucd": "pos.eq.ra"
+    },
+    {
+     "name": "dec0",
+     "unit": "deg",
+     "datatype": "double",
+     "arraysize": null,
+     "ucd": "pos.eq.dec"
+    },
+    {
+     "name": "agis_source_excess_noise",
+     "unit": "mas",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "stat.param"
+    },
+    {
+     "name": "obs_time_tcb",
+     "unit": "ns",
+     "datatype": "long",
+     "arraysize": "*",
+     "ucd": "time.epoch"
+    },
+    {
+     "name": "obs_time_bary_corr",
+     "unit": "ns",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "time.epoch;arith.diff"
+    },
+    {
+     "name": "scan_pos_angle",
+     "unit": "deg",
+     "datatype": "double",
+     "arraysize": "*",
+     "ucd": "pos.posAng"
+    },
+    {
+     "name": "zeta",
+     "unit": "deg",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "instr.offset;pos.posAng"
+    },
+    {
+     "name": "parallax_factor_al",
+     "unit": "",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "obs.param"
+    },
+    {
+     "name": "parallax_factor_ac",
+     "unit": "",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "obs.param"
+    },
+    {
+     "name": "colour_factor_al",
+     "unit": "",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "arith.factor;phot.color"
+    },
+    {
+     "name": "colour_factor_ac",
+     "unit": "",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "arith.factor;phot.color"
+    },
+    {
+     "name": "nu_eff_used_in_astrometry",
+     "unit": "1 / um",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "em.wavenumber;em.opt"
+    },
+    {
+     "name": "nu_eff_error",
+     "unit": "1 / um",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "stat.error;em.wavenumber;em.opt"
+    },
+    {
+     "name": "centroid_pos_al",
+     "unit": "mas",
+     "datatype": "double",
+     "arraysize": "*",
+     "ucd": "pos.angDistance"
+    },
+    {
+     "name": "centroid_pos_ac",
+     "unit": "mas",
+     "datatype": "double",
+     "arraysize": "*",
+     "ucd": "pos.angDistance"
+    },
+    {
+     "name": "calculated_pos_ac",
+     "unit": "mas",
+     "datatype": "double",
+     "arraysize": "*",
+     "ucd": "pos.angDistance"
+    },
+    {
+     "name": "centroid_pos_error_al",
+     "unit": "mas",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "stat.error;pos.angDistance"
+    },
+    {
+     "name": "centroid_pos_error_ac",
+     "unit": "mas",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "stat.error;pos.angDistance"
+    },
+    {
+     "name": "used_by_agis_al",
+     "unit": "",
+     "datatype": "boolean",
+     "arraysize": "*",
+     "ucd": "meta.code.status"
+    },
+    {
+     "name": "used_by_agis_ac",
+     "unit": "",
+     "datatype": "boolean",
+     "arraysize": "*",
+     "ucd": "meta.code.status"
+    },
+    {
+     "name": "transit_acq_flags",
+     "unit": "",
+     "datatype": "short",
+     "arraysize": null,
+     "ucd": "meta.code.qual"
+    },
+    {
+     "name": "transit_proc_flags",
+     "unit": "",
+     "datatype": "short",
+     "arraysize": null,
+     "ucd": "meta.code.qual"
+    },
+    {
+     "name": "ccd_proc_flags",
+     "unit": "",
+     "datatype": "short",
+     "arraysize": "*",
+     "ucd": "meta.code.qual"
+    },
+    {
+     "name": "multipeak",
+     "unit": "",
+     "datatype": "boolean",
+     "arraysize": null,
+     "ucd": "meta.code.status"
+    },
+    {
+     "name": "blended",
+     "unit": "",
+     "datatype": "boolean",
+     "arraysize": null,
+     "ucd": "meta.code.status"
+    },
+    {
+     "name": "ipd_error_al",
+     "unit": "mas",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "stat.error;pos.angDistance"
+    },
+    {
+     "name": "ipd_error_ac",
+     "unit": "mas",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "stat.error;pos.angDistance"
+    },
+    {
+     "name": "g_mag",
+     "unit": "mag",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "phot.mag;em.opt"
+    },
+    {
+     "name": "g_class",
+     "unit": "",
+     "datatype": "short",
+     "arraysize": null,
+     "ucd": "obs.param"
+    },
+    {
+     "name": "gates",
+     "unit": "",
+     "datatype": "short",
+     "arraysize": "*",
+     "ucd": "obs.param"
+    },
+    {
+     "name": "source_dist_to_last_ci",
+     "unit": "pix",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "obs.param"
+    },
+    {
+     "name": "ac_rate",
+     "unit": "pix / s",
+     "datatype": "float",
+     "arraysize": null,
+     "ucd": "obs.param"
+    },
+    {
+     "name": "sub_pixel_coord",
+     "unit": "pix",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "obs.param"
+    },
+    {
+     "name": "mu",
+     "unit": "pix",
+     "datatype": "float",
+     "arraysize": "*",
+     "ucd": "obs.param"
+    }
+   ],
+   "params": [
+    {
+     "name": "citation",
+     "value": "https://www.cosmos.esa.int/web/gaia-users/credits"
+    },
+    {
+     "name": "release",
+     "value": "Gaia DR4_RC3"
+    },
+    {
+     "name": "help",
+     "value": "https://www.cosmos.esa.int/web/gaia-users/archive"
+    },
+    {
+     "name": "issues",
+     "value": "https://www.cosmos.esa.int/web/gaia-users/known-issues"
+    },
+    {
+     "name": "data",
+     "value": "https://www.cosmos.esa.int/web/gaia/data-access"
+    },
+    {
+     "name": "terms",
+     "value": "https://www.cosmos.esa.int/web/esdc/terms-and-conditions"
+    },
+    {
+     "name": "home",
+     "value": "https://www.cosmos.esa.int/web/gaia"
+    },
+    {
+     "name": "publisher",
+     "value": "ESA/Gaia/DPAC"
+    },
+    {
+     "name": "creator",
+     "value": "Gaia Collaboration"
+    }
+   ]
+  }
+ ],
+ "skipped_members": [
+  "readme.txt"
+ ],
+ "n_rows": 1008,
+ "first_row": {
+  "solution_id": 2888461026632663040,
+  "source_id": 4181040337841125632,
+  "transit_id": 81977850197762549,
+  "ra0": 292.77959920112164,
+  "dec0": -16.70246576342942,
+  "agis_source_excess_noise": 0.0,
+  "obs_time_tcb": [
+   248777672486876800,
+   248777679747269156,
+   248777684484290736,
+   248777689407817595,
+   248777694204658444,
+   248777699128510301,
+   248777703988302311,
+   248777708785162133,
+   248777713707957594,
+   248777718564754487
+  ],
+  "obs_time_bary_corr": -288415318016.0,
+  "scan_pos_angle": [
+   -42.56522336542415,
+   -42.565486072343774,
+   -42.565657431633774,
+   -42.565835578594,
+   -42.56600924640599,
+   -42.56618767597383,
+   -42.56636392121273,
+   -42.566537958831105,
+   -42.566716581780945,
+   -42.56689276555971
+  ],
+  "zeta": -0.16024808585643768,
+  "parallax_factor_al": 0.41302165389060974,
+  "parallax_factor_ac": 0.7106326818466187,
+  "colour_factor_al": [
+   -12.964435577392578,
+   -6.83746337890625,
+   -4.087481498718262,
+   -1.8016228675842285,
+   0.9139764308929443,
+   0.9487333297729492,
+   0.2506352365016937,
+   -0.023103728890419006,
+   -0.8307877779006958,
+   -1.4629751443862915
+  ],
+  "colour_factor_ac": [
+   2.4609556198120117,
+   4.200168609619141,
+   2.9540650844573975,
+   2.1453139781951904,
+   1.4009870290756226,
+   1.3464040756225586,
+   1.6216388940811157,
+   1.5607914924621582,
+   1.8305449485778809,
+   1.5889155864715576
+  ],
+  "nu_eff_used_in_astrometry": 1.3847911357879639,
+  "nu_eff_error": 0.00025499562616460025,
+  "centroid_pos_al": [
+   7.150382363042267,
+   -0.45949483652185497,
+   -0.47823094768568547,
+   -0.30780545021781086,
+   -0.3610907391731617,
+   -0.5282062245977025,
+   -0.37440940585313764,
+   -0.34852099588962737,
+   -0.4880005093741908,
+   -0.44678988230032335
+  ],
+  "centroid_pos_ac": null,
+  "calculated_pos_ac": [
+   -0.032495316637276304,
+   -0.032606313843548784,
+   -0.02042189679087008,
+   -0.0167546754840558,
+   -0.011646196692248846,
+   0.04572294411890093,
+   0.0038133559275698664,
+   0.0013777453993199236,
+   -0.21482723387277652,
+   -0.01016728971281371
+  ],
+  "centroid_pos_error_al": [
+   0.11630335450172424,
+   0.2801286280155182,
+   0.10322856903076172,
+   0.1269732266664505,
+   0.09855172038078308,
+   0.11185064166784286,
+   0.11418642103672028,
+   0.10695891827344894,
+   0.10320580005645752,
+   0.10079028457403183
+  ],
+  "centroid_pos_error_ac": null,
+  "used_by_agis_al": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "used_by_agis_ac": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "transit_acq_flags": 8256,
+  "transit_proc_flags": 8756,
+  "ccd_proc_flags": [
+   832,
+   8720,
+   528,
+   528,
+   528,
+   528,
+   528,
+   528,
+   528,
+   528
+  ],
+  "multipeak": false,
+  "blended": false,
+  "ipd_error_al": [
+   0.11631332337856293,
+   0.2609960734844208,
+   0.060033101588487625,
+   0.08048270642757416,
+   0.0540347620844841,
+   0.0725032389163971,
+   0.06680621951818466,
+   0.049079522490501404,
+   0.06793146580457687,
+   0.07264596968889236
+  ],
+  "ipd_error_ac": [
+   0.21714094281196594,
+   0.8065301179885864,
+   0.1316177248954773,
+   0.1868576854467392,
+   0.13382211327552795,
+   0.19199110567569733,
+   0.19303810596466064,
+   0.13671556115150452,
+   0.1891753226518631,
+   0.19208881258964539
+  ],
+  "g_mag": 8.974701881408691,
+  "g_class": 0,
+  "gates": [
+   12,
+   4,
+   8,
+   7,
+   8,
+   7,
+   7,
+   8,
+   7,
+   7
+  ],
+  "source_dist_to_last_ci": [
+   null,
+   915.8324584960938,
+   174.4597625732422,
+   1430.1064453125,
+   684.9436645507812,
+   1939.9210205078125,
+   1195.7642822265625,
+   450.62078857421875,
+   1705.523193359375,
+   963.3189697265625
+  ],
+  "ac_rate": 0.684023380279541,
+  "sub_pixel_coord": [
+   0.48846435546875,
+   0.9449462890625,
+   0.869171142578125,
+   0.5626983642578125,
+   0.353057861328125,
+   0.37725830078125,
+   0.2205047607421875,
+   0.0301971435546875,
+   0.9795074462890625,
+   0.7752227783203125
+  ],
+  "mu": [
+   498.0,
+   502.0,
+   505.0,
+   509.0,
+   512.0,
+   515.0,
+   519.0,
+   522.0,
+   526.0,
+   532.0
+  ]
+ },
+ "sources": {
+  "4181040337841125632": {
+   "group": "parallax",
+   "n_transits": 72,
+   "t_yr_range": [
+    -2.334706626001207,
+    2.4105927374771454
+   ]
+  },
+  "435469040545191680": {
+   "group": "parallax",
+   "n_transits": 74,
+   "t_yr_range": [
+    -2.4840752769446226,
+    2.2769378216551104
+   ]
+  },
+  "3926186255616949504": {
+   "group": "parallax",
+   "n_transits": 54,
+   "t_yr_range": [
+    -2.6710880355260542,
+    2.4628314244760077
+   ]
+  },
+  "2309425390592896": {
+   "group": "magnitude",
+   "n_transits": 68,
+   "t_yr_range": [
+    -2.510855911559247,
+    2.537228172961477
+   ]
+  },
+  "20694084440761600": {
+   "group": "magnitude",
+   "n_transits": 65,
+   "t_yr_range": [
+    -2.5094715734949204,
+    2.5353900362124477
+   ]
+  },
+  "1663617687609809280": {
+   "group": "magnitude",
+   "n_transits": 89,
+   "t_yr_range": [
+    -2.72336053284198,
+    2.4835152957889477
+   ]
+  },
+  "2237987199365376": {
+   "group": "qso",
+   "n_transits": 80,
+   "t_yr_range": [
+    -2.5115347738869787,
+    2.537233980395058
+   ]
+  },
+  "60730287810150016": {
+   "group": "qso",
+   "n_transits": 70,
+   "t_yr_range": [
+    -2.4976142982127385,
+    2.523755248131465
+   ]
+  },
+  "10973744521070720": {
+   "group": "qso",
+   "n_transits": 59,
+   "t_yr_range": [
+    -2.503318504246181,
+    2.531750814938732
+   ]
+  },
+  "4318465066420528000": {
+   "group": "orbit",
+   "n_transits": 63,
+   "t_yr_range": [
+    -2.67970836405334,
+    2.415449893312598
+   ]
+  },
+  "3937211745905473024": {
+   "group": "orbit",
+   "n_transits": 63,
+   "t_yr_range": [
+    -2.4475885797905903,
+    2.4739995619686397
+   ]
+  },
+  "1457486023639239296": {
+   "group": "orbit",
+   "n_transits": 93,
+   "t_yr_range": [
+    -2.457880268136023,
+    2.4826796409752205
+   ]
+  }
+ },
+ "dr3_orbits": {
+  "3937211745905473024": {
+   "status": "OK",
+   "type": "OrbitalTargetedSearchValidated",
+   "P": 83.73818467439406,
+   "e": 0.323893426184342,
+   "tp": -30.549198136739747,
+   "a0_dr3_mas": 1.7971357360189488,
+   "cos_i_dr3": 0.9463066762393085
+  },
+  "1457486023639239296": {
+   "status": "OK",
+   "type": "Orbital",
+   "P": 564.0242807973492,
+   "e": 0.5075808455347155,
+   "tp": -0.4040070499453895,
+   "a0_dr3_mas": 0.3128468035961588,
+   "cos_i_dr3": -0.42948033482168024
+  }
+ },
+ "fits": {
+  "4181040337841125632": {
+   "group": "parallax",
+   "at_hd114762_orbit": {
+    "n_transits": 72,
+    "n_ccd": 637,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 62.80380885878843,
+    "chi2_orbit": 60.50647985211478,
+    "dchi2": 2.2973290066736496,
+    "dchi2_no_excess_noise": 2.2973290066736496,
+    "dof_orbit": 62,
+    "B": -0.0066753418775052096,
+    "G": 0.01477367717846271,
+    "A": -0.01003194940953546,
+    "F": -0.0002093846023776893,
+    "a0_mas": 0.016880793309704146,
+    "cos_i": -0.5250065794936871,
+    "sigma_cos_i": 0.3208896813319357,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "435469040545191680": {
+   "group": "parallax",
+   "at_hd114762_orbit": {
+    "n_transits": 74,
+    "n_ccd": 649,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 90.16354687859881,
+    "chi2_orbit": 88.69302231780198,
+    "dchi2": 1.4705245607968322,
+    "dchi2_no_excess_noise": 1.4705245607968322,
+    "dof_orbit": 64,
+    "B": 0.01599023639980288,
+    "G": 0.0020352514834517843,
+    "A": 0.0033339884077856945,
+    "F": 0.009339525357526685,
+    "a0_mas": 0.01695529497671466,
+    "cos_i": -0.49587695826781975,
+    "sigma_cos_i": 0.33002054601236985,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "3926186255616949504": {
+   "group": "parallax",
+   "at_hd114762_orbit": {
+    "n_transits": 54,
+    "n_ccd": 462,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 62.12419131433906,
+    "chi2_orbit": 61.01011764240778,
+    "dchi2": 1.1140736719312798,
+    "dchi2_no_excess_noise": 1.1140736719312798,
+    "dof_orbit": 44,
+    "B": -0.11766802293108874,
+    "G": -0.15228367928942957,
+    "A": -0.05268516939985919,
+    "F": 0.21162037817511437,
+    "a0_mas": 0.26239463802669566,
+    "cos_i": 0.47819303631402676,
+    "sigma_cos_i": 0.3779252130066125,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "2309425390592896": {
+   "group": "magnitude",
+   "at_hd114762_orbit": {
+    "n_transits": 68,
+    "n_ccd": 597,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 50.09708820507783,
+    "chi2_orbit": 46.682292033269896,
+    "dchi2": 3.414796171807936,
+    "dchi2_no_excess_noise": 3.414796171807936,
+    "dof_orbit": 58,
+    "B": -0.034682301364416766,
+    "G": -0.020880542308041577,
+    "A": -0.028111745382357063,
+    "F": -0.010157422143487964,
+    "a0_mas": 0.05010348035208847,
+    "cos_i": 0.09349488935035792,
+    "sigma_cos_i": 0.2535050933279886,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "20694084440761600": {
+   "group": "magnitude",
+   "at_hd114762_orbit": {
+    "n_transits": 65,
+    "n_ccd": 576,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 82.82021259407715,
+    "chi2_orbit": 77.77268988617756,
+    "dchi2": 5.047522707899589,
+    "dchi2_no_excess_noise": 5.047522707899589,
+    "dof_orbit": 55,
+    "B": 0.026725170545033074,
+    "G": 0.0059711037051117175,
+    "A": 0.03801613163073693,
+    "F": 0.014821865722727295,
+    "a0_mas": 0.049019384345599964,
+    "cos_i": -0.0703810486794221,
+    "sigma_cos_i": 0.2840411951251095,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "1663617687609809280": {
+   "group": "magnitude",
+   "at_hd114762_orbit": {
+    "n_transits": 89,
+    "n_ccd": 781,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 99.21622169614048,
+    "chi2_orbit": 93.5092110889497,
+    "dchi2": 5.707010607190782,
+    "dchi2_no_excess_noise": 5.707010607190782,
+    "dof_orbit": 79,
+    "B": -0.009386502272801661,
+    "G": 0.017637709507124705,
+    "A": -0.006687330636454991,
+    "F": -0.022200298972738054,
+    "a0_mas": 0.02836154571596546,
+    "cos_i": -0.405695637966127,
+    "sigma_cos_i": 0.30681524424274953,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "2237987199365376": {
+   "group": "qso",
+   "at_hd114762_orbit": {
+    "n_transits": 80,
+    "n_ccd": 702,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 66.67147710230496,
+    "chi2_orbit": 65.48147388740443,
+    "dchi2": 1.1900032149005284,
+    "dchi2_no_excess_noise": 1.1900032149005284,
+    "dof_orbit": 70,
+    "B": 0.03521263908512905,
+    "G": 0.10024773819350642,
+    "A": -0.363957098069864,
+    "F": -0.05750592586243541,
+    "a0_mas": 0.37213701182815445,
+    "cos_i": -0.24884068803867165,
+    "sigma_cos_i": 0.3338559748496797,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "60730287810150016": {
+   "group": "qso",
+   "at_hd114762_orbit": {
+    "n_transits": 70,
+    "n_ccd": 608,
+    "excess_noise_mas": 0.0,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 61.73084237830133,
+    "chi2_orbit": 61.08903343566285,
+    "dchi2": 0.6418089426384839,
+    "dchi2_no_excess_noise": 0.6418089426384839,
+    "dof_orbit": 60,
+    "B": 0.3123003010804721,
+    "G": 0.06807522636406019,
+    "A": 0.06496587654892957,
+    "F": -0.17853990081730403,
+    "a0_mas": 0.32117372772928887,
+    "cos_i": 0.5834138247090813,
+    "sigma_cos_i": 0.36897658160241525,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "10973744521070720": {
+   "group": "qso",
+   "at_hd114762_orbit": {
+    "n_transits": 59,
+    "n_ccd": 515,
+    "excess_noise_mas": 0.6188957095146179,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 49.55436207300756,
+    "chi2_orbit": 47.48063521122043,
+    "dchi2": 2.0737268617871294,
+    "dchi2_no_excess_noise": 3.2226945653395944,
+    "dof_orbit": 49,
+    "B": -0.18597077872994586,
+    "G": 0.39597132799111356,
+    "A": -0.15256868235575619,
+    "F": -0.45626703856490797,
+    "a0_mas": 0.604173567053309,
+    "cos_i": -0.39795872066222554,
+    "sigma_cos_i": 0.40990429658528865,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "4318465066420528000": {
+   "group": "orbit",
+   "at_hd114762_orbit": {
+    "n_transits": 63,
+    "n_ccd": 558,
+    "excess_noise_mas": 6.582944393157959,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 63.03997803471223,
+    "chi2_orbit": 60.577241374860265,
+    "dchi2": 2.462736659851963,
+    "dchi2_no_excess_noise": 156675.7352096727,
+    "dof_orbit": 53,
+    "B": 2.066147662713393,
+    "G": -1.660784815983426,
+    "A": 0.4251373450460998,
+    "F": -1.7726181628571767,
+    "a0_mas": 3.0696040381473777,
+    "cos_i": 0.3137637536490346,
+    "sigma_cos_i": 0.34877379919616897,
+    "detected": false,
+    "edge_on": true
+   }
+  },
+  "3937211745905473024": {
+   "group": "orbit",
+   "own_orbit": {
+    "n_transits": 63,
+    "n_ccd": 558,
+    "excess_noise_mas": 1.2271604537963867,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 61.16020929039302,
+    "chi2_orbit": 0.6232422625348699,
+    "dchi2": 60.53696702785815,
+    "dchi2_no_excess_noise": 53191.26680448687,
+    "dof_orbit": 53,
+    "B": -0.19475480395643147,
+    "G": 1.8263498891967638,
+    "A": 1.8653938108717276,
+    "F": 0.1191934330570458,
+    "a0_mas": 1.895060726748442,
+    "cos_i": 0.9551187878643019,
+    "sigma_cos_i": 0.16215189611865133,
+    "detected": true,
+    "edge_on": false,
+    "a0_ratio": 1.0544894794348805
+   },
+   "at_hd114762_orbit": {
+    "n_transits": 63,
+    "n_ccd": 558,
+    "excess_noise_mas": 1.2271604537963867,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 61.16020929039302,
+    "chi2_orbit": 0.6232422625348699,
+    "dchi2": 60.53696702785815,
+    "dchi2_no_excess_noise": 53191.26680448687,
+    "dof_orbit": 53,
+    "B": -0.19475480395643147,
+    "G": 1.8263498891967638,
+    "A": 1.8653938108717276,
+    "F": 0.1191934330570458,
+    "a0_mas": 1.895060726748442,
+    "cos_i": 0.9551187878643019,
+    "sigma_cos_i": 0.16215189611865133,
+    "detected": true,
+    "edge_on": false
+   }
+  },
+  "1457486023639239296": {
+   "group": "orbit",
+   "own_orbit": {
+    "n_transits": 93,
+    "n_ccd": 824,
+    "excess_noise_mas": 0.1190168634057045,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 91.14109462904973,
+    "chi2_orbit": 8.331095225822075,
+    "dchi2": 82.80999940322766,
+    "dchi2_no_excess_noise": 1674.0307573084847,
+    "dof_orbit": 83,
+    "B": -0.056549680414297476,
+    "G": -0.12357601898461658,
+    "A": 0.24119205315193823,
+    "F": -0.07687833471743594,
+    "a0_mas": 0.2538826672266216,
+    "cos_i": -0.5298619590747476,
+    "sigma_cos_i": 0.14506758149690382,
+    "detected": true,
+    "edge_on": false,
+    "a0_ratio": 0.8115239289909716
+   },
+   "at_hd114762_orbit": {
+    "n_transits": 93,
+    "n_ccd": 824,
+    "excess_noise_mas": 0.1190168634057045,
+    "colour_column": true,
+    "status": "OK",
+    "chi2_single": 91.14109462904973,
+    "chi2_orbit": 82.10345796325613,
+    "dchi2": 9.037636665793599,
+    "dchi2_no_excess_noise": 181.7300891159557,
+    "dof_orbit": 83,
+    "B": -0.02570178296731043,
+    "G": -0.042370859223730045,
+    "A": -0.04551957665054056,
+    "F": -0.06586763311728654,
+    "a0_mas": 0.09412849458790973,
+    "cos_i": 0.026612115824698503,
+    "sigma_cos_i": 0.29037220209369874,
+    "detected": false,
+    "edge_on": true
+   }
+  }
+ },
+ "rehearsal": {
+  "rule": "HD 114762 dchi2 > 30 at its DR3 orbit; each QSO dchi2 < 30 at that orbit",
+  "hd114762_dchi2": 60.53696702785815,
+  "hd114762_status": "OK",
+  "qso_dchi2": {
+   "2237987199365376": 1.1900032149005284,
+   "60730287810150016": 0.6418089426384839,
+   "10973744521070720": 2.0737268617871294
+  },
+  "null_dchi2_all_single_and_qso": {
+   "4181040337841125632": 2.2973290066736496,
+   "435469040545191680": 1.4705245607968322,
+   "3926186255616949504": 1.1140736719312798,
+   "2309425390592896": 3.414796171807936,
+   "20694084440761600": 5.047522707899589,
+   "1663617687609809280": 5.707010607190782,
+   "2237987199365376": 1.1900032149005284,
+   "60730287810150016": 0.6418089426384839,
+   "10973744521070720": 2.0737268617871294
+  },
+  "pass": true
+ },
+ "datalink_smoke": {
+  "dr3_epoch_photometry": {
+   "error": "HTTP 503: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>503 Service Unavailable</title>\n</head><body>\n<h1>Service Unavailable</h1>\n<p>The server is temporarily unable to service your\nrequest due to maintenance downtime or capacity\nproblems. Please try again later.</p>\n</body></html>\n"
+  },
+  "dr4_epoch_astrometry": {
+   "error": "HTTP 503: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>503 Service Unavailable</title>\n</head><body>\n<h1>Service Unavailable</h1>\n<p>The server is temporarily unable to service your\nrequest due to maintenance downtime or capacity\nproblems. Please try again later.</p>\n</body></html>\n"
+  }
+ }
+}

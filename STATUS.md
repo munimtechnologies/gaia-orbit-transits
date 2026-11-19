@@ -15,10 +15,19 @@ holds.
      **If the orbits are right, σ(cos i) is understated by k = 2.1 (1.4–3.4).**
    - "About a third (14–56%) of these orbits are wrong" fits equally well. **Gaia DR4 will
      decide.** There are two pre-registered tests:
-     - `findings/2026-11-18-calib-dr4-prereg.md` (amendment 1), which uses DR4's published
-       orbits;
-     - `findings/2026-11-19-dr4-wobble-prereg.md` + amendment 1, with release-day code
-       `dr4_wobble.py` 0.1.0 (0.25.0). A rehearsal on ESA's DR4 pre-release is queued.
+     - `findings/2026-11-18-calib-dr4-prereg.md` (amendments 1 and 2), which uses DR4's
+       published orbits. **The DR3 dress rehearsal caught a wrong column-name assumption**
+       (ESA's neighbourhood tables name the new id `dr3_source_id`, not `source_id`) before
+       release day. Amendment 2 (`findings/2026-11-19-calib-dr4-amendment-2.md`) fixes it in
+       `dr4_fetch.py` 0.2.0 and the modules that use it. The rehearsal is re-queued
+       (gaia-calibdr4-reh-v2).
+     - `findings/2026-11-19-dr4-wobble-prereg.md` + amendment 1, with code `dr4_wobble.py`
+       0.1.0. **The rehearsal on ESA's 12-source DR4 pre-release passed**
+       (`findings/2026-11-19-dr4-wobble-rehearsal-results.md`):
+       - HD 114762's orbit is recovered from DR4's raw epoch astrometry at Δχ² = 60.5,
+         a₀ ratio 1.05;
+       - all three quasars are at Δχ² ≤ 2.1;
+       - Gaia-4's planet-host orbit is recovered at Δχ² = 82.8.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?**
    - **0.1.0** (`findings/2026-11-18-sb1-transit-results.md`): ρ = 0.10 (0.03–0.22) from 512
      orbits. The hit rule was fooled by outlying points.
@@ -39,9 +48,9 @@ holds.
      Catalog lists 4.9 R☉) and Gaia DR3 209360173711680640 (chunk 3; M_G = −1.4, a luminous
      red giant). The rule's `giant_cmd` test removes both.
      - `dr4_d3_a1.py` 0.1.0 (0.26.0) applies the rule to the DR4 orbit-survival test.
-     - **D5** (`findings/2026-11-19-dr4-sb1-reality-amendment-3.md`, `dr4_d5_rate.py` 0.1.0,
-       release 0.27.0) asks whether DR4's *new* low-mass SB1 orbits are purer than DR3's.
-       A DR3 rehearsal of its pool step is queued (job gaia-d5pool-reh-v2).
+     - **D5** (`findings/2026-11-19-dr4-sb1-reality-amendment-3.md`, `dr4_d5_rate.py`, now
+       0.1.1) asks whether DR4's *new* low-mass SB1 orbits are purer than DR3's. A DR3
+       rehearsal of its pool step is queued (job gaia-d5pool-reh-v2).
    - **Eclipsing companions found by the search (D1 and others):**
      - **BD+65 286** (TIC 50453242, chunk 3): a V ≈ 9.7 F star eclipsed every 1.6465 days by
        the ~0.1 M☉ companion of its Gaia orbit (0.4% deep, flat-bottomed, at Gaia's predicted
@@ -54,8 +63,10 @@ holds.
        list it): `findings/2026-11-19-bd65-286-prior-art-addendum.md`. A pre-registered fit
        is queued (`findings/2026-11-19-bd65-286-prereg.md`).
      - **TIC 71945261** (chunk 7): a clean ~6% eclipse, about three times deeper than Gaia's
-       0.097 M☉ companion allows. Not in Green et al. 2023 or Kostov+ 2025. A pre-registered
-       fit is queued (`findings/2026-11-18-tic71945261-prereg.md`).
+       0.097 M☉ companion allows. The full prior-art list is checked
+       (`findings/2026-11-19-tic71945261-prior-art.md`). No catalogue, TCE or paper lists it
+       as eclipsing or variable. A pre-registered fit is queued
+       (`findings/2026-11-18-tic71945261-prereg.md`).
      - **TOI-7247.01** (chunk 5): already a TOI. TFOP calls it a false positive from the Gaia
        orbit; a 2026 RAVEN upload calls it a likely planet. It is fitted in the BD+65 286 job.
      - **TIC 324597856** (chunk 0): rejected as a brown dwarf. It has a secondary eclipse half
@@ -63,7 +74,7 @@ holds.
      - **TIC 135050395** (chunk 1): the known EBLM J1219-39, not new.
      - **TIC 202283090** (chunk 1): TOI-6218.01, an existing TFOP candidate.
    - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
-     (`dr4_sb1_reality.py`, amendments 1–3, `dr4_d3_a1.py` and `dr4_d5_rate.py`).
+     (`dr4_sb1_reality.py`, now 0.1.1; amendments 1–3; `dr4_d3_a1.py` and `dr4_d5_rate.py`).
 3. **Are M dwarfs in 1–2-day orbits inflated?** +2.2% (95% CI +0.3% to +7.1%) from 14
    systems: **INCONCLUSIVE**, as pre-registered (`findings/2026-11-18-eblm-infl-results.md`).
    - `findings/2026-11-19-eblm-rest-results.md` (0.26.0): the other 97 EBLM-like systems are
@@ -97,12 +108,16 @@ holds.
 - **Never skip a window that is too wide; cap it.** **Never truncate a query at the row cap;
   split it.**
 - A query that silently drops columns changes the sample. Jobs now stop instead.
-- **Rehearse release-day code on the previous release** (or on a pre-release sample).
+- **Rehearse release-day code on the previous release** (or on a pre-release sample). On
+  19 November this caught a wrong column name that would have stopped three release-day
+  tests on 2 December.
+- **Don't assume a new table's column names from an older table's documentation; read the
+  older table's TAP_SCHEMA.** Then accept only a short, fixed list of names.
 - **Read every table that can hold the thing you count.**
 - **Check that a catalogue service is actually up before reading "no rows" as "not
   listed".** CDS Strasbourg (SIMBAD, VizieR) has been degraded since 9 November. The CfA
   VizieR mirror was down early on 19 November and back by 09:12 UTC; the CfA SIMBAD mirror
-  worked.
+  worked. The Gaia DataLink server answered 503 at 09:18 UTC on 19 November.
 - **A threshold-crossing event is not a catalogue entry, but it is prior art.** Before calling
   an eclipse new, query the SPOC DV TCE list on MAST and credit any detection.
 - **A close binary with an eclipse usually also has an ellipsoidal or reflection signal, and
@@ -122,6 +137,8 @@ tables.
 - Tables: `nss_two_body_orbit` (5.9M) + `_supp`, `rvs_two_body_orbit` (639k),
   `dr3_neighbourhood`, `nss_masses` and `nss_acceleration_astro`. DataLink-only epoch
   products: RVS epoch parameters, epoch astrometry (`EPOCH_ASTROMETRY`) and epoch photometry.
+- `dr3_neighbourhood`'s DR4 id column is read from TAP_SCHEMA (`dr4_source_id`, else
+  `source_id`; anything else stops the run). See calib-dr4 amendment 2.
 - Pre-registered order:
   1. the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py` with `dr4_d3_a1.py` for D3,
      and `calib_dr4_run.py`);
