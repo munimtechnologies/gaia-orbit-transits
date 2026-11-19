@@ -1,4 +1,4 @@
-# gaia-orbit-transits: current status (2026-11-19, v0.24.0)
+# gaia-orbit-transits: current status (2026-11-19, v0.25.0)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
@@ -17,36 +17,41 @@ holds.
      decide.** There are two pre-registered tests:
      - `findings/2026-11-18-calib-dr4-prereg.md` (amendment 1), which uses DR4's published
        orbits;
-     - **new in 0.24.0:** `findings/2026-11-19-dr4-wobble-prereg.md`. It looks for the
-       photocentre wobble at the DR3 period in DR4's raw along-scan epoch astrometry, for the
-       eclipsing and the non-eclipsing targets separately. It is rehearsed on ESA's
-       pre-released epoch astrometry.
+     - `findings/2026-11-19-dr4-wobble-prereg.md` + **amendment 1 (new in 0.25.0)**. It looks
+       for the photocentre wobble at the DR3 period in DR4's raw along-scan epoch
+       astrometry.
+       - **New in 0.25.0: `dr4_wobble.py` 0.1.0**, release-day code with standard-library
+         tests.
+       - It is being rehearsed on ESA's 12-source DR4 pre-release (job gaia-wobble-reh-v1).
+         The rehearsal passes if HD 114762 wobbles at its DR3 orbit (Δχ² > 30) and the three
+         quasars do not.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?**
    - **0.1.0** (`findings/2026-11-18-sb1-transit-results.md`): ρ = 0.10 (0.03–0.22) from 512
      orbits. The hit rule was fooled by outlying points.
-   - **0.2.0, the outlier-proof rerun: 2 of 8 chunks are in.** These are interim and
-     descriptive, and the grade combines all 8 chunks.
-     (`findings/2026-11-18-sb1-robust-k7-interim.md`,
-     `findings/2026-11-19-sb1-robust-k0-interim.md`)
-     - Chunks 0 and 7 summed: 9 robust hits in 944 sensitive stars, against 170 expected
-       if every orbit were real. ρ (substellar size) = 0.018 (0.004–0.052).
-     - **No substellar-size transit in 679 brown-dwarf-mass orbits, where 127 were
-       expected.** At 95%, fewer than 3% are both real and that light.
-     - The median rule removed 65 of the 74 hits the old rule would have made.
-   - **A flaw found and fixed before the rest of the data (amendment 1,
-     `findings/2026-11-19-sb1-robust-amendment-1.md`).** In 17.6% of the pool (1,132 stars),
-     luminous stars with no Gaia radius were given a clamped 1.9 R☉ main-sequence radius,
-     which biases ρ low. The primary grade stays as pre-registered. A secondary grade (A1)
-     without them is computed by the new `sb1_combine.py` (job gaia-sb1comb-v1).
+   - **0.2.0, the outlier-proof rerun: 3 of 8 chunks are in** (k0, k1, k7). These are
+     interim and descriptive, and the grade combines all 8 chunks.
+     (`findings/2026-11-19-sb1-robust-k1-interim.md`; earlier: k0, k7)
+     - Chunks 0, 1 and 7 summed: 13 robust hits in 1,293 sensitive stars, against 234
+       expected if every orbit were real. ρ (substellar size) = 0.021 (0.007–0.050).
+     - **In 926 brown-dwarf-mass orbits, 174 transits were expected and one is seen**:
+       TOI-6218.01, at 71 M_Jup by Gaia's orbit, right at the brown-dwarf/star boundary.
+     - The very-low-mass-star orbits do better, at ~8% (2–21%). They include J1219-39, a
+       published EBLM (Triaud et al. 2013) that the pipeline recovered blind. Gaia's mass
+       for it (0.094 M☉) matches the RV mass.
+   - **Amendment 1** (`findings/2026-11-19-sb1-robust-amendment-1.md`): 17.6% of the pool are
+     luminous stars that entered with a clamped 1.9 R☉ radius, which biases ρ low. A
+     secondary grade (A1) without them comes from `sb1_combine.py` once all 8 chunks are in.
    - **Survivors and rejections (D1):**
      - **TIC 71945261** (chunk 7): a clean ~6% eclipse, about three times deeper than Gaia's
        0.097 M☉ companion allows. A pre-registered fit is queued
        (`findings/2026-11-18-tic71945261-prereg.md`).
      - **TIC 324597856** (chunk 0): rejected as a brown dwarf. It has a secondary eclipse half
-       as deep as the primary, so the companion is a star. It is a probable new eclipsing
-       binary whose Gaia orbit (K, e) is distorted, most likely by blended lines.
+       as deep as the primary, so the companion is a star.
+     - **TIC 135050395** (chunk 1): the known EBLM J1219-39, not new.
+     - **TIC 202283090** (chunk 1): TOI-6218.01, an existing TFOP candidate. Gaia's orbit and
+       TESS's transit agree.
    - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
-     (`dr4_sb1_reality.py`, amendments 1–2; amendment 1 above adds the radius rule).
+     (`dr4_sb1_reality.py`, amendments 1–2).
 3. **Are M dwarfs in 1–2-day orbits inflated?** +2.2% (95% CI +0.3% to +7.1%) from 14
    systems: **INCONCLUSIVE**, as pre-registered (`findings/2026-11-18-eblm-infl-results.md`).
    It moves to DR4.
@@ -74,9 +79,12 @@ holds.
 - **Never skip a window that is too wide; cap it.**
 - A query that silently drops columns changes the sample. Jobs now stop instead.
 - **Rehearse release-day code on the previous release** (or on a pre-release sample).
+  **Read the real file layout before release day.** DR4's epoch astrometry is one row per
+  transit with per-CCD arrays, not one row per CCD (wobble amendment 1).
 - **Read every table that can hold the thing you count.**
 - **Check that a catalogue service is actually up before reading "no rows" as "not
-  listed".**
+  listed".** Since 9 November, CDS Strasbourg (SIMBAD, VizieR) has been degraded by a
+  security incident. We use the CfA VizieR mirror.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), Gaia DR3 vari_eclipsing_binary,
@@ -91,7 +99,7 @@ claim tables.
   products: RVS epoch parameters, epoch astrometry (`EPOCH_ASTROMETRY`) and epoch photometry.
 - Pre-registered order:
   1. the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py`, `calib_dr4_run.py`);
-  2. the wobble test (`dr4_wobble.py`, owed before release);
+  2. the wobble test (`dr4_wobble.py release`);
   3. the SB1 transit-rate test (0.2.0 rules plus amendment 1) on DR4's RVS SB1 orbits;
   4. the inclination and timing calibration on DR4's own orbits;
   5. EBLM inflation;
