@@ -16,11 +16,9 @@ holds.
    - "About a third (14–56%) of these orbits are wrong" fits equally well. **Gaia DR4 will
      decide.** There are two pre-registered tests:
      - `findings/2026-11-18-calib-dr4-prereg.md` (amendments 1 and 2), which uses DR4's
-       published orbits. **The DR3 dress rehearsal caught a wrong column-name assumption**
-       (ESA's neighbourhood tables name the new id `dr3_source_id`, not `source_id`) before
-       release day. Amendment 2 (`findings/2026-11-19-calib-dr4-amendment-2.md`) fixes it in
-       `dr4_fetch.py` 0.2.0 and the modules that use it, **released in v0.28.0**. The
-       rehearsal is re-queued (gaia-calibdr4-reh-v2).
+       published orbits. The DR3 dress rehearsal caught a wrong column-name assumption
+       before release day; amendment 2 (`findings/2026-11-19-calib-dr4-amendment-2.md`) fixes
+       it in `dr4_fetch.py` 0.2.0 (v0.28.0). The rehearsal is re-queued (gaia-calibdr4-reh-v2).
      - `findings/2026-11-19-dr4-wobble-prereg.md` + amendment 1, with code `dr4_wobble.py`
        0.1.0. **The rehearsal on ESA's 12-source DR4 pre-release passed**
        (`findings/2026-11-19-dr4-wobble-rehearsal-results.md`).
@@ -35,81 +33,67 @@ holds.
      - **In 2,180 brown-dwarf-mass orbits, 408 transits were expected and three are seen**
        (TOI-6218.01, TOI-5427.01, TOI-5882.01, all known). ρ_BD = 0.007 (0.002–0.022).
      - The very-low-mass-star orbits do better, at ~5% (2–11%).
-     - Chunk 5 fails the per-job size check C3 (141 < 150 stars) because MAST searches
-       timed out during the job. The combined report will say so.
+     - Chunk 5 fails the per-job size check C3 (141 < 150 stars). The combined report will say
+       so.
    - **Amendment 1** (`findings/2026-11-19-sb1-robust-amendment-1.md`): 17.6% of the pool are
      luminous stars that entered with a fallback main-sequence radius, which biases ρ low. A
      secondary grade (A1) without them comes from the same combine job.
-     - `dr4_d3_a1.py` 0.1.0 (0.26.0) applies the rule to the DR4 orbit-survival test.
-     - **D5** (`findings/2026-11-19-dr4-sb1-reality-amendment-3.md`, `dr4_d5_rate.py`)
-       asks whether DR4's *new* low-mass SB1 orbits are purer than DR3's. **Its DR3 dress
-       rehearsal passed on 19 Nov** (`findings/2026-11-19-d5-pool-rehearsal-results.md`:
-       6,434 eligible rows reproduced, all 4,366 unflagged stars in DR3, flags add up).
-   - **Amendment 2, pre-registered 19 Nov** (`findings/2026-11-19-sb1-robust-amendment-2-inclination.md`,
-     code `inclination_floor.py` 0.1.0, job gaia-incfloor-v1 queued). Interim wording
-     ("fewer than ~2% describe a real brown-dwarf-mass companion") folds two things together:
-     orbits that are wrong, and right orbits of heavier stars seen nearly face-on, which never
-     transit. Brown dwarfs are rare in close orbits, so the second is a known, large effect.
-     The amendment computes, with the exact mass function and a grid of brown-dwarf and
-     stellar companion populations fixed in advance, the fraction φ of the orbits that are
-     right, and labels the result MOSTLY_SPURIOUS, SPURIOUS_UNLESS_DRY_DESERT or
-     FACE_ON_SUFFICIENT. **Until it is graded, our earlier phrase "most of these orbits are
-     not real" is not a supported claim.**
+   - **Amendment 2** (`findings/2026-11-19-sb1-robust-amendment-2-inclination.md`, code
+     `inclination_floor.py` 0.1.0 in v0.29.0, job gaia-incfloor-v1 queued). A missing-transit
+     rate measures "real orbit AND near edge-on". Brown dwarfs are rare in close orbits, so right
+     orbits of heavier stars seen nearly face-on are a known, large contaminant. The amendment
+     computes the fraction φ of orbits that are right under a fixed grid of companion
+     populations. **Until it is graded, "most of these orbits are not real" is not a supported
+     claim.**
+   - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
+     (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py` and `dr4_d5_rate.py`). **All of its
+     DR3 rehearsals have now passed**: the pool (RH1–RH3), and on 19 Nov the DataLink step
+     (RH4) through the exact release-day fetch path
+     (`findings/2026-11-19-bd65-286-fit-results.md`, last section; `data/sb1real-reh-v2/`).
+     The D5 pool rehearsal passed too (`findings/2026-11-19-d5-pool-rehearsal-results.md`).
    - **Eclipsing companions found by the search:**
-     - **TIC 71945261** (TYC 6340-23-1, chunk 7). **Fit graded 19 Nov**
+     - **TIC 71945261** (TYC 6340-23-1, chunk 7). Fit graded 19 Nov
        (`findings/2026-11-19-tic71945261-fit-results.md`): pre-registered label
-       **B_OVERSIZED_COMPANION**, as predicted.
-       - It is a new 2.3287-day eclipsing system: 6.1% deep, with equal odd and even
-         eclipses and a 0.39% occultation. No catalogue, TCE or paper lists it.
-       - The companion's radius is **0.224 R☉** at Gaia's 0.097 M☉, **1.9× the main-sequence
-         value**.
-       - Young age or a wrong Gaia mass are not yet excluded, so we do not call it
-         "inflated". A youth and archival-RV check is pre-registered
-         (`findings/2026-11-19-tic71945261-followup-prereg.md`) and queued.
-       - Gaia's own epoch-RV spread (32.5 km/s ≈ 2K) argues against a mass error; this is
-         ungraded.
-       - The comparison system TOI-1251.01 failed its prediction: we expected C and it came
-         out D (odd/even differ). It is already in the TESS EB catalogue, which we should have
-         checked first.
-     - **BD+65 286** (TIC 50453242, chunk 3): a V ≈ 9.7 F star eclipsed every 1.6465 days by
-       the ~0.1 M☉ companion of its Gaia orbit. **Prior art:** Green et al. 2023 list it as a
-       TESS ellipsoidal binary candidate with the same period, and NASA's SPOC pipeline
-       flagged the dip in 2022 (sector 52 TCE). The new part is the eclipse identification and
-       the Gaia-mass link (`findings/2026-11-19-bd65-286-prior-art-addendum.md`). A
-       pre-registered fit is queued (`findings/2026-11-19-bd65-286-prereg.md`).
-     - **TOI-7247.01** (chunk 5): already a TOI. It is fitted in the BD+65 286 job.
+       **B_OVERSIZED_COMPANION**, as predicted. A new 2.3287-day eclipsing system (6.1% deep,
+       equal odd/even eclipses, 0.39% occultation) whose companion's radius is **0.224 R☉** at
+       Gaia's 0.097 M☉, **1.9× the main-sequence value**. Youth or a wrong Gaia mass are not
+       yet excluded, so we do not call it "inflated"; a youth and archival-RV check is queued
+       (`findings/2026-11-19-tic71945261-followup-prereg.md`).
+     - **BD+65 286** (TIC 50453242, chunk 3). **Fit run 19 Nov**
+       (`findings/2026-11-19-bd65-286-fit-results.md`): every pre-registered number held
+       (eblm_fit EBLM_CONSISTENT; companion **0.100 M☉, 0.122 R☉**, +1% above the
+       main-sequence radius, +9% with Gaia's FLAME primary radius; Gaia's mass confirmed by the
+       ellipsoidal signal at 0.81 of prediction). **But the job's control, TOI-1251.01, failed
+       its prediction, and our rule says the other labels are then not interpreted, so the
+       label is not graded.** A new control set of six published EBLMs (Swayne et al. 2024)
+       is pre-registered (`findings/2026-11-19-eblm-control-prereg.md`, job gaia-eblmctl-v1).
+       The eclipse itself is in all 8 TESS sectors at Gaia's period. Prior art: Green et al.
+       2023 (ellipsoidal candidate, same period) and NASA SPOC's sector-52 TCE (2022).
+     - **TOI-7247.01** (chunk 5): our prediction (C or B) failed; it came out D (odd and even
+       eclipses differ at Gaia's period). Not interpreted; no statement about the TOI.
      - **TIC 324597856** (chunk 0): rejected as a brown dwarf (secondary eclipse half as deep).
      - **TIC 135050395** (chunk 1): the known EBLM J1219-39, not new.
      - **TIC 202283090** (chunk 1): TOI-6218.01, an existing TFOP candidate.
-   - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
-     (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py` and `dr4_d5_rate.py`). Its DR3
-     rehearsal reproduced the pool (RH1–RH3 pass). The DataLink step (RH4) could not be
-     tested then because ESA's DataLink server answered 503. It answers again, and the
-     re-test through the exact release-day path is queued (gaia-sb1real-reh-v2).
 3. **Are M dwarfs in short orbits inflated? Graded on the full DR3 sample, 19 Nov**
    (`findings/2026-11-19-eblm-infl-full-results.md`):
-   - 28 M dwarfs (0.24–0.60 M☉) in 0.89–3.52-day orbits, weighed with Gaia SB1 orbits and
-     TESS eclipses, sit **+6.3% (95% CI +1.0% to +8.8%)** above BHAC15 5-Gyr radii.
-     Pre-registered label **INCONCLUSIVE**: the interval excludes zero but not the 3% bar.
-   - **No sign that shorter orbits inflate more** (pre-registered H2: NO_TREND_DETECTED). The
-     rank correlation has the opposite sign (ρ = +0.49).
-   - Our prediction that the heavier companions would pull the median down **failed**: it rose
-     from +2.2% (14 systems) to +6.3% (28).
-   - It agrees with Swayne et al. 2024's ~6% below 5 days and sits above EBLM XIX's
-     0.3 ± 1.6% beyond 5 days (cross-study, different models).
+   - 28 M dwarfs (0.24–0.60 M☉) in 0.89–3.52-day orbits sit **+6.3% (95% CI +1.0% to
+     +8.8%)** above BHAC15 5-Gyr radii. Pre-registered label **INCONCLUSIVE**.
+   - **No sign that shorter orbits inflate more** (H2: NO_TREND_DETECTED; ρ = +0.49).
+   - Our prediction that the heavier companions would pull the median down **failed**.
+   - **The pipeline's radius scale has not yet been checked against independently measured
+     systems.** The control test above (gaia-eblmctl-v1) does that; if its median offset is
+     beyond ±3%, this grade gets an addendum.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
   (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
-- **"Most brown-dwarf-mass orbits are not real" was premature.** Face-on stellar companions
-  were not modelled. See amendment 2 above.
-- **BD+65 286's variability and period were already published** (Green et al. 2023,
-  ellipsoidal candidate). The claim is narrowed in
-  `findings/2026-11-19-bd65-286-prior-art-addendum.md`.
+- **"Most brown-dwarf-mass orbits are not real" was premature.** See amendment 2 above.
+- **BD+65 286's variability and period were already published** (Green et al. 2023). The
+  claim is narrowed in `findings/2026-11-19-bd65-286-prior-art-addendum.md`.
 - **CD-48 897 (TIC 200743349) is not a new discovery of ours.** *Eclipses by Appointment*
-  (github.com/Snowstar38/eclipses-by-appointment) listed it first (claim Q031).
+  listed it first (claim Q031).
 - TOI-710.01 was already a TFOP false positive.
 
 ## Refuted or closed
@@ -120,23 +104,20 @@ holds.
 ## Lessons the pipeline now encodes
 - **A box depth is a mean, so a few outliers can fake a transit.** Fold searches require
   the in-box median to agree with the mean (`sb1_robust.py`).
-- **A fallback table that clamps can carry a whole population through a cut.** Count how
-  many rows sit exactly on a fallback value.
+- **A fallback table that clamps can carry a whole population through a cut.**
 - **A rule fixed for one release must be applied by importing it, not by copying it.**
 - **Never skip a window that is too wide; cap it.** **Never truncate a query at the row cap;
   split it.**
-- **Rehearse release-day code on the previous release.** On 19 November this caught a wrong
-  column name that would have stopped three release-day tests on 2 December.
-- **Don't assume a new table's column names from an older table's documentation; read the
-  older table's TAP_SCHEMA.**
-- **Check that a catalogue service is actually up before reading "no rows" as "not
-  listed".** Pair every empty answer with a control query.
-- **A threshold-crossing event is not a catalogue entry, but it is prior art.** Query the
-  SPOC DV TCE list on MAST and credit any detection.
-- **Vet a comparison system like a candidate.** TOI-1251.01 was chosen as a "normal"
-  comparison but was already in the TESS EB catalogue.
-- **A minimum mass is not a mass.** A missing-transit rate measures "real orbit AND near
-  edge-on"; separate the two with the companion population before calling orbits wrong.
+- **Rehearse release-day code on the previous release.**
+- **Don't assume a new table's column names; read TAP_SCHEMA.**
+- **Pair every empty answer with a control query.** On 19 Nov a position search on
+  `nss_two_body_orbit` returned nothing even for BD+65 286: that table's ra/dec are empty for
+  SB1 solutions, so positions must come from `gaia_source`.
+- **A threshold-crossing event is not a catalogue entry, but it is prior art.**
+- **Vet a comparison system like a candidate, and prefer controls with independently
+  published answers.** TOI-1251.01 was a known EB; it failed as a control twice, and under our
+  own rule that left BD+65 286's label ungraded.
+- **A minimum mass is not a mass.**
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -147,15 +128,14 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
-  2 December 12:00 CET.** Every DR3 rehearsal has to run before then. Done: wobble (passed),
-  D5 pool (passed). Queued: sb1real (DataLink), calib-dr4 v2, the pinned-fetch check.
+  2 December 12:00 CET.** Every DR3 rehearsal has to run before then. Done: wobble, D5 pool,
+  sb1real (pool + DataLink). Queued: calib-dr4 v2, the pinned-fetch check, and the EBLM
+  control test.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
-  pinning every module to the commit that published it (0.28.0 code for the amendment-2 fix).
+  pinning every module to the commit that published it.
 - Tables: `nss_two_body_orbit` + `_supp`, `rvs_two_body_orbit`, `dr3_neighbourhood`,
   `nss_masses`, `nss_acceleration_astro`, `nss_epoch_flags`, `rvs_epoch_parameters_single`
   (all in ESA's draft DR4 data model). Epoch photometry is DataLink-only.
-- `dr3_neighbourhood`'s DR4 id column is read from TAP_SCHEMA (`dr4_source_id`, else
-  `source_id`). See calib-dr4 amendment 2.
 - Pre-registered order:
   1. the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py` with `dr4_d3_a1.py`, and
      `calib_dr4_run.py`);
@@ -166,3 +146,4 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
   6. the RV transit screen;
   7. exoplanet candidates;
   8. self-lensing.
+- On the day, also look up BD+65 286 and TIC 71945261 in DR4's orbit tables.

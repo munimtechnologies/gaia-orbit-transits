@@ -1,0 +1,49 @@
+{
+ "release": "Gaia DR3",
+ "probe": "3186963491384132352",
+ "link_types": [
+  "MCMC_GSPPHOT",
+  "MCMC_MSC",
+  "XP_CONTINUOUS",
+  "XP_SAMPLED"
+ ],
+ "links_head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<VOTABLE version=\"1.4\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.ivoa.net/xml/VOTable/v1.4 http://www.ivoa.net/xml/VOTable/v1.4\" xmlns=\"http://www.ivoa.net/xml/VOTable/v1.4\">\n\t<RESOURCE type=\"results\">\n\t\t<INFO name=\"standardID\" value=\"ivo://ivoa.net/std/DataLink#links-1.0\"/>\n\t\t<INFO name=\"QUERY_STATUS\" value=\"OK\" />\n\t\t<INFO name=\"JOBID\" value=\"bfb808f0-e419-11f1-a690-005056a04b55-ODL\"><![CDATA[bfb808f0-e419-11f1-a690-005056a04b55-ODL]]></INFO>\n\t\t<INFO name=\"JOBNAME\" value=\"\"><![CDATA[Datalink job for user anonymous]]></INFO>\n\t\t<TABLE>\n\t\t<FIELD name=\"ID\" ucd=\"meta.id;meta.main\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"linking_parameter\" ucd=\"meta.id.assoc\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"access_url\" ucd=\"meta.ref.url\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"service_def\" ucd=\"meta.ref\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"error_message\" ucd=\"meta.code.error\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"semantics\" ucd=\"meta.code\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"description\" ucd=\"meta.note\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"content_type\" ucd=\"meta.code.mime\" datatype=\"char\" arraysize=\"*\"/>\n\t\t<FIELD name=\"content_length\" ucd=\"phys.size;meta.file\" datatype=\"long\" unit=\"byte\"/>\n\t\t<DATA>\n\t\t<TABLEDATA>\n\t\t<TR>\n\t\t<TD>Gaia DR3 3186963491384132352</TD>\n\t\t<TD>SOURCE_ID</TD>\n\t\t<TD><![CDATA[https://gea.esac.esa.int/data-server/data?ID=Gaia+DR3+3186963491384132352&RETRIEVAL_TYPE=MCMC_MSC&LINKING_PARAMETER=SOURCE_ID]]></TD>\n\t\t<TD></TD>\n\t\t<TD></TD>\n\t\t<TD>#this</TD>\n\t\t<TD><![CDATA[MCMC MSC, source Gaia DR3 3186963491384132352, linking_parameter SOURCE_ID]]></TD>\n\t\t<TD>application/x-votable+xml</TD>\n\t\t<TD></TD>\n\t\t</TR>\n\t\t<TR>\n\t\t<TD>Gaia DR3 3186963491384132352</TD>\n\t\t<TD>SOURCE_ID</TD>\n\t\t<TD><![CDATA[https://gea.esac.esa.int/data-server/data?ID=Gaia+DR3+3186963491384132352&RETRIEVAL_TYPE=XP_SAMPLED&LINKING_PARAMETER=SOURCE_ID]]></TD>\n\t\t<TD",
+ "smoke": {
+  "ids": [
+   "3186963491384132352",
+   "2784138955368103168",
+   "435404306796373248"
+  ],
+  "rows": {
+   "435404306796373248": 41
+  },
+  "columns": [
+   "bp_flux",
+   "bp_flux_error",
+   "bp_flux_over_error",
+   "bp_mag",
+   "bp_obs_time",
+   "bp_other_flags",
+   "g_other_flags",
+   "g_transit_flux",
+   "g_transit_flux_error",
+   "g_transit_flux_over_error",
+   "g_transit_mag",
+   "g_transit_time",
+   "rejected_by_photometry",
+   "rp_flux",
+   "rp_flux_error",
+   "rp_flux_over_error",
+   "rp_mag",
+   "rp_obs_time",
+   "rp_other_flags",
+   "solution_id",
+   "source_id",
+   "transit_id",
+   "variability_flag_bp_reject",
+   "variability_flag_g_reject",
+   "variability_flag_rp_reject"
+  ]
+ },
+ "status": "suspended (DR3 has no epoch RVs; rehearsal)"
+}

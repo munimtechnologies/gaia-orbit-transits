@@ -1,0 +1,110 @@
+{
+ "version": "0.1.1",
+ "schema": "dr3",
+ "started": "2026-11-19T13:03:32Z",
+ "gaia_rows": 11937,
+ "pool": 6434,
+ "rejected": {
+  "m2sini": 3802,
+  "evolved": 1701
+ },
+ "expected_pool": 6434,
+ "n_sources": 6434,
+ "labels": {
+  "CONFIRMED": 6434,
+  "ALIAS": 0,
+  "CHANGED": 0,
+  "DROPPED": 0,
+  "UNTESTABLE": 0
+ },
+ "epochs_active": false,
+ "match_status": {
+  "ok": 6434,
+  "none": 0,
+  "ambiguous": 0
+ },
+ "from_supp": 0,
+ "orbit_table": {
+  "gaiadr3.nss_two_body_orbit": 6434
+ },
+ "k_from_ch": 0,
+ "grades": {
+  "R0": {
+   "prediction": ">= 70% of S3 testable",
+   "value": [
+    6434,
+    6434
+   ],
+   "pass": true
+  },
+  "D1": {
+   "prediction": "f_conf upper 95% < 0.8",
+   "value": {
+    "n_testable": 6434,
+    "n_confirmed": 6434,
+    "f_conf": 1.0,
+    "ci95": [
+     0.9994033001735392,
+     0.9999999999999998
+    ]
+   },
+   "pass": false
+  },
+  "D2": {
+   "prediction": "f_conf(K3 >= 3 km/s) > f_conf(K3 < 3 km/s), 95% intervals not overlapping",
+   "value": {
+    "K3>=3": {
+     "n_testable": 5431,
+     "n_confirmed": 5431,
+     "f_conf": 1.0,
+     "ci95": [
+      0.9992931792196037,
+      0.9999999999999999
+     ]
+    },
+    "K3<3": {
+     "n_testable": 1003,
+     "n_confirmed": 1003,
+     "f_conf": 1.0,
+     "ci95": [
+      0.9961846437217988,
+      1.0
+     ]
+    }
+   },
+   "pass": false
+  },
+  "D4": {
+   "prediction": "(exploratory) f_conf(m1 >= 1.5) < f_conf(m1 < 1.2)",
+   "value": {
+    "m1>=1.5": {
+     "n_testable": 2156,
+     "n_confirmed": 2156,
+     "f_conf": 1.0,
+     "ci95": [
+      0.9982214162685413,
+      0.9999999999999999
+     ]
+    },
+    "m1<1.2": {
+     "n_testable": 2877,
+     "n_confirmed": 2877,
+     "f_conf": 1.0,
+     "ci95": [
+      0.9986665497091298,
+      1.0
+     ]
+    }
+   },
+   "pass": false
+  }
+ },
+ "reading": "D1 fails: most DR3 orbits are real; small rho is (N) or a fault in the TESS test",
+ "rehearsal": {
+  "RH1_pool_reproduced": true,
+  "RH2_all_matched": true,
+  "RH3_all_confirmed": true,
+  "RH4_datalink_plumbing": true
+ },
+ "finished": "2026-11-19T13:04:29Z"
+}
