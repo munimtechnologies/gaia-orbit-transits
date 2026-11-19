@@ -128,9 +128,12 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
-  2 December 12:00 CET.** Every DR3 rehearsal has to run before then. Done: wobble, D5 pool,
-  sb1real (pool + DataLink). Queued: calib-dr4 v2, the pinned-fetch check, and the EBLM
-  control test.
+  2 December 12:00 CET** (re-checked on ESA's Gaia news page, 19 Nov). Every DR3 rehearsal
+  has to run before then. Done: wobble, D5 pool, sb1real (pool + DataLink), and **the
+  pinned-fetch check** (gaia-fetchrel-check-v2, 19 Nov 14:45 UTC: all six release-day groups,
+  `sb1real`, `calib`, `wobble`, `d3a1`, `d5` and `d5grade`, fetched every module at its pinned
+  commit, every version check matched, every step exited 0; log in
+  `data/fetchrel-check-v2/`). Queued: calib-dr4 v2 and the EBLM control test.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it.
 - Tables: `nss_two_body_orbit` + `_supp`, `rvs_two_body_orbit`, `dr3_neighbourhood`,

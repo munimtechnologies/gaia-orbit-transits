@@ -1,0 +1,27 @@
+===== run-01-python: python fetch_release.py sb1real
+fetched dr4_fetch.py 17204 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/25020a830eb9594182a6f8ed9c4aefc185dfd9af/dr4_fetch.py
+fetched dr4_sb1_reality.py 36066 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/25020a830eb9594182a6f8ed9c4aefc185dfd9af/dr4_sb1_reality.py
+fetched sb1_transit.py 44312 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/2e166f126ff045775b5d0430a0338b2f59375da0/sb1_transit.py
+fetched sb1_robust.py 10116 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/2f9aa36307f2c501d7f56c24b0088c7bb4061d44/sb1_robust.py
+fetched dipsearch.py 12825 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/c3c6ce7755749e6d0f22cf9764b74694df16986b/dipsearch.py
+fetched vet_event.py 24554 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/c3c6ce7755749e6d0f22cf9764b74694df16986b/vet_event.py
+
+===== run-02-python: python fetch_release.py calib
+fetched calib_dr4_run.py 20291 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/25020a830eb9594182a6f8ed9c4aefc185dfd9af/calib_dr4_run.py
+fetched calib_dr4.py 5781 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/cd17d1ad75bdfdb8194082975cba55812c7bc1cf/calib_dr4.py
+fetched calib_eclipse_rate.py 34333 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/2e166f126ff045775b5d0430a0338b2f59375da0/calib_eclipse_rate.py
+fetched gaia_orbits.py 21934 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/2e166f126ff045775b5d0430a0338b2f59375da0/gaia_orbits.py
+fetched calib_window.py 16808 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/51b8a35f4dbd28516d14f71e91abbbc778b25a5c/calib_window.py
+fetched window_targets.csv 40640 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/74736a623df08f3231deb5c0cbc77694fea3b330/data/calib-window-v1/window_targets.csv
+
+===== run-03-python: python fetch_release.py wobble
+fetched dr4_wobble.py 35001 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/ea4f08302e25275daa58b7e9e9f6173f78b3e88d/dr4_wobble.py
+
+===== run-04-python: python fetch_release.py d3a1
+fetched sb1_combine.py 17608 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/0c4ca340a679e1903ccd4cdffe19aee4ea6b4f2f/sb1_combine.py
+fetched dr4_d3_a1.py 6316 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/1e94a8aa30ce0f7457e786cce5c91ad474a9d118/dr4_d3_a1.py
+
+===== run-05-python: python fetch_release.py d5
+fetched dr4_d5_rate.py 22904 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/25020a830eb9594182a6f8ed9c4aefc185dfd9af/dr4_d5_rate.py
+
+===== run-06-python: python fetch_release.py d5grade
