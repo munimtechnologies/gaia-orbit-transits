@@ -1,0 +1,28 @@
+{
+ "version": "0.1.0",
+ "eblm_fit_version": "0.1.0",
+ "code_sha": "10b5aeb917c9c52492e7435de93ff1843fcf0999",
+ "schema": "gaiadr3",
+ "ids": [
+  "5440085875822885888",
+  "2970781118606872192",
+  "870991952855398656",
+  "1393971390134144640",
+  "4600624489073375744",
+  "323261744326472832",
+  "6150072630171194752"
+ ],
+ "max_sectors": 8,
+ "adql": "SELECT n.source_id, n.nss_solution_type, n.period, n.period_error, n.t_periastron, n.eccentricity, n.arg_periastron, n.semi_amplitude_primary AS k1, n.semi_amplitude_primary_error AS k1_error, n.significance, v.frequency, v.reference_time, v.model_type, v.derived_primary_ecl_phase, v.derived_primary_ecl_depth, v.derived_secondary_ecl_phase, v.derived_secondary_ecl_depth, v.geom_model_gaussian1_phase, v.geom_model_gaussian1_depth, v.geom_model_gaussian1_depth_error, v.geom_model_gaussian2_phase, v.geom_model_gaussian2_depth, v.geom_model_cosine_half_period_amplitude AS ell_mag, v.geom_model_cosine_half_period_amplitude_error AS ell_mag_error, g.ra, g.dec, g.phot_g_mean_mag, g.bp_rp, g.ruwe, g.parallax, g.non_single_star, p.mass_flame, p.radius_flame, p.teff_gspphot FROM gaiadr3.nss_two_body_orbit AS n JOIN gaiadr3.gaia_source AS g ON g.source_id = n.source_id LEFT JOIN gaiadr3.vari_eclipsing_binary AS v ON v.source_id = n.source_id LEFT JOIN gaiadr3.astrophysical_parameters AS p ON p.source_id = n.source_id WHERE n.nss_solution_type = 'SB1' AND n.source_id IN (5440085875822885888, 2970781118606872192, 870991952855398656, 1393971390134144640, 4600624489073375744, 323261744326472832, 6150072630171194752)",
+ "n_rows": 7,
+ "outcomes": {
+  "5440085875822885888": "C_NORMAL_COMPANION",
+  "2970781118606872192": "A2_COMPANION_LIGHTER_THAN_GAIA",
+  "870991952855398656": "C_NORMAL_COMPANION",
+  "1393971390134144640": "A2_COMPANION_LIGHTER_THAN_GAIA",
+  "4600624489073375744": "A2_COMPANION_LIGHTER_THAN_GAIA",
+  "323261744326472832": "A2_COMPANION_LIGHTER_THAN_GAIA",
+  "6150072630171194752": "C_NORMAL_COMPANION"
+ },
+ "minutes": 8.03861179749171
+}

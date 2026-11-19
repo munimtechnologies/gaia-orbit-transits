@@ -1,0 +1,83 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-eblmctl-v1",
+ "id": "945c6c450569",
+ "field": "astrophysics",
+ "run": "20261119T142250Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-19T16:39:26.898710+00:00",
+ "finished_at": "2026-11-19T16:50:01.896884+00:00",
+ "duration_seconds": 634,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 180.0
+ },
+ "peak_memory_gb": 0.22,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install -r requirements.txt",
+   "exit": 0,
+   "seconds": 44
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_single.py",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "setup-03-python",
+   "cmd": "python eblm_single.py --fetch-only",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_eblm_single",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python eblm_single.py --ids 5440085875822885888 2970781118606872192 870991952855398656 1393971390134144640 4600624489073375744 323261744326472832 6150072630171194752 --max-sectors 8 --data-dir /data/tess --out-dir /out",
+   "exit": 0,
+   "seconds": 483
+  }
+ ],
+ "out_files": [
+  "eblm_fit_report.md",
+  "eblm_fit_results.csv",
+  "eblm_fit_summary.json",
+  "fit_plots/fit_1393971390134144640.png",
+  "fit_plots/fit_2970781118606872192.png",
+  "fit_plots/fit_323261744326472832.png",
+  "fit_plots/fit_4600624489073375744.png",
+  "fit_plots/fit_5440085875822885888.png",
+  "fit_plots/fit_6150072630171194752.png",
+  "fit_plots/fit_870991952855398656.png",
+  "single_classified.json",
+  "single_gaia_rows.json",
+  "single_summary.json",
+  "single_vets.json"
+ ],
+ "out_files_total": 14,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stderr] /usr/local/lib/python3.12/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.\n  warnings.warn(\nWarning: 26% (3392/12904) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 24% (4072/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-02-python stdout] m_model_gaussian1_depth_error, v.geom_model_gaussian2_phase, v.geom_model_gaussian2_depth, v.geom_model_cosine_half_period_amplitude AS ell_mag, v.geom_model_cosine_half_period_amplitude_error AS ell_mag_error, g.ra, g.dec, g.phot_g_mean_mag, g.bp_rp, g.ruwe, g.parallax, g.non_single_star, p.mass_flame, p.radius_flame, p.teff_gspphot FROM gaiadr3.nss_two_body_orbit AS n JOIN gaiadr3.gaia_source AS g ON g.source_id = n.source_id LEFT JOIN gaiadr3.vari_eclipsing_binary AS v ON v.source_id = n.source_id LEFT JOIN gaiadr3.astrophysical_parameters AS p ON p.source_id = n.source_id WHERE n.nss_solution_type = 'SB1' AND n.source_id IN (5440085875822885888, 2970781118606872192, 870991952855398656, 1393971390134144640, 4600624489073375744, 323261744326472832, 6150072630171194752)\", \"n_rows\": 7, \"outcomes\": {\"5440085875822885888\": \"C_NORMAL_COMPANION\", \"2970781118606872192\": \"A2_COMPANION_LIGHTER_THAN_GAIA\", \"870991952855398656\": \"C_NORMAL_COMPANION\", \"1393971390134144640\": \"A2_COMPANION_LIGHTER_THAN_GAIA\", \"4600624489073375744\": \"A2_COMPANION_LIGHTER_THAN_GAIA\", \"323261744326472832\": \"A2_COMPANION_LIGHTER_THAN_GAIA\", \"6150072630171194752\": \"C_NORMAL_COMPANION\"}, \"minutes\": 8.03861179749171}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261119T142250Z-astrophysics\\ctl)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

@@ -1,0 +1,30 @@
+{
+ "job": "gaia-eblmctl-v1",
+ "prereg": "findings/2026-11-19-eblm-control-prereg.md",
+ "results_note": "findings/2026-11-19-eblm-control-results.md",
+ "computed": "by hand from data/eblmctl-v1/eblm_fit_results.csv (columns r2, r2_flame, m2, verdict) and Swayne et al. 2024 Table 4",
+ "grade": "PIPELINE_FAILED",
+ "n_testable": 6,
+ "n_pass": 2,
+ "pass_fraction": 0.333,
+ "bar": "PIPELINE_VALIDATED needs >= 4 testable and >= 80% pass",
+ "median_radius_offset_pct": -0.89,
+ "radius_within_10pct": 5,
+ "median_m2_over_M2": 0.951,
+ "controls": [
+  {"eblm": "J0941-31", "gaia_dr3": "5440085875822885888", "verdict": "EBLM_CONSISTENT", "label": "C", "r2": 0.2253, "R2_lit": 0.2365, "r2_offset_pct": -4.72, "r2_flame_ratio": null, "m2": 0.1996, "M2_lit": 0.2173, "m2_ratio": 0.918, "m1_source": "default_1.3", "a_ell_ppm": 122, "err_a_ell_ppm": 16, "ell_pred_ppm": 292, "pass": true},
+  {"eblm": "J0540-17", "gaia_dr3": "2970781118606872192", "verdict": "MASS_TENSION_LIGHTER", "label": "A2", "r2": 0.1992, "R2_lit": 0.1949, "r2_offset_pct": 2.22, "r2_flame_ratio": 1.017, "m2": 0.1780, "M2_lit": 0.1633, "m2_ratio": 1.090, "m1_source": "flame", "a_ell_ppm": -7, "err_a_ell_ppm": 10, "ell_pred_ppm": 236, "pass": false},
+  {"eblm": "J0719+25", "gaia_dr3": "870991952855398656", "verdict": "EBLM_CONSISTENT", "label": "C", "r2": 0.1897, "R2_lit": 0.1917, "r2_offset_pct": -1.03, "r2_flame_ratio": 0.989, "m2": 0.1502, "M2_lit": 0.1584, "m2_ratio": 0.948, "m1_source": "flame", "a_ell_ppm": 142, "err_a_ell_ppm": 17, "ell_pred_ppm": 90, "pass": true},
+  {"eblm": "J1522+42", "gaia_dr3": "1393971390134144640", "verdict": "MASS_TENSION_LIGHTER", "label": "A2", "r2": 0.2092, "R2_lit": 0.1915, "r2_offset_pct": 9.25, "r2_flame_ratio": 0.994, "m2": 0.1580, "M2_lit": 0.1656, "m2_ratio": 0.954, "m1_source": "flame", "a_ell_ppm": -52, "err_a_ell_ppm": 14, "ell_pred_ppm": 146, "pass": false},
+  {"eblm": "J1741+31", "gaia_dr3": "4600624489073375744", "verdict": "MASS_TENSION_LIGHTER", "label": "A2", "r2": 0.3244, "R2_lit": 0.377, "r2_offset_pct": -13.96, "r2_flame_ratio": 1.245, "m2": 0.4301, "M2_lit": 0.461, "m2_ratio": 0.933, "m1_source": "flame", "a_ell_ppm": -122, "err_a_ell_ppm": 12, "ell_pred_ppm": 54, "pass": false},
+  {"eblm": "J0123+38", "gaia_dr3": "323261744326472832", "verdict": "MASS_TENSION_LIGHTER", "label": "A2", "r2": 0.3505, "R2_lit": 0.3531, "r2_offset_pct": -0.74, "r2_flame_ratio": 0.986, "m2": 0.3457, "M2_lit": 0.338, "m2_ratio": 1.023, "m1_source": "flame", "a_ell_ppm": -586, "err_a_ell_ppm": 63, "ell_pred_ppm": 417, "pass": false}
+ ],
+ "descriptive": [
+  {"eblm": "J1219-39", "gaia_dr3": "6150072630171194752", "verdict": "EBLM_CONSISTENT", "r2": 0.1347, "m2": 0.1220, "a_ell_ppm": -17, "err_a_ell_ppm": 21, "ell_pred_ppm": 21}
+ ],
+ "predictions": {
+  "outcome": {"predicted": "VALIDATED 65 / FAILED 25 / INCONCLUSIVE 10", "result": "FAILED", "favoured_outcome_held": false},
+  "median_offset_within_5pct": {"probability": 0.70, "held": true},
+  "j1741_most_likely_to_fail": {"held": "partly: it failed and is the only radius failure, but three others failed on the mass-consistency label"}
+ }
+}

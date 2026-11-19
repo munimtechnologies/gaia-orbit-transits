@@ -4,6 +4,20 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
+## Newest result (19 Nov, evening)
+**Our EBLM fitting pipeline failed its pre-registered outside check**
+(`findings/2026-11-19-eblm-control-results.md`, data `data/eblmctl-v1/`). We fitted six
+M-dwarf companions whose radii Swayne et al. 2024 measured independently. Only 2 of 6 passed;
+80% was required. Our favoured outcome (validated, 65%) was wrong.
+- The **radii agree**: median offset −0.9%, and 5 of 6 are within ±10%.
+- All four failures come from the **mass-consistency (ellipsoidal) check**. At 5.5-8 days its
+  white-noise error bars are far too small: three controls have impossible negative ellipsoidal
+  amplitudes at 3.7-10.5σ. Eccentric orbits (secondary eclipse away from phase 0.5) are also not
+  modelled.
+- Consequences, as pre-registered: **BD+65 286's label is not adopted**, the M-dwarf inflation
+  grade carries a caveat, and the fit is being fixed (eblm_fit 0.2.0, with a fresh control set
+  chosen before fitting) before any Gaia DR4 EBLM run.
+
 ## Leads
 1. **Do Gaia DR3 inclinations hold up against real eclipses?** Graded in 0.20.0:
    `findings/2026-11-18-calib-window-results.md`.
@@ -58,17 +72,17 @@ holds.
        equal odd/even eclipses, 0.39% occultation) whose companion's radius is **0.224 R☉** at
        Gaia's 0.097 M☉, **1.9× the main-sequence value**. Youth or a wrong Gaia mass are not
        yet excluded, so we do not call it "inflated"; a youth and archival-RV check is queued
-       (`findings/2026-11-19-tic71945261-followup-prereg.md`).
-     - **BD+65 286** (TIC 50453242, chunk 3). **Fit run 19 Nov**
-       (`findings/2026-11-19-bd65-286-fit-results.md`): every pre-registered number held
-       (eblm_fit EBLM_CONSISTENT; companion **0.100 M☉, 0.122 R☉**, +1% above the
-       main-sequence radius, +9% with Gaia's FLAME primary radius; Gaia's mass confirmed by the
-       ellipsoidal signal at 0.81 of prediction). **But the job's control, TOI-1251.01, failed
-       its prediction, and our rule says the other labels are then not interpreted, so the
-       label is not graded.** A new control set of six published EBLMs (Swayne et al. 2024)
-       is pre-registered (`findings/2026-11-19-eblm-control-prereg.md`, job gaia-eblmctl-v1).
-       The eclipse itself is in all 8 TESS sectors at Gaia's period. Prior art: Green et al.
-       2023 (ellipsoidal candidate, same period) and NASA SPOC's sector-52 TCE (2022).
+       (`findings/2026-11-19-tic71945261-followup-prereg.md`). The fitting pipeline failed its
+       outside check on 19 Nov (above); the radius scale held there, but this label carries
+       the same caveat.
+     - **BD+65 286** (TIC 50453242, chunk 3). Fit run 19 Nov
+       (`findings/2026-11-19-bd65-286-fit-results.md`): companion **0.100 M☉, 0.122 R☉**;
+       Gaia's mass agrees with the ellipsoidal signal at 0.81 of prediction. Its first control
+       (TOI-1251.01) failed, and **its second control set, six published EBLMs, failed too
+       (2/6, `findings/2026-11-19-eblm-control-results.md`). Under our rules its label is not
+       adopted.** The numbers stand as measurements only. The eclipse itself is in all 8
+       TESS sectors at Gaia's period. Prior art: Green et al. 2023 (ellipsoidal candidate, same
+       period) and NASA SPOC's sector-52 TCE (2022).
      - **TOI-7247.01** (chunk 5): our prediction (C or B) failed; it came out D (odd and even
        eclipses differ at Gaia's period). Not interpreted; no statement about the TOI.
      - **TIC 324597856** (chunk 0): rejected as a brown dwarf (secondary eclipse half as deep).
@@ -80,9 +94,10 @@ holds.
      +8.8%)** above BHAC15 5-Gyr radii. Pre-registered label **INCONCLUSIVE**.
    - **No sign that shorter orbits inflate more** (H2: NO_TREND_DETECTED; ρ = +0.49).
    - Our prediction that the heavier companions would pull the median down **failed**.
-   - **The pipeline's radius scale has not yet been checked against independently measured
-     systems.** The control test above (gaia-eblmctl-v1) does that; if its median offset is
-     beyond ±3%, this grade gets an addendum.
+   - **Caveat (19 Nov): the pipeline failed its pre-registered outside check**
+     (`findings/2026-11-19-eblm-control-results.md`). The failure is in the mass-consistency
+     step. The radius scale agreed with published radii (median −0.9%, inside the ±3% addendum
+     threshold), but at longer periods (5.5-8 d) and with cooler primaries than this sample.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
@@ -117,6 +132,9 @@ holds.
 - **Vet a comparison system like a candidate, and prefer controls with independently
   published answers.** TOI-1251.01 was a known EB; it failed as a control twice, and under our
   own rule that left BD+65 286's label ungraded.
+- **A white-noise error bar on a small phase-curve term is not an error bar.** A physically
+  impossible sign (a negative ellipsoidal amplitude) at many σ shows red noise. Check the sign
+  before trusting the σ.
 - **A minimum mass is not a mass.**
 
 ## Prior-art sources we check for every eclipsing system
@@ -129,11 +147,11 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET** (re-checked on ESA's Gaia news page, 19 Nov). Every DR3 rehearsal
-  has to run before then. Done: wobble, D5 pool, sb1real (pool + DataLink), and **the
-  pinned-fetch check** (gaia-fetchrel-check-v2, 19 Nov 14:45 UTC: all six release-day groups,
-  `sb1real`, `calib`, `wobble`, `d3a1`, `d5` and `d5grade`, fetched every module at its pinned
-  commit, every version check matched, every step exited 0; log in
-  `data/fetchrel-check-v2/`). Queued: calib-dr4 v2 and the EBLM control test.
+  has to run before then. Done: wobble, D5 pool, sb1real (pool + DataLink), the EBLM control
+  test (failed; see top), and **the pinned-fetch check** (gaia-fetchrel-check-v2, 19 Nov
+  14:45 UTC: all six release-day groups, `sb1real`, `calib`, `wobble`, `d3a1`, `d5` and
+  `d5grade`, fetched every module at its pinned commit, every version check matched, every
+  step exited 0; log in `data/fetchrel-check-v2/`). Queued: calib-dr4 v2.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it.
 - Tables: `nss_two_body_orbit` + `_supp`, `rvs_two_body_orbit`, `dr3_neighbourhood`,
@@ -145,7 +163,8 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
   2. the wobble test (`dr4_wobble.py release`);
   3. the SB1 transit-rate test on DR4's new SB1 orbits (D5);
   4. the inclination and timing calibration on DR4's own orbits;
-  5. EBLM inflation;
+  5. EBLM inflation (**on hold until eblm_fit 0.2.0 passes a fresh, pre-registered control
+     set**);
   6. the RV transit screen;
   7. exoplanet candidates;
   8. self-lensing.
