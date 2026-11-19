@@ -1,0 +1,381 @@
+{
+ "version": "0.2.0 (sb1_robust; sb1_transit 0.1.0 + median rule)",
+ "args": {
+  "out_dir": "/out",
+  "tmp_dir": "/tmp/sb1lc",
+  "chunk": 2,
+  "n_chunks": 8,
+  "max_sectors": 3,
+  "mc": 400,
+  "time_budget_min": 165.0,
+  "max_stars": 100000
+ },
+ "gaia_rows": 11937,
+ "eligible": 6434,
+ "rejected": {
+  "m2sini": 3802,
+  "evolved": 1701
+ },
+ "stars_processed": 457,
+ "status_counts": {
+  "OK": 442,
+  "NO_TESS": 15
+ },
+ "summary": {
+  "n_rate_sample": 340,
+  "n_hit": 1,
+  "n_hit_substellar_size": 0,
+  "n_control_hits_expected": 0.5,
+  "n_control_hits_substellar_size": 0.0,
+  "expected_if_all_real": 59.99550400441601,
+  "control_rate": 0.0014705882352941176,
+  "n_phase_match": 0,
+  "n_phase_mismatch": 0,
+  "rho_all": 0.008333957823959562,
+  "rho_all_ci95": [
+   0.0,
+   0.08453372423649604
+  ],
+  "rho_substellar_size": 0.0,
+  "rho_substellar_size_ci95": [
+   0.0,
+   0.061485931576513005
+  ]
+ },
+ "by_period": {
+  "P<5": {
+   "n_rate_sample": 239,
+   "n_hit": 0,
+   "n_hit_substellar_size": 0,
+   "n_control_hits_expected": 0.0,
+   "n_control_hits_substellar_size": 0.0,
+   "expected_if_all_real": 50.10850435805529,
+   "control_rate": 0.0,
+   "n_phase_match": 0,
+   "n_phase_mismatch": 0,
+   "rho_all": 0.0,
+   "rho_all_ci95": [
+    0.0,
+    0.07361783197029152
+   ],
+   "rho_substellar_size": 0.0,
+   "rho_substellar_size_ci95": [
+    0.0,
+    0.07361783197029152
+   ]
+  },
+  "P>=5": {
+   "n_rate_sample": 101,
+   "n_hit": 1,
+   "n_hit_substellar_size": 0,
+   "n_control_hits_expected": 0.5,
+   "n_control_hits_substellar_size": 0.0,
+   "expected_if_all_real": 9.88699964636072,
+   "control_rate": 0.0049504950495049506,
+   "n_phase_match": 0,
+   "n_phase_mismatch": 0,
+   "rho_all": 0.05057145927824966,
+   "rho_all_ci95": [
+    0.0,
+    0.512960814437341
+   ],
+   "rho_substellar_size": 0.0,
+   "rho_substellar_size_ci95": [
+    0.0,
+    0.3731040341921894
+   ]
+  }
+ },
+ "by_class": {
+  "BD": {
+   "n_rate_sample": 248,
+   "n_hit": 0,
+   "n_hit_substellar_size": 0,
+   "n_control_hits_expected": 0.5,
+   "n_control_hits_substellar_size": 0.0,
+   "expected_if_all_real": 46.277817088049126,
+   "control_rate": 0.0020161290322580645,
+   "n_phase_match": 0,
+   "n_phase_mismatch": 0,
+   "rho_all": -0.010804312551058529,
+   "rho_all_ci95": [
+    0.0,
+    0.06890730061979171
+   ],
+   "rho_substellar_size": 0.0,
+   "rho_substellar_size_ci95": [
+    0.0,
+    0.07971161317085024
+   ]
+  },
+  "VLMS": {
+   "n_rate_sample": 73,
+   "n_hit": 1,
+   "n_hit_substellar_size": 0,
+   "n_control_hits_expected": 0.0,
+   "n_control_hits_substellar_size": 0.0,
+   "expected_if_all_real": 10.747810230225133,
+   "control_rate": 0.0,
+   "n_phase_match": 0,
+   "n_phase_mismatch": 0,
+   "rho_all": 0.09304220846659414,
+   "rho_all_ci95": [
+    0.0023556247683914973,
+    0.5183980058812584
+   ],
+   "rho_substellar_size": 0.0,
+   "rho_substellar_size_ci95": [
+    0.0,
+    0.34322149117780476
+   ]
+  }
+ },
+ "grades": {
+  "C1": {
+   "prediction": ">= 3 of the 4 known transiting companions (WASP-18 b, TOI-2533 b, TOI-1712 b, TOI-5427 b) hit at the Gaia period (untestable if < 3 have TESS data)",
+   "value": "4 of 4 with data",
+   "pass": true
+  },
+  "C2": {
+   "prediction": "control-period hit rate <= 3 % of the rate sample",
+   "value": 0.0014705882352941176,
+   "pass": true
+  },
+  "C3": {
+   "prediction": ">= 150 stars in the rate sample (sensitivity >= 0.5) in this job",
+   "value": 340,
+   "pass": true
+  },
+  "H1": {
+   "prediction": "rho (substellar-size hits) upper 95 % bound < 0.5: most DR3 low-mass SB1 orbits at P = 1-13 d do not show the transits a real low-mass companion must give",
+   "value": 0.061485931576513005,
+   "pass": true
+  },
+  "H2": {
+   "prediction": "(exploratory) rho_all at P >= 5 d exceeds rho_all at P < 5 d",
+   "value": [
+    0.0,
+    0.05057145927824966
+   ],
+   "pass": true
+  },
+  "H3": {
+   "prediction": "of the hits that Gaia still times (3 sigma < P/4), most (> 50 %) sit at the predicted transit phase (|z| < 3); unrelated dips would match < 6 sigma / P < 50 % of the time",
+   "value": "0 of 0 timed hits",
+   "pass": null
+  },
+  "D1": {
+   "prediction": "(report) substellar-size hits not on the TOI list -> vetting, not claims",
+   "value": [],
+   "pass": null
+  }
+ },
+ "controls": [
+  {
+   "source_id": "3341401062125577088",
+   "tic": "52420398",
+   "toi": "5427.01(PC)",
+   "P": 5.234503898115951,
+   "K": 7.864213049264911,
+   "e": 0.2771771585178456,
+   "m1": 1.0735145,
+   "r1": 1.1990898,
+   "m2sini": 0.0672759373816147,
+   "m2_class": "BD",
+   "p_transit": 0.1355605048862058,
+   "depth_exp": 0.006954991164680099,
+   "depth_obs": 0.010446573875299727,
+   "snr_best": 50.360778198294405,
+   "hit_class": "SUBSTELLAR_SIZE",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 1.1791367510278188,
+   "sec_label": "UNTIMED",
+   "G": 12.0692215,
+   "ruwe": 1.0351056,
+   "sensitivity": 1.0,
+   "n_sectors_used": 3,
+   "n_sectors_hit": 2,
+   "mod_amp": 0.0020096745143812714,
+   "control": "TOI-5427 b (93 M_Jup, P 5.24 d)",
+   "status": "OK"
+  },
+  {
+   "source_id": "4955371367334610048",
+   "tic": "100100827",
+   "toi": "185.01(KP)",
+   "P": 0.9414684606070756,
+   "K": 1.9382581841901922,
+   "e": 0.1233766991234055,
+   "m1": 1.1969767,
+   "r1": 1.2781686,
+   "m2sini": 0.010037484855862552,
+   "m2_class": "planet",
+   "p_transit": 0.34944143122576227,
+   "depth_exp": 0.00612101877222873,
+   "depth_obs": 0.010424920853677973,
+   "snr_best": 64.07543133866187,
+   "hit_class": "SUBSTELLAR_SIZE",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 0.11182928261615761,
+   "sec_label": "UNTIMED",
+   "G": 9.173881,
+   "ruwe": 0.95191836,
+   "sensitivity": 1.0,
+   "n_sectors_used": 3,
+   "n_sectors_hit": 3,
+   "mod_amp": 0.001864487361284004,
+   "control": "WASP-18 b (10.4 M_Jup, P 0.941 d)",
+   "status": "OK"
+  },
+  {
+   "source_id": "917823348536224768",
+   "tic": "67926921",
+   "toi": "1712.01(FP)",
+   "P": 3.5656497820968083,
+   "K": 7.693113239389888,
+   "e": 0.08968670164635542,
+   "m1": 1.6971835835245888,
+   "r1": 1.5976529862704907,
+   "m2sini": 0.08068541138667543,
+   "m2_class": "VLMS",
+   "p_transit": 0.152038070566673,
+   "depth_exp": 0.0042195498377550255,
+   "depth_obs": 0.0033200138732356953,
+   "snr_best": 52.61334610900282,
+   "hit_class": "SUBSTELLAR_SIZE",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 0.3328637300674669,
+   "sec_label": "UNTIMED",
+   "G": 10.275276,
+   "ruwe": 1.023126,
+   "sensitivity": 1.0,
+   "n_sectors_used": 2,
+   "n_sectors_hit": 2,
+   "mod_amp": 0.00025430539706793585,
+   "control": "TOI-1712 b (82 M_Jup, P 3.57 d)",
+   "status": "OK"
+  },
+  {
+   "source_id": "1259922196651254272",
+   "tic": "418012030",
+   "toi": "2533.01(PC)",
+   "P": 6.692407610923351,
+   "K": 7.388477197951771,
+   "e": 0.1951324400207906,
+   "m1": 1.0970802,
+   "r1": 1.1380085,
+   "m2sini": 0.07114383590542808,
+   "m2_class": "BD",
+   "p_transit": 0.09673385008304822,
+   "depth_exp": 0.007721630011635056,
+   "depth_obs": 0.006534997632646006,
+   "snr_best": 28.851754410018515,
+   "hit_class": "SUBSTELLAR_SIZE",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 0.9513145196145706,
+   "sec_label": "UNTIMED",
+   "G": 12.001508,
+   "ruwe": 1.5871413,
+   "sensitivity": 0.5,
+   "n_sectors_used": 2,
+   "n_sectors_hit": 1,
+   "mod_amp": 3.8732004438333044e-05,
+   "control": "TOI-2533 b (72 M_Jup BD, P 6.68 d)",
+   "status": "OK"
+  }
+ ],
+ "hits": [
+  {
+   "source_id": "6073528478949603200",
+   "tic": "412083925",
+   "toi": "",
+   "P": 8.574416468093732,
+   "K": 7.337213104268127,
+   "e": 0.17171108863312687,
+   "m1": 1.3458427350425444,
+   "r1": 1.3066741880340356,
+   "m2sini": 0.08837111838718706,
+   "m2_class": "VLMS",
+   "p_transit": 0.07352385772775258,
+   "depth_exp": 0.007430602134379125,
+   "depth_obs": 0.0017176696742653623,
+   "snr_best": 8.254782728576133,
+   "hit_class": "MODULATED",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 1.2846498132750581,
+   "sec_label": "UNTIMED",
+   "G": 12.581541,
+   "ruwe": 1.1842501,
+   "sensitivity": 1.0,
+   "n_sectors_used": 3,
+   "n_sectors_hit": 1,
+   "mod_amp": 0.0016383565422571067,
+   "control": "",
+   "status": "OK"
+  },
+  {
+   "source_id": "6129981769596529152",
+   "tic": "334502995",
+   "toi": "",
+   "P": 12.056743183339703,
+   "K": 5.799884670074972,
+   "e": 0.030459553954021616,
+   "m1": 1.3001207060014601,
+   "r1": 1.2700965648011682,
+   "m2sini": 0.07729259246105774,
+   "m2_class": "VLMS",
+   "p_transit": 0.05641494676295129,
+   "depth_exp": 0.006199069668233065,
+   "depth_obs": 0.0046695666418853305,
+   "snr_best": 15.27755723680987,
+   "hit_class": "MODULATED",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 4.229561132426333,
+   "sec_label": "UNTIMED",
+   "G": 11.747296,
+   "ruwe": 2.0977864,
+   "sensitivity": 0.25,
+   "n_sectors_used": 3,
+   "n_sectors_hit": 1,
+   "mod_amp": 0.008011497619868703,
+   "control": "",
+   "status": "OK"
+  },
+  {
+   "source_id": "390727988263983360",
+   "tic": "191226967",
+   "toi": "",
+   "P": 9.408323138923212,
+   "K": 1.5450974133157789,
+   "e": 0.20153705994168378,
+   "m1": 2.2,
+   "r1": 1.9,
+   "m2sini": 0.025579093786348657,
+   "m2_class": "BD",
+   "p_transit": 0.09564664763914364,
+   "depth_exp": 0.0027700831024930752,
+   "depth_obs": 0.0006226031819947381,
+   "snr_best": 9.68577741741331,
+   "hit_class": "MODULATED",
+   "phase_label": "UNTIMED",
+   "phase_z": null,
+   "sigma_pred_d": 1.5472345562957426,
+   "sec_label": "UNTIMED",
+   "G": 10.308123,
+   "ruwe": 1.2537948,
+   "sensitivity": 0.25,
+   "n_sectors_used": 3,
+   "n_sectors_hit": 1,
+   "mod_amp": 0.002406003637640739,
+   "control": "",
+   "status": "OK"
+  }
+ ],
+ "minutes": 165.2681955933571
+}
