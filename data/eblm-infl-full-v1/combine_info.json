@@ -1,0 +1,20 @@
+{
+ "parts": {
+  "v1": 70,
+  "rest-a": 49,
+  "rest-b": 48
+ },
+ "duplicates": [],
+ "n_rows": 167,
+ "version": "0.1.0",
+ "eblm_infl_sha": "87f190f9d49b39e53bd738f2c8995d8cdfe2b194",
+ "v1_sha": "179d6e4805c38f27c0cc8cda22e54c6ebde56467",
+ "input_sha256": {
+  "v1": "3864bfa8a801b7268a9f5aedd95b2b2ea064331103bbd9f5a0b37be246fe1ec8",
+  "rest-a": "6501c3415c548a944a7d43ab772fd584e9fa150674165d94e120b32a57fa6722",
+  "rest-b": "593add11d7c4ac07a0d07135d8ccb8491d43c998698a9383c03e749bda85a8bd"
+ },
+ "combined_sha256": "dacf9c86495e952df9982e3cb24404b8241ce435eb8eaf6b64580369b662b26d",
+ "n_eblm_like": 167,
+ "n_missing": 0
+}

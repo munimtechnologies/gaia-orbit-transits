@@ -19,8 +19,8 @@ holds.
        published orbits. **The DR3 dress rehearsal caught a wrong column-name assumption**
        (ESA's neighbourhood tables name the new id `dr3_source_id`, not `source_id`) before
        release day. Amendment 2 (`findings/2026-11-19-calib-dr4-amendment-2.md`) fixes it in
-       `dr4_fetch.py` 0.2.0 and the modules that use it. The rehearsal is re-queued
-       (gaia-calibdr4-reh-v2).
+       `dr4_fetch.py` 0.2.0 and the modules that use it, **released in v0.28.0**. The
+       rehearsal is re-queued (gaia-calibdr4-reh-v2).
      - `findings/2026-11-19-dr4-wobble-prereg.md` + amendment 1, with code `dr4_wobble.py`
        0.1.0. **The rehearsal on ESA's 12-source DR4 pre-release passed**
        (`findings/2026-11-19-dr4-wobble-rehearsal-results.md`).
@@ -71,11 +71,20 @@ holds.
      - **TIC 202283090** (chunk 1): TOI-6218.01, an existing TFOP candidate.
    - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
      (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py` and `dr4_d5_rate.py`). Its DR3
-     rehearsal reproduced the pool (RH1–RH3 pass); the DataLink step (RH4) could not be
-     tested because ESA's DataLink server answered 503.
-3. **Are M dwarfs in 1–2-day orbits inflated?** +2.2% (95% CI +0.3% to +7.1%) from 14
-   systems: **INCONCLUSIVE**, as pre-registered (`findings/2026-11-18-eblm-infl-results.md`).
-   The pre-registered full-sample grade on all 167 rows is queued (gaia-eblm-infl-full-v1).
+     rehearsal reproduced the pool (RH1–RH3 pass). The DataLink step (RH4) could not be
+     tested then because ESA's DataLink server answered 503. It answers again, and the
+     re-test through the exact release-day path is queued (gaia-sb1real-reh-v2).
+3. **Are M dwarfs in short orbits inflated? Graded on the full DR3 sample, 19 Nov**
+   (`findings/2026-11-19-eblm-infl-full-results.md`):
+   - 28 M dwarfs (0.24–0.60 M☉) in 0.89–3.52-day orbits, weighed with Gaia SB1 orbits and
+     TESS eclipses, sit **+6.3% (95% CI +1.0% to +8.8%)** above BHAC15 5-Gyr radii.
+     Pre-registered label **INCONCLUSIVE**: the interval excludes zero but not the 3% bar.
+   - **No sign that shorter orbits inflate more** (pre-registered H2: NO_TREND_DETECTED). The
+     rank correlation has the opposite sign (ρ = +0.49).
+   - Our prediction that the heavier companions would pull the median down **failed**: it rose
+     from +2.2% (14 systems) to +6.3% (28).
+   - It agrees with Swayne et al. 2024's ~6% below 5 days and sits above EBLM XIX's
+     0.3 ± 1.6% beyond 5 days (cross-study, different models).
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
@@ -123,6 +132,8 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** Every DR3 rehearsal has to run before then.
+- Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
+  pinning every module to the commit that published it (0.28.0 code for the amendment-2 fix).
 - Tables: `nss_two_body_orbit` + `_supp`, `rvs_two_body_orbit`, `dr3_neighbourhood`,
   `nss_masses`, `nss_acceleration_astro`, `nss_epoch_flags`, `rvs_epoch_parameters_single`
   (all in ESA's draft DR4 data model). Epoch photometry is DataLink-only.
