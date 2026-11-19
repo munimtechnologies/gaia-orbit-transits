@@ -1,11 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
-"""dr4_d5_rate 0.1.0: D5 of the Gaia DR4 SB1-reality test. Are DR4's NEW low-mass SB1 orbits purer?
+"""dr4_d5_rate 0.1.1: D5 of the Gaia DR4 SB1-reality test. Are DR4's NEW low-mass SB1 orbits purer?
 
 Part of gaia-orbit-transits by MV2 of Munim, Inc. (made with AI agents). Apache-2.0.
 Pre-registration: findings/2026-11-18-dr4-sb1-reality-prereg.md (D5), amendment 2 (DR4 keeps
 SB1 orbits in two tables), sb1_robust amendment 1 (radius_flag) and amendment 3
 (findings/2026-11-19-dr4-sb1-reality-amendment-3.md, the implementation rules of this file).
 Written 2026-11-19, thirteen days before Gaia DR4 (2 December 2026), with no DR4 data seen.
+
+0.1.1 (2026-11-19, findings/2026-11-19-calib-dr4-amendment-2.md): the DR4 id column of
+gaiadr4.dr3_neighbourhood is resolved with dr4_fetch.resolve_new_id ('dr4_source_id', then
+'source_id'); neither present = exit 4. 0.1.0 assumed 'source_id', which the DR3 rehearsal of
+calib-dr4 showed ESA does not use for gaiadr3.dr2_neighbourhood. Nothing else changed.
 
 D5 (exploratory): rho_DR4-new > rho_DR3, where rho_DR4-new is the transit reality fraction of
 DR4 SB1/SB1C orbits that pass the same cuts and were NOT SB1/SB1C orbits in DR3.
@@ -50,7 +55,7 @@ import dr4_fetch as df
 import dr4_sb1_reality as dsr
 import sb1_combine as sc
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 P_EDGES = (1, 1.5, 2, 3, 5, 8, 13)
 G_MAX = 13.0                    # sb1_transit.G_MAX
 KP_SERVER_MAX = 15440.0         # sb1_transit.KP_SERVER_MAX
@@ -83,7 +88,7 @@ SOURCE_REQUIRED = ("source_id", "ra", "dec", "phot_g_mean_mag", "bp_rp", "parall
                    "parallax_error", "ruwe")
 AP_REQUIRED = ("source_id", "mass_flame", "radius_flame", "radius_gspphot", "logg_gspphot")
 AP_OPTIONAL = ("teff_gspphot",)
-XMATCH_NEW, XMATCH_OLD = "source_id", "dr3_source_id"
+XMATCH_OLD = "dr3_source_id"
 
 
 class PoolError(RuntimeError):
@@ -96,7 +101,8 @@ class PoolError(RuntimeError):
 def check_tables(schema, query=df.tap_query):
     """{table: {col: meta}} for every table used. Raises df.SchemaError when a required
     table/column is missing. An optional orbit table that is absent is skipped; one that
-    exists without the required columns stops the run (its orbits would be lost)."""
+    exists without the required columns stops the run (its orbits would be lost). The
+    neighbourhood table's DR4 id column is resolved with dr4_fetch.resolve_new_id."""
     t = TABLES[schema]
     found, missing = {}, []
     need = {}
@@ -109,7 +115,7 @@ def check_tables(schema, query=df.tap_query):
     add(t["ap"], AP_REQUIRED)
     add(t["dr3_nss"], ("source_id", "nss_solution_type"))
     if t["xmatch"]:
-        add(t["xmatch"], (XMATCH_NEW, XMATCH_OLD) + df.XMATCH_COLS)
+        add(t["xmatch"], (XMATCH_OLD,) + df.XMATCH_COLS)
     for tb, cols in need.items():
         have = df.table_columns(tb, query)
         found[tb] = have
@@ -117,6 +123,12 @@ def check_tables(schema, query=df.tap_query):
             missing.append("%s (table)" % tb)
             continue
         missing += ["%s.%s" % (tb, c) for c in cols if c not in have]
+        if tb == t["xmatch"]:
+            col = df.resolve_new_id(schema, have)
+            if col is None:
+                missing.append(df.missing_new_id_label(schema))
+            else:
+                df.set_xmatch_new_id(schema, col)
     for tb in t["optional_orbits"]:
         have = df.table_columns(tb, query)
         found[tb] = have
@@ -205,9 +217,10 @@ def flag_of(row, ph):
 # ------------------------------------------------------------------ in-DR3 test
 def adql_xmatch_rev(schema, ids):
     t = TABLES[schema]
+    new_col = df.SCHEMAS[schema]["xmatch_new_id"]
     return ("SELECT x.%s AS new_id, x.%s AS old_id, %s FROM %s AS x WHERE x.%s IN (%s)"
-            % (XMATCH_NEW, XMATCH_OLD, ", ".join("x.%s" % c for c in df.XMATCH_COLS),
-               t["xmatch"], XMATCH_NEW, df._ids(ids)))
+            % (new_col, XMATCH_OLD, ", ".join("x.%s" % c for c in df.XMATCH_COLS),
+               t["xmatch"], new_col, df._ids(ids)))
 
 
 def adql_dr3_sb1(schema, ids):
@@ -288,6 +301,7 @@ def build_pool(schema, st, query=df.tap_query, p_edges=P_EDGES, all_new=False, l
             "eligible_unflagged": len(elig), "dr3_status": counts, "all_new": bool(all_new),
             "pool": len(new_ids), "pool_sha256": pool_hash(new_ids),
             "pool_by_class": {}, "pool_by_table": {}, "seed": SEED_NOTE,
+            "xmatch_new_id": df.SCHEMAS[schema]["xmatch_new_id"] if TABLES[schema]["xmatch"] else "",
             "t_periastron_meta": {tb: found.get(tb, {}).get("t_periastron")
                                   for tb in orbit_tables(schema, found)}}
     for rec in recs:

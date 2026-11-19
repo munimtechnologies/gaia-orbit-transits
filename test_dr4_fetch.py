@@ -6,13 +6,29 @@ import unittest
 import dr4_fetch as df
 
 
-class TestAdql(unittest.TestCase):
-    def test_xmatch_query(self):
+class _Reset(unittest.TestCase):
+    def setUp(self):
+        df.reset_xmatch_new_id()
+
+    def tearDown(self):
+        df.reset_xmatch_new_id()
+
+
+class TestAdql(_Reset):
+    def test_xmatch_query_default_and_explicit(self):
         q = df.adql_xmatch("dr4", ["123", 456])
         self.assertIn("FROM gaiadr4.dr3_neighbourhood AS x", q)
         self.assertIn("x.dr3_source_id IN (123,456)", q)
-        self.assertIn("x.source_id AS new_id", q)
+        self.assertIn("x.dr4_source_id AS new_id", q)
         self.assertIn("x.dr3_source_id AS old_id", q)
+        q = df.adql_xmatch("dr4", ["123"], new_col="source_id")
+        self.assertIn("x.source_id AS new_id", q)
+
+    def test_unregistered_new_col_refused(self):
+        with self.assertRaises(ValueError):
+            df.adql_xmatch("dr4", ["1"], new_col="dr2_source_id")
+        with self.assertRaises(ValueError):
+            df.set_xmatch_new_id("dr4", "anything")
 
     def test_bad_ids_refused(self):
         with self.assertRaises(ValueError):
@@ -27,6 +43,52 @@ class TestAdql(unittest.TestCase):
 
     def test_chunks(self):
         self.assertEqual([len(c) for c in df.chunks(range(320), 150)], [150, 150, 20])
+
+
+class TestResolveNewId(_Reset):
+    # the real gaiadr3.dr2_neighbourhood columns (TAP_SCHEMA, 2026-11-19, gaia-calibdr4-reh-v1)
+    DR3_REAL = ["angular_distance", "dr2_source_id", "dr3_source_id", "magnitude_difference",
+                "proper_motion_propagation"]
+
+    def test_dr3_real_table(self):
+        self.assertEqual(df.resolve_new_id("dr3", self.DR3_REAL), "dr3_source_id")
+
+    def test_dr4_order(self):
+        self.assertEqual(df.resolve_new_id("dr4", ["dr4_source_id", "dr3_source_id"]),
+                         "dr4_source_id")
+        self.assertEqual(df.resolve_new_id("dr4", ["source_id", "dr3_source_id"]), "source_id")
+        self.assertEqual(df.resolve_new_id("dr4", ["source_id", "dr4_source_id"]),
+                         "dr4_source_id")
+        self.assertIsNone(df.resolve_new_id("dr4", ["dr3_source_id", "angular_distance"]))
+        self.assertEqual(df.resolve_new_id("dr4", ["DR4_SOURCE_ID "]), "dr4_source_id")
+
+    def test_ensure_once_and_used_by_fetch_matches(self):
+        calls = []
+
+        def q(adql):
+            calls.append(adql)
+            if "tap_schema.columns" in adql:
+                return [{"column_name": c, "unit": "mas" if c == "angular_distance" else ""}
+                        for c in ("dr4_source_id", "dr3_source_id", "angular_distance",
+                                  "magnitude_difference")]
+            return [{"new_id": "77", "old_id": "1", "angular_distance": "3",
+                     "magnitude_difference": "0"}]
+        res, rows = df.fetch_matches("dr4", ["1", "2"], "mas", q)
+        self.assertEqual(res, {"1": ("77", "ok"), "2": (None, "none")})
+        self.assertIn("x.dr4_source_id AS new_id", calls[-1])
+        n = len(calls)
+        df.fetch_matches("dr4", ["1"], "mas", q)
+        self.assertEqual(len(calls), n + 1)          # no second TAP_SCHEMA lookup
+
+    def test_ensure_stops_without_candidate(self):
+        def q(adql):
+            if "tap_schema.columns" in adql:
+                return [{"column_name": c} for c in ("dr3_source_id", "angular_distance")]
+            raise AssertionError("cross-match must not run")
+        with self.assertRaises(df.SchemaError) as cm:
+            df.fetch_matches("dr4", ["1"], "mas", q)
+        self.assertIn("dr4_source_id | source_id", str(cm.exception))
+        self.assertIn("gaiadr4.dr3_neighbourhood", cm.exception.found)
 
 
 class TestParse(unittest.TestCase):
@@ -158,7 +220,7 @@ class TestDetectEvent(unittest.TestCase):
         self.assertIsNone(df.detect_event([], {"t1": [(1.0, 1.0)]}, 10.0, 3.0))
 
 
-class TestSchemaCheck(unittest.TestCase):
+class TestSchemaCheck(_Reset):
     def _fake(self, tables):
         def q(adql):
             for t, cols in tables.items():
@@ -169,7 +231,7 @@ class TestSchemaCheck(unittest.TestCase):
         return q
 
     def test_missing_column_stops(self):
-        tables = {"gaiadr4.dr3_neighbourhood": ["source_id", "dr3_source_id",
+        tables = {"gaiadr4.dr3_neighbourhood": ["dr4_source_id", "dr3_source_id",
                                                 "angular_distance"],
                   "gaiadr4.nss_two_body_orbit": list(df.NSS_REQUIRED),
                   "gaiadr4.gaia_source": ["source_id", "ref_epoch"]}
@@ -178,14 +240,40 @@ class TestSchemaCheck(unittest.TestCase):
         self.assertIn("gaiadr4.dr3_neighbourhood.magnitude_difference", str(cm.exception))
         self.assertIn("gaiadr4.dr3_neighbourhood", cm.exception.found)
 
-    def test_complete(self):
-        tables = {"gaiadr4.dr3_neighbourhood": ["source_id", "dr3_source_id",
+    def test_missing_new_id_stops(self):
+        tables = {"gaiadr4.dr3_neighbourhood": ["dr3_source_id", "angular_distance",
+                                                "magnitude_difference"],
+                  "gaiadr4.nss_two_body_orbit": list(df.NSS_REQUIRED),
+                  "gaiadr4.gaia_source": ["source_id", "ref_epoch"]}
+        with self.assertRaises(df.SchemaError) as cm:
+            df.check_schema("dr4", self._fake(tables))
+        self.assertIn("gaiadr4.dr3_neighbourhood.(dr4_source_id | source_id)",
+                      str(cm.exception))
+
+    def test_complete_dr4_style_names(self):
+        tables = {"gaiadr4.dr3_neighbourhood": ["dr4_source_id", "dr3_source_id",
                                                 "angular_distance", "magnitude_difference"],
                   "gaiadr4.nss_two_body_orbit": list(df.NSS_REQUIRED) + ["significance"],
                   "gaiadr4.gaia_source": ["source_id", "ref_epoch"]}
         got = df.check_schema("dr4", self._fake(tables))
         self.assertEqual(got["gaiadr4.dr3_neighbourhood"]["angular_distance"]["unit"], "mas")
         self.assertEqual(got["gaiadr4.nss_two_body_orbit_supp"], {})
+        self.assertEqual(df.SCHEMAS["dr4"]["xmatch_new_id"], "dr4_source_id")
+
+    def test_complete_source_id_fallback(self):
+        tables = {"gaiadr4.dr3_neighbourhood": ["source_id", "dr3_source_id",
+                                                "angular_distance", "magnitude_difference"],
+                  "gaiadr4.nss_two_body_orbit": list(df.NSS_REQUIRED),
+                  "gaiadr4.gaia_source": ["source_id", "ref_epoch"]}
+        df.check_schema("dr4", self._fake(tables))
+        self.assertIn("x.source_id AS new_id", df.adql_xmatch("dr4", ["1"]))
+
+    def test_dr3_rehearsal_real_columns(self):
+        tables = {"gaiadr3.dr2_neighbourhood": TestResolveNewId.DR3_REAL,
+                  "gaiadr3.nss_two_body_orbit": list(df.NSS_REQUIRED),
+                  "gaiadr3.gaia_source": ["source_id", "ref_epoch"]}
+        df.check_schema("dr3", self._fake(tables))
+        self.assertEqual(df.SCHEMAS["dr3"]["xmatch_new_id"], "dr3_source_id")
 
     def test_fetch_orbits_uses_available_columns(self):
         seen = []

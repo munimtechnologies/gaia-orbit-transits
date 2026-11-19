@@ -8,11 +8,17 @@ by the DR4 SB1-reality test. Written 2026-11-18, two weeks before Gaia DR4.
 Table names come from ESA's DR4 contents page (cosmos.esa.int/web/gaia/dr4, read
 2026-11-18): gaiadr4.dr3_neighbourhood (07.03, TAP, 2,448,832,159 rows) and
 gaiadr4.nss_two_body_orbit (10.08, TAP, 5,901,111 rows), plus the bright-source
-gaiadr4.nss_two_body_orbit_supp. Column names are assumed to follow DR3's pattern
-(gaiadr3.dr2_neighbourhood: source_id, dr2_source_id, angular_distance [mas],
-magnitude_difference, proper_motion_propagation). They are CHECKED at run time against
-TAP_SCHEMA; a missing column stops the run (exit 4) with the real column list. No
-silent fallback.
+gaiadr4.nss_two_body_orbit_supp.
+
+0.2.0 (2026-11-19, calib-dr4 amendment 2): the DR3 rehearsal (gaia-calibdr4-reh-v1) showed
+that ESA's gaiadr3.dr2_neighbourhood has NO 'source_id' column: its columns are
+dr2_source_id, dr3_source_id, angular_distance, magnitude_difference,
+proper_motion_propagation. The new-release identifier is '<release>_source_id'. The
+new-release id column of a neighbourhood table is therefore resolved from TAP_SCHEMA, from a
+fixed ordered list (XMATCH_NEW_ID_CANDIDATES): DR4 'dr4_source_id' then 'source_id'; DR3
+'dr3_source_id' then 'source_id'. If neither exists the run stops (SchemaError, exit 4) with
+the real column list. Every other table and column is still CHECKED at run time against
+TAP_SCHEMA. No silent fallback beyond that fixed list.
 
 The same code runs a DR3 "rehearsal" (schema 'dr3'): identity cross-match, DR3 orbits.
 """
@@ -23,7 +29,7 @@ import time
 import urllib.parse
 import urllib.request
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 TAP_SYNC = "https://gea.esac.esa.int/tap-server/tap/sync"
 CHUNK = 150
 MATCH_RADIUS_MAS = 1000.0
@@ -31,11 +37,17 @@ AMBIG_DMAG = 1.0
 JD_J2016 = 2457389.0
 BTJD0 = 2457000.0
 
+# Ordered candidates for the NEW-release identifier column of the neighbourhood table.
+XMATCH_NEW_ID_CANDIDATES = {
+    "dr4": ("dr4_source_id", "source_id"),
+    "dr3": ("dr3_source_id", "source_id"),
+}
+
 SCHEMAS = {
     "dr4": {
         "release": "gaiadr4",
         "xmatch": "gaiadr4.dr3_neighbourhood",
-        "xmatch_new_id": "source_id",
+        "xmatch_new_id": XMATCH_NEW_ID_CANDIDATES["dr4"][0],   # resolved at run time
         "xmatch_old_id": "dr3_source_id",
         "nss": "gaiadr4.nss_two_body_orbit",
         "nss_supp": "gaiadr4.nss_two_body_orbit_supp",
@@ -44,13 +56,14 @@ SCHEMAS = {
     "dr3": {
         "release": "gaiadr3",
         "xmatch": "gaiadr3.dr2_neighbourhood",
-        "xmatch_new_id": "source_id",
+        "xmatch_new_id": XMATCH_NEW_ID_CANDIDATES["dr3"][0],   # resolved at run time
         "xmatch_old_id": "dr2_source_id",
         "nss": "gaiadr3.nss_two_body_orbit",
         "nss_supp": None,
         "gaia_source": "gaiadr3.gaia_source",
     },
 }
+_RESOLVED = {}      # schema -> new-id column confirmed in TAP_SCHEMA during this process
 
 XMATCH_COLS = ("angular_distance", "magnitude_difference")
 NSS_REQUIRED = ("source_id", "nss_solution_type", "period", "period_error",
@@ -110,6 +123,35 @@ def _ids(ids):
     return ",".join(out)
 
 
+def resolve_new_id(schema, have):
+    """The new-release id column of the neighbourhood table: the first name of
+    XMATCH_NEW_ID_CANDIDATES[schema] present in `have` (column names), else None."""
+    names = {str(c).strip().lower() for c in have}
+    for c in XMATCH_NEW_ID_CANDIDATES[schema]:
+        if c in names:
+            return c
+    return None
+
+
+def set_xmatch_new_id(schema, col):
+    """Record the resolved column so every query of this process uses it."""
+    if col not in XMATCH_NEW_ID_CANDIDATES[schema]:
+        raise ValueError(f"{col!r} is not a registered new-id column for {schema}")
+    SCHEMAS[schema]["xmatch_new_id"] = col
+    _RESOLVED[schema] = col
+
+
+def reset_xmatch_new_id():
+    """Back to the defaults (tests)."""
+    _RESOLVED.clear()
+    for schema, cands in XMATCH_NEW_ID_CANDIDATES.items():
+        SCHEMAS[schema]["xmatch_new_id"] = cands[0]
+
+
+def missing_new_id_label(schema):
+    return "%s.(%s)" % (SCHEMAS[schema]["xmatch"], " | ".join(XMATCH_NEW_ID_CANDIDATES[schema]))
+
+
 def adql_columns(table):
     """TAP_SCHEMA query for a table's columns (Gaia stores 'schema.table')."""
     t = table.replace("'", "")
@@ -117,9 +159,12 @@ def adql_columns(table):
             f"WHERE table_name = '{t}'")
 
 
-def adql_xmatch(schema, old_ids):
+def adql_xmatch(schema, old_ids, new_col=None):
     s = SCHEMAS[schema]
-    cols = ", ".join([f"x.{s['xmatch_new_id']} AS new_id", f"x.{s['xmatch_old_id']} AS old_id"]
+    new_col = new_col or s["xmatch_new_id"]
+    if new_col not in XMATCH_NEW_ID_CANDIDATES[schema]:
+        raise ValueError(f"{new_col!r} is not a registered new-id column for {schema}")
+    cols = ", ".join([f"x.{new_col} AS new_id", f"x.{s['xmatch_old_id']} AS old_id"]
                      + [f"x.{c}" for c in XMATCH_COLS])
     return (f"SELECT {cols} FROM {s['xmatch']} AS x "
             f"WHERE x.{s['xmatch_old_id']} IN ({_ids(old_ids)})")
@@ -308,18 +353,39 @@ def table_columns(table, query=tap_query):
             for k in rows[0].keys()}
 
 
+def ensure_xmatch_new_id(schema, query=tap_query):
+    """Resolve (once per process) the new-id column of the schema's neighbourhood table
+    from TAP_SCHEMA. Raises SchemaError with the real columns if no candidate exists."""
+    if schema in _RESOLVED:
+        return _RESOLVED[schema]
+    table = SCHEMAS[schema]["xmatch"]
+    have = table_columns(table, query)
+    col = resolve_new_id(schema, have)
+    if col is None:
+        raise SchemaError("missing: " + missing_new_id_label(schema), {table: sorted(have)})
+    set_xmatch_new_id(schema, col)
+    return col
+
+
 def check_schema(schema, query=tap_query):
     """Verify every table/column used. Returns {table: {column: meta}}; raises
-    SchemaError listing what exists when anything required is missing."""
+    SchemaError listing what exists when anything required is missing. Resolves the
+    neighbourhood table's new-id column (XMATCH_NEW_ID_CANDIDATES)."""
     s = SCHEMAS[schema]
     found, missing = {}, []
-    need = {s["xmatch"]: (s["xmatch_new_id"], s["xmatch_old_id"]) + XMATCH_COLS,
+    need = {s["xmatch"]: (s["xmatch_old_id"],) + XMATCH_COLS,
             s["nss"]: NSS_REQUIRED,
             s["gaia_source"]: ("source_id", "ref_epoch")}
     for table, cols in need.items():
         have = table_columns(table, query)
         found[table] = have
         missing += [f"{table}.{c}" for c in cols if c not in have]
+        if table == s["xmatch"]:
+            col = resolve_new_id(schema, have)
+            if col is None:
+                missing.append(missing_new_id_label(schema))
+            else:
+                set_xmatch_new_id(schema, col)
     if s.get("nss_supp"):
         found[s["nss_supp"]] = table_columns(s["nss_supp"], query)
     if missing:
@@ -331,6 +397,7 @@ def check_schema(schema, query=tap_query):
 def fetch_matches(schema, old_ids, unit="mas", query=tap_query):
     if schema == "dr3":
         return {str(o): (str(o), "ok") for o in old_ids}, []
+    ensure_xmatch_new_id(schema, query)
     rows = []
     for ch in chunks(old_ids):
         rows += query(adql_xmatch(schema, ch))

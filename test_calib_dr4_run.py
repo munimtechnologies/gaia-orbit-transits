@@ -4,6 +4,7 @@ agents). Offline; the run itself needs numpy and the Gaia archive."""
 import unittest
 
 import calib_dr4_run as cr
+import dr4_fetch as df
 
 
 class TestMcNemar(unittest.TestCase):
@@ -63,6 +64,38 @@ class TestRehearsal(unittest.TestCase):
         self.assertFalse(rh["RH2_cosi_reproduced"]["pass"])
         self.assertFalse(rh["RH3_timing_reproduced"]["pass"])
         self.assertFalse(rh["RH4_no_failures"]["pass"])
+
+
+class TestSmokeDr2(unittest.TestCase):
+    def setUp(self):
+        df.reset_xmatch_new_id()
+
+    def tearDown(self):
+        df.reset_xmatch_new_id()
+
+    def test_query_uses_real_dr3_column(self):
+        q = cr.adql_smoke_dr2("dr3_source_id", ["11", "12"])
+        self.assertIn("x.dr3_source_id AS new_id", q)
+        self.assertIn("x.dr2_source_id AS old_id", q)
+        self.assertIn("WHERE x.dr3_source_id IN (11,12)", q)
+        self.assertNotIn("x.source_id", q)
+
+    def test_resolves_and_reports(self):
+        def q(adql):
+            return [{"new_id": "11", "old_id": "901", "angular_distance": "4",
+                     "magnitude_difference": "0.0"},
+                    {"new_id": "12", "old_id": "902", "angular_distance": "2",
+                     "magnitude_difference": "0.0"}]
+        s = cr.smoke_dr2(["11", "12"], "mas", q)
+        self.assertEqual(s["new_id_column"], "dr3_source_id")
+        self.assertEqual(s["dr2_counterparts"], 2)
+        self.assertEqual(s["resolved_ok_to_a_target"], 2)
+
+    def test_tap_failure_is_not_fatal(self):
+        def q(adql):
+            raise df.TapError("timeout")
+        s = cr.smoke_dr2(["11"], "mas", q)
+        self.assertIn("timeout", s["error"])
 
 
 if __name__ == "__main__":

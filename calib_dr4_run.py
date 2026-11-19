@@ -2,8 +2,10 @@
 """calib_dr4_run.py -- run the pre-registered DR3 -> DR4 test of the eclipse deficit.
 
 Part of gaia-orbit-transits by MV2 of Munim, Inc. (made with AI agents). Apache-2.0.
-Pre-registration: findings/2026-11-18-calib-dr4-prereg.md (+ amendment of 2026-11-18,
-findings/2026-11-18-calib-dr4-amendment-1.md).
+Pre-registration: findings/2026-11-18-calib-dr4-prereg.md (+ amendment 1 of 2026-11-18,
+findings/2026-11-18-calib-dr4-amendment-1.md, and amendment 2 of 2026-11-19,
+findings/2026-11-19-calib-dr4-amendment-2.md: neighbourhood id column resolved from a fixed
+list; the report-only DR2 smoke test can no longer stop the rehearsal).
 
   --schema dr4   release day (Gaia DR4, 2 December 2026): grade K1-K6 (+ K2b).
   --schema dr3   dress rehearsal before DR4: the same code with DR3 as the "new" release
@@ -29,7 +31,7 @@ import os
 import statistics
 import sys
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 N_MC = 4000
 N_SIGMA = 9.0
 EXPECT_MAIN = 162
@@ -106,6 +108,36 @@ def rehearsal_checks(rows, grade):
                                          and grade["K1"]["fail_N"] == 0
                                          and grade["K1"]["fail_E"] == 0)},
     }
+
+
+def adql_smoke_dr2(new_col, ids):
+    """Report-only DR3 <- DR2 cross-match query on gaiadr3.dr2_neighbourhood, keyed on the
+    resolved DR3 id column (dr4_fetch.resolve_new_id)."""
+    import dr4_fetch as df
+    return ("SELECT x.%s AS new_id, x.dr2_source_id AS old_id, x.angular_distance, "
+            "x.magnitude_difference FROM gaiadr3.dr2_neighbourhood AS x WHERE x.%s IN (%s)"
+            % (new_col, new_col, df._ids(ids)))
+
+
+def smoke_dr2(ids, unit, query=None):
+    """Exercise the real cross-match path on DR3 <- DR2. Report only: a TAP failure is
+    recorded, never fatal (amendment 2)."""
+    import dr4_fetch as df
+    query = query or df.tap_query
+    new_col = df.SCHEMAS["dr3"]["xmatch_new_id"]
+    back = []
+    try:
+        for ch in df.chunks(ids):
+            back += query(adql_smoke_dr2(new_col, ch))
+    except df.TapError as exc:
+        return {"new_id_column": new_col, "error": str(exc)[:500]}
+    olds = sorted({str(r["old_id"]).strip() for r in back})
+    res = df.resolve_matches(back, olds, unit)
+    ok_back = {o for o, (n, st) in res.items() if st == "ok" and n in set(ids)}
+    return {"new_id_column": new_col, "dr2_counterparts": len(olds),
+            "resolved_ok_to_a_target": len(ok_back),
+            "statuses": {st: sum(1 for v in res.values() if v[1] == st)
+                         for st in ("ok", "none", "ambiguous")}}
 
 
 def build_sample(data_dir, expect_csv):
@@ -222,6 +254,7 @@ def run(a):
         return 2
     dump("schema_found.json", avail)
     sch = df.SCHEMAS[a.schema]
+    print("cross-match new-id column:", sch["xmatch"], sch["xmatch_new_id"])
 
     try:
         # DR3 period errors (the old release), for the CONFIRMED tolerance
@@ -241,25 +274,10 @@ def run(a):
         matches, xrows = df.fetch_matches(a.schema, ids, unit)
         new_ids = sorted({m[0] for m in matches.values() if m[0]})
         orbits = df.fetch_orbits(a.schema, new_ids, avail)
-        smoke = None
-        if a.schema == "dr3":
-            # exercise the real cross-match path on DR3 <- DR2 (report only)
-            back = []
-            for ch in df.chunks(ids):
-                back += df.tap_query(
-                    "SELECT x.source_id AS new_id, x.dr2_source_id AS old_id, "
-                    "x.angular_distance, x.magnitude_difference FROM gaiadr3.dr2_neighbourhood "
-                    f"AS x WHERE x.source_id IN ({','.join(ch)})")
-            olds = sorted({str(r["old_id"]).strip() for r in back})
-            res = df.resolve_matches(back, olds, unit)
-            ok_back = {o for o, (n, st) in res.items() if st == "ok" and n in set(ids)}
-            smoke = {"dr2_counterparts": len(olds),
-                     "resolved_ok_to_a_target": len(ok_back),
-                     "statuses": {st: sum(1 for v in res.values() if v[1] == st)
-                                  for st in ("ok", "none", "ambiguous")}}
     except df.TapError as exc:
         print("TAP DOWN", exc)
         return 2
+    smoke = smoke_dr2(ids, unit) if a.schema == "dr3" else None
 
     rows, unknown_all, n_multi, n_supp = [], set(), 0, 0
     for i, s in enumerate(sample):
@@ -366,7 +384,8 @@ def run(a):
         fh.write("\n".join(L) + "\n")
     print(json.dumps({"labels": g["counts"]["labels"], "reading": g["reading"],
                       "rehearsal": {k: v["pass"] for k, v in summary.get("rehearsal", {}).items()},
-                      "K2b": extra["K2b"]["pass"], "baseline": base}, default=str))
+                      "K2b": extra["K2b"]["pass"], "baseline": base, "smoke": smoke},
+                     default=str))
     return 0
 
 

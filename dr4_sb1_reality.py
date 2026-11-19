@@ -6,6 +6,10 @@ Pre-registration: findings/2026-11-18-dr4-sb1-reality-prereg.md, amendment 1 (ep
 through DataLink) and amendment 2 (the implementation rules of this file). Written
 2026-11-18, two weeks before Gaia DR4 (2 December 2026), with no DR4 data seen.
 
+0.1.1 (2026-11-19, findings/2026-11-19-calib-dr4-amendment-2.md): the new-release id column of
+gaiadr4.dr3_neighbourhood is resolved by dr4_fetch 0.2.0 from a fixed ordered list
+('dr4_source_id', then 'source_id'); neither present = exit 4 as before. Nothing else changed.
+
 What it does (stdlib only, network through dr4_fetch.tap_query and urllib):
   1. S3: the full eligible DR3 pool of sb1_robust 0.2.0 (same ADQL, same eligibility via
      the pinned sb1_transit 0.1.0, no fallback). Must reproduce 6,434 stars (exit 3).
@@ -43,7 +47,7 @@ import zipfile
 
 import dr4_fetch as df
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 EXPECTED_POOL = 6434
 MIN_EPOCHS = 10
 ALIAS_BASE_PERIODS = (1.0, 365.25, 63.0)     # 1 day, 1 year, Gaia scan precession
@@ -522,16 +526,23 @@ def rvs_table_ok(have):
 
 def check_nss_schema(schema, query=df.tap_query):
     """Every table/column the rules use. An orbit table that EXISTS but lacks the columns
-    to read P and K stops the run (its orbits would otherwise be silently lost)."""
+    to read P and K stops the run (its orbits would otherwise be silently lost). The
+    neighbourhood table's new-id column is resolved by dr4_fetch.resolve_new_id (0.1.1)."""
     s = df.SCHEMAS[schema]
     found, missing = {}, []
     need = {s["nss"]: SB1_REQUIRED}
     if schema != "dr3":
-        need[s["xmatch"]] = (s["xmatch_new_id"], s["xmatch_old_id"]) + df.XMATCH_COLS
+        need[s["xmatch"]] = (s["xmatch_old_id"],) + df.XMATCH_COLS
     for table, cols in need.items():
         have = df.table_columns(table, query)
         found[table] = have
         missing += ["%s.%s" % (table, c) for c in cols if c not in have]
+        if schema != "dr3" and table == s["xmatch"]:
+            col = df.resolve_new_id(schema, have)
+            if col is None:
+                missing.append(df.missing_new_id_label(schema))
+            else:
+                df.set_xmatch_new_id(schema, col)
     for extra in (RVS_ORBIT.get(schema), s.get("nss_supp")):
         if not extra:
             continue
@@ -687,6 +698,8 @@ def run(args, query=df.tap_query, http=_http):
     _dump(os.path.join(out, "schema_found.json"),
           {t: sorted(c) for t, c in found.items()})
     s = df.SCHEMAS[args.schema]
+    if args.schema != "dr3":
+        summ["xmatch_new_id"] = s["xmatch_new_id"]
     unit = found.get(s["xmatch"], {}).get("angular_distance", {}).get("unit", "mas") \
         if args.schema != "dr3" else "mas"
     try:
