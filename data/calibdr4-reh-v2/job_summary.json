@@ -1,0 +1,68 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-calibdr4-reh-v2",
+ "id": "6015df276253",
+ "field": "astrophysics",
+ "run": "20261119T100536Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-19T18:29:38.783411+00:00",
+ "finished_at": "2026-11-19T18:33:13.520660+00:00",
+ "duration_seconds": 214,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 60.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install -r requirements.txt",
+   "exit": 0,
+   "seconds": 4
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_deps.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_dr4_fetch test_calib_dr4_run",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python calib_dr4_run.py --schema dr3 --data-dir /data --out-dir /out --expect window_targets.csv",
+   "exit": 0,
+   "seconds": 11
+  }
+ ],
+ "out_files": [
+  "calib_dr4_report.md",
+  "calib_dr4_summary.json",
+  "calib_dr4_targets.csv",
+  "reproduction.json",
+  "schema_found.json"
+ ],
+ "out_files_total": 5,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] cross-match new-id column: gaiadr3.dr2_neighbourhood dr3_source_id\n{\"labels\": {\"CONFIRMED\": 162, \"ALIAS\": 0, \"CHANGED\": 0, \"DROPPED\": 0, \"UNTESTABLE\": 0}, \"reading\": \"UNDECIDED: DR4 cannot separate the readings for this sample\", \"rehearsal\": {\"RH1_all_confirmed\": true, \"RH2_cosi_reproduced\": true, \"RH3_timing_reproduced\": true, \"RH4_no_failures\": true}, \"K2b\": false, \"baseline\": {\"E\": {\"n\": 58, \"not_edge_on_2sd_dr3\": 1}, \"N\": {\"n\": 104, \"not_edge_on_2sd_dr3\": 7}}, \"smoke\": {\"new_id_column\": \"dr3_source_id\", \"dr2_counterparts\": 164, \"resolved_ok_to_a_target\": 162, \"statuses\": {\"ok\": 162, \"none\": 2, \"ambiguous\": 0}}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261119T100536Z-astrophysics\\calibdr4)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

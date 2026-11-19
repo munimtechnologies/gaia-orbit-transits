@@ -1,0 +1,164 @@
+{
+ "version": "0.1.1",
+ "dr4_fetch": "0.2.0",
+ "calib_dr4": "0.1.0",
+ "schema": "dr3",
+ "tables": {
+  "release": "gaiadr3",
+  "xmatch": "gaiadr3.dr2_neighbourhood",
+  "xmatch_new_id": "dr3_source_id",
+  "xmatch_old_id": "dr2_source_id",
+  "nss": "gaiadr3.nss_two_body_orbit",
+  "nss_supp": null,
+  "gaia_source": "gaiadr3.gaia_source"
+ },
+ "t_ref_btjd": 389.0,
+ "t_ref_source": "gaiadr3.gaia_source.ref_epoch = 2016.0",
+ "t_periastron_doc": {
+  "unit": "d",
+  "description": "Periastron epoch",
+  "via": "tap_schema"
+ },
+ "angular_distance_unit": "mas",
+ "reproduction": {
+  "n_main": 162,
+  "n_E": 58,
+  "problems": [],
+  "pass": true
+ },
+ "match_status": {
+  "ok": 162,
+  "none": 0,
+  "ambiguous": 0
+ },
+ "n_multi_astro_solutions": 2,
+ "n_from_supp": 0,
+ "unknown_types": [],
+ "used_corr_frac": 1.0,
+ "phase_lost": 0,
+ "dr3_baseline_not_edge_on": {
+  "E": {
+   "n": 58,
+   "not_edge_on_2sd_dr3": 1
+  },
+  "N": {
+   "n": 104,
+   "not_edge_on_2sd_dr3": 7
+  }
+ },
+ "grade": {
+  "version": "0.1.0",
+  "counts": {
+   "E_testable": 58,
+   "N_testable": 104,
+   "untestable": 0,
+   "labels": {
+    "CONFIRMED": 162,
+    "ALIAS": 0,
+    "CHANGED": 0,
+    "DROPPED": 0,
+    "UNTESTABLE": 0
+   }
+  },
+  "K1": {
+   "fail_N": 0.0,
+   "fail_E": 0.0,
+   "diff": 0.0,
+   "lo95": -0.062117855787202914,
+   "hi95": 0.03562135437245191,
+   "fail_N_ci": [
+    0.0,
+    0.03562135437245191
+   ],
+   "fail_E_ci": [
+    0.0,
+    0.062117855787202914
+   ],
+   "pass": false
+  },
+  "K2": {
+   "N_conf_not_edge_on": 0.057692307692307696,
+   "n_N_conf": 104,
+   "E_conf_not_edge_on": 0.017241379310344827,
+   "n_E_conf": 58,
+   "pass": false
+  },
+  "K3": {
+   "E_conf_edge_on_3sd": 1.0,
+   "n": 58,
+   "pass": true
+  },
+  "K4": {
+   "rms_z4": 2.6152916169824847,
+   "n_timed": 57,
+   "pass": false
+  },
+  "K5": {
+   "pass": false
+  },
+  "K6": {
+   "pass": false
+  },
+  "reading": "UNDECIDED: DR4 cannot separate the readings for this sample"
+ },
+ "extra": {
+  "K2b": {
+   "N": {
+    "n": 104,
+    "gain": 0,
+    "loss": 1,
+    "frac3": 0.0673076923076923,
+    "frac4": 0.057692307692307696,
+    "delta": -0.009615384615384616,
+    "p_mcnemar": 1.0
+   },
+   "E": {
+    "n": 58,
+    "gain": 0,
+    "loss": 0,
+    "frac3": 0.017241379310344827,
+    "frac4": 0.017241379310344827,
+    "delta": 0.0,
+    "p_mcnemar": 1.0
+   },
+   "pass": false
+  }
+ },
+ "xmatch_smoke_dr2": {
+  "new_id_column": "dr3_source_id",
+  "dr2_counterparts": 164,
+  "resolved_ok_to_a_target": 162,
+  "statuses": {
+   "ok": 162,
+   "none": 2,
+   "ambiguous": 0
+  }
+ },
+ "rehearsal": {
+  "RH1_all_confirmed": {
+   "n_rows": 162,
+   "n_tested": 162,
+   "n_confirmed": 162,
+   "pass": true
+  },
+  "RH2_cosi_reproduced": {
+   "n": 162,
+   "frac_dcosi_lt_0.1sd": 0.9938271604938271,
+   "median_sd_ratio": 1.0028522365148205,
+   "frac_sd_ratio_0.8_1.25": 1.0,
+   "pass": true
+  },
+  "RH3_timing_reproduced": {
+   "n_timed": 57,
+   "rms_z4": 2.6152916169824847,
+   "dr3_rms_z9": 2.665039767525298,
+   "pass": true
+  },
+  "RH4_no_failures": {
+   "K1_pass": false,
+   "fail_N": 0.0,
+   "fail_E": 0.0,
+   "pass": true
+  }
+ }
+}

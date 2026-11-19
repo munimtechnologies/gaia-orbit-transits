@@ -1,0 +1,1178 @@
+{
+ "gaiadr3.dr2_neighbourhood": {
+  "dr2_source_id": {
+   "unit": "",
+   "description": "Source identifier in Gaia DR2",
+   "via": "tap_schema"
+  },
+  "dr3_source_id": {
+   "unit": "",
+   "description": "Source identifier in Gaia E/DR3",
+   "via": "tap_schema"
+  },
+  "angular_distance": {
+   "unit": "mas",
+   "description": "Angular distance between the two sources",
+   "via": "tap_schema"
+  },
+  "magnitude_difference": {
+   "unit": "mag",
+   "description": "G band magnitude difference between the sources",
+   "via": "tap_schema"
+  },
+  "proper_motion_propagation": {
+   "unit": "",
+   "description": "Flag indicating whether E/DR3 coordinates were proper motion corrected",
+   "via": "tap_schema"
+  }
+ },
+ "gaiadr3.nss_two_body_orbit": {
+  "b_thiele_innes": {
+   "unit": "mas",
+   "description": "Thiele-Innes element B",
+   "via": "tap_schema"
+  },
+  "solution_id": {
+   "unit": "",
+   "description": "Solution Identifier",
+   "via": "tap_schema"
+  },
+  "source_id": {
+   "unit": "",
+   "description": "Source Identifier",
+   "via": "tap_schema"
+  },
+  "nss_solution_type": {
+   "unit": "",
+   "description": "NSS model adopted",
+   "via": "tap_schema"
+  },
+  "ra_error": {
+   "unit": "mas",
+   "description": "Standard error of right ascension",
+   "via": "tap_schema"
+  },
+  "dec_error": {
+   "unit": "mas",
+   "description": "Standard error of declination",
+   "via": "tap_schema"
+  },
+  "parallax": {
+   "unit": "mas",
+   "description": "Parallax",
+   "via": "tap_schema"
+  },
+  "parallax_error": {
+   "unit": "mas",
+   "description": "Standard error of parallax",
+   "via": "tap_schema"
+  },
+  "pmra": {
+   "unit": "mas.yr**-1",
+   "description": "Proper motion in right ascension direction",
+   "via": "tap_schema"
+  },
+  "pmra_error": {
+   "unit": "mas.yr**-1",
+   "description": "Standard error of proper motion in right ascension direction",
+   "via": "tap_schema"
+  },
+  "pmdec": {
+   "unit": "mas.yr**-1",
+   "description": "Proper motion in declination direction",
+   "via": "tap_schema"
+  },
+  "pmdec_error": {
+   "unit": "mas.yr**-1",
+   "description": "Standard error of proper motion in declination direction",
+   "via": "tap_schema"
+  },
+  "a_thiele_innes": {
+   "unit": "mas",
+   "description": "Thiele-Innes element A",
+   "via": "tap_schema"
+  },
+  "a_thiele_innes_error": {
+   "unit": "mas",
+   "description": "Standard error of Thiele-Innes element A",
+   "via": "tap_schema"
+  },
+  "b_thiele_innes_error": {
+   "unit": "mas",
+   "description": "Standard error of Thiele-Innes element B",
+   "via": "tap_schema"
+  },
+  "f_thiele_innes": {
+   "unit": "mas",
+   "description": "Thiele-Innes element F",
+   "via": "tap_schema"
+  },
+  "f_thiele_innes_error": {
+   "unit": "mas",
+   "description": "Standard error of Thiele-Innes element F",
+   "via": "tap_schema"
+  },
+  "g_thiele_innes": {
+   "unit": "mas",
+   "description": "Thiele-Innes element G",
+   "via": "tap_schema"
+  },
+  "g_thiele_innes_error": {
+   "unit": "mas",
+   "description": "Standard error of Thiele-Innes element G",
+   "via": "tap_schema"
+  },
+  "c_thiele_innes": {
+   "unit": "AU",
+   "description": "C element of Thiele-Innes ",
+   "via": "tap_schema"
+  },
+  "c_thiele_innes_error": {
+   "unit": "AU",
+   "description": "Standard error of C element of Thiele-Innes ",
+   "via": "tap_schema"
+  },
+  "h_thiele_innes": {
+   "unit": "AU",
+   "description": "H element of Thiele-Innes ",
+   "via": "tap_schema"
+  },
+  "h_thiele_innes_error": {
+   "unit": "AU",
+   "description": "Standard error of H element of Thiele-Innes ",
+   "via": "tap_schema"
+  },
+  "period": {
+   "unit": "d",
+   "description": "Orbital Period",
+   "via": "tap_schema"
+  },
+  "period_error": {
+   "unit": "d",
+   "description": "Standard error of Orbital Period",
+   "via": "tap_schema"
+  },
+  "t_periastron": {
+   "unit": "d",
+   "description": "Periastron epoch",
+   "via": "tap_schema"
+  },
+  "t_periastron_error": {
+   "unit": "d",
+   "description": "Standard error of Periastron epoch",
+   "via": "tap_schema"
+  },
+  "eccentricity": {
+   "unit": "",
+   "description": "eccentricity",
+   "via": "tap_schema"
+  },
+  "eccentricity_error": {
+   "unit": "",
+   "description": "Standard error of eccentricity",
+   "via": "tap_schema"
+  },
+  "center_of_mass_velocity": {
+   "unit": "km.s**-1",
+   "description": "The velocity of the center of mass",
+   "via": "tap_schema"
+  },
+  "center_of_mass_velocity_error": {
+   "unit": "km.s**-1",
+   "description": "Standard error of The velocity of the center of mass",
+   "via": "tap_schema"
+  },
+  "semi_amplitude_primary": {
+   "unit": "km.s**-1",
+   "description": "Semi-amplitude of the center of mass",
+   "via": "tap_schema"
+  },
+  "semi_amplitude_primary_error": {
+   "unit": "km.s**-1",
+   "description": "Standard error of Semi-amplitude of the center of mass",
+   "via": "tap_schema"
+  },
+  "semi_amplitude_secondary": {
+   "unit": "km.s**-1",
+   "description": "The semiamplitude of the radial velocity curve for second component",
+   "via": "tap_schema"
+  },
+  "semi_amplitude_secondary_error": {
+   "unit": "km.s**-1",
+   "description": "Standard error of The semiamplitude of the radial velocity curve for second component",
+   "via": "tap_schema"
+  },
+  "mass_ratio": {
+   "unit": "",
+   "description": "Mass ratio",
+   "via": "tap_schema"
+  },
+  "mass_ratio_error": {
+   "unit": "",
+   "description": "Standard error of Mass ratio",
+   "via": "tap_schema"
+  },
+  "fill_factor_primary": {
+   "unit": "",
+   "description": "Fill factor of primary",
+   "via": "tap_schema"
+  },
+  "fill_factor_primary_error": {
+   "unit": "",
+   "description": "Standard error of Fill factor of primary",
+   "via": "tap_schema"
+  },
+  "fill_factor_secondary": {
+   "unit": "",
+   "description": "Fill factor of secondary",
+   "via": "tap_schema"
+  },
+  "fill_factor_secondary_error": {
+   "unit": "",
+   "description": "Standard error of Fill factor of secondary",
+   "via": "tap_schema"
+  },
+  "arg_periastron": {
+   "unit": "deg",
+   "description": "Argument of periastron",
+   "via": "tap_schema"
+  },
+  "arg_periastron_error": {
+   "unit": "deg",
+   "description": "Standard error of Argument of periastron",
+   "via": "tap_schema"
+  },
+  "temperature_ratio": {
+   "unit": "",
+   "description": "Ratio of the effective temperatures",
+   "via": "tap_schema"
+  },
+  "temperature_ratio_error": {
+   "unit": "",
+   "description": "Standard error of the ratio of the effective temperatures",
+   "via": "tap_schema"
+  },
+  "temperature_ratio_definition": {
+   "unit": "",
+   "description": "Code defining which fitting scenario did apply to the effective temperature",
+   "via": "tap_schema"
+  },
+  "astrometric_n_obs_al": {
+   "unit": "",
+   "description": "Total astrometric CCD observations in AL considered",
+   "via": "tap_schema"
+  },
+  "astrometric_n_good_obs_al": {
+   "unit": "",
+   "description": "Total astrometric CCD observations in AL actually used",
+   "via": "tap_schema"
+  },
+  "rv_n_obs_primary": {
+   "unit": "",
+   "description": "Total number of radial velocities considered for the primary",
+   "via": "tap_schema"
+  },
+  "rv_n_good_obs_primary": {
+   "unit": "",
+   "description": "Total number of radial velocities actually used for the primary",
+   "via": "tap_schema"
+  },
+  "rv_n_obs_secondary": {
+   "unit": "",
+   "description": "Total number of radial velocities considered for the secondary in the case of SB2",
+   "via": "tap_schema"
+  },
+  "rv_n_good_obs_secondary": {
+   "unit": "",
+   "description": "Total number of radial velocities actually used for the secondary in the case of SB2",
+   "via": "tap_schema"
+  },
+  "phot_g_n_obs": {
+   "unit": "",
+   "description": "Total number of G photometry measurements considered",
+   "via": "tap_schema"
+  },
+  "phot_g_n_good_obs": {
+   "unit": "",
+   "description": "Total number of G photometry measurements actually used",
+   "via": "tap_schema"
+  },
+  "bit_index": {
+   "unit": "",
+   "description": "boolean mask for the fields above in the corrVec matrix ",
+   "via": "tap_schema"
+  },
+  "corr_vec": {
+   "unit": "",
+   "description": "Vector form of the upper triangle of the correlation matrix (column-major ordered)",
+   "via": "tap_schema"
+  },
+  "obj_func": {
+   "unit": "",
+   "description": "value of the objective function at the solution",
+   "via": "tap_schema"
+  },
+  "goodness_of_fit": {
+   "unit": "",
+   "description": "goodness of fit in the Hipparcos sense",
+   "via": "tap_schema"
+  },
+  "efficiency": {
+   "unit": "",
+   "description": "Efficiency of the solution",
+   "via": "tap_schema"
+  },
+  "significance": {
+   "unit": "",
+   "description": "The significance of the solution (i.e. how worth keeping a model is)",
+   "via": "tap_schema"
+  },
+  "flags": {
+   "unit": "",
+   "description": "Quality flag for the achieved NSS solution",
+   "via": "tap_schema"
+  },
+  "conf_spectro_period": {
+   "unit": "",
+   "description": "The probability of the period for not being due to (gaussian white) noise. Relevant for SB1, SB1C, SB2 and SB2C models. To be ignored otherwise.",
+   "via": "tap_schema"
+  },
+  "r_pole_sum": {
+   "unit": "",
+   "description": "Sum of the polar radii of primary and secondary (in units of the semi-major axis)",
+   "via": "tap_schema"
+  },
+  "r_l1_point_sum": {
+   "unit": "",
+   "description": "L1-pointing radii of primary and secondary (in units of the semi-major axis)",
+   "via": "tap_schema"
+  },
+  "r_spher_sum": {
+   "unit": "",
+   "description": "Sum of the radii of sphere having the same volume as the primary and secondary (in units of the semi-major axis",
+   "via": "tap_schema"
+  },
+  "ecl_time_primary": {
+   "unit": "d",
+   "description": "Time of mid-eclipse of the primary by the secondary",
+   "via": "tap_schema"
+  },
+  "ecl_time_secondary": {
+   "unit": "d",
+   "description": "Time of mid-eclipse of the secondary by the primary",
+   "via": "tap_schema"
+  },
+  "ecl_dur_primary": {
+   "unit": "d",
+   "description": "Duration of primary eclipse assuming spherical components",
+   "via": "tap_schema"
+  },
+  "ecl_dur_secondary": {
+   "unit": "d",
+   "description": "Duration of secondary eclipse assuming spherical components",
+   "via": "tap_schema"
+  },
+  "g_luminosity_ratio": {
+   "unit": "",
+   "description": "Ratio of the G-band luminosity of the secondary over the primary",
+   "via": "tap_schema"
+  },
+  "input_period_error": {
+   "unit": "d",
+   "description": "Standard error of the period taken from VariEclipsingBinary.frequencyError",
+   "via": "tap_schema"
+  },
+  "g_rank": {
+   "unit": "",
+   "description": "Rank of the G-band solution",
+   "via": "tap_schema"
+  },
+  "astrometric_jitter": {
+   "unit": "mas",
+   "description": "Uncorrelated astrometric jitter term",
+   "via": "tap_schema"
+  },
+  "inclination": {
+   "unit": "deg",
+   "description": "Orbital inclination",
+   "via": "tap_schema"
+  },
+  "inclination_error": {
+   "unit": "deg",
+   "description": "Standard error of Orbital inclination",
+   "via": "tap_schema"
+  },
+  "ra": {
+   "unit": "deg",
+   "description": "Right ascension",
+   "via": "tap_schema"
+  },
+  "dec": {
+   "unit": "deg",
+   "description": "Declination",
+   "via": "tap_schema"
+  }
+ },
+ "gaiadr3.gaia_source": {
+  "solution_id": {
+   "unit": "",
+   "description": "Solution Identifier",
+   "via": "tap_schema"
+  },
+  "designation": {
+   "unit": "",
+   "description": "Unique source designation (unique across all Data Releases)",
+   "via": "tap_schema"
+  },
+  "source_id": {
+   "unit": "",
+   "description": "Unique source identifier (unique within a particular Data Release)",
+   "via": "tap_schema"
+  },
+  "random_index": {
+   "unit": "",
+   "description": "Random index for use when selecting subsets",
+   "via": "tap_schema"
+  },
+  "ref_epoch": {
+   "unit": "yr",
+   "description": "Reference epoch",
+   "via": "tap_schema"
+  },
+  "ra": {
+   "unit": "deg",
+   "description": "Right ascension",
+   "via": "tap_schema"
+  },
+  "ra_error": {
+   "unit": "mas",
+   "description": "Standard error of right ascension",
+   "via": "tap_schema"
+  },
+  "dec": {
+   "unit": "deg",
+   "description": "Declination",
+   "via": "tap_schema"
+  },
+  "dec_error": {
+   "unit": "mas",
+   "description": "Standard error of declination",
+   "via": "tap_schema"
+  },
+  "parallax": {
+   "unit": "mas",
+   "description": "Parallax",
+   "via": "tap_schema"
+  },
+  "parallax_error": {
+   "unit": "mas",
+   "description": "Standard error of parallax",
+   "via": "tap_schema"
+  },
+  "parallax_over_error": {
+   "unit": "",
+   "description": "Parallax divided by its standard error",
+   "via": "tap_schema"
+  },
+  "pm": {
+   "unit": "mas.yr**-1",
+   "description": "Total proper motion",
+   "via": "tap_schema"
+  },
+  "pmra": {
+   "unit": "mas.yr**-1",
+   "description": "Proper motion in right ascension direction",
+   "via": "tap_schema"
+  },
+  "scan_direction_strength_k1": {
+   "unit": "",
+   "description": "Degree of concentration of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "pmra_error": {
+   "unit": "mas.yr**-1",
+   "description": "Standard error of proper motion in right ascension direction",
+   "via": "tap_schema"
+  },
+  "pmdec": {
+   "unit": "mas.yr**-1",
+   "description": "Proper motion in declination direction",
+   "via": "tap_schema"
+  },
+  "pmdec_error": {
+   "unit": "mas.yr**-1",
+   "description": "Standard error of proper motion in declination direction",
+   "via": "tap_schema"
+  },
+  "ra_dec_corr": {
+   "unit": "",
+   "description": "Correlation between right ascension and declination",
+   "via": "tap_schema"
+  },
+  "ra_parallax_corr": {
+   "unit": "",
+   "description": "Correlation between right ascension and parallax\t\t",
+   "via": "tap_schema"
+  },
+  "ra_pmra_corr": {
+   "unit": "",
+   "description": "Correlation between right ascension and proper motion in right ascension",
+   "via": "tap_schema"
+  },
+  "ra_pmdec_corr": {
+   "unit": "",
+   "description": "Correlation between right ascension and proper motion in declination",
+   "via": "tap_schema"
+  },
+  "dec_parallax_corr": {
+   "unit": "",
+   "description": "Correlation between declination and parallax",
+   "via": "tap_schema"
+  },
+  "dec_pmra_corr": {
+   "unit": "",
+   "description": "Correlation between declination and proper motion in right ascension",
+   "via": "tap_schema"
+  },
+  "dec_pmdec_corr": {
+   "unit": "",
+   "description": "Correlation between declination and proper motion in declination",
+   "via": "tap_schema"
+  },
+  "parallax_pmra_corr": {
+   "unit": "",
+   "description": "Correlation between parallax and proper motion in right ascension",
+   "via": "tap_schema"
+  },
+  "parallax_pmdec_corr": {
+   "unit": "",
+   "description": "Correlation between parallax and proper motion in declination",
+   "via": "tap_schema"
+  },
+  "pmra_pmdec_corr": {
+   "unit": "",
+   "description": "Correlation between proper motion in right ascension and proper motion in declination",
+   "via": "tap_schema"
+  },
+  "astrometric_n_obs_al": {
+   "unit": "",
+   "description": "Total number of observations in the along-scan (AL) direction",
+   "via": "tap_schema"
+  },
+  "astrometric_n_obs_ac": {
+   "unit": "",
+   "description": "Total number of observations in the across-scan (AC) direction",
+   "via": "tap_schema"
+  },
+  "astrometric_n_good_obs_al": {
+   "unit": "",
+   "description": "Number of good observations in the along-scan (AL) direction",
+   "via": "tap_schema"
+  },
+  "astrometric_n_bad_obs_al": {
+   "unit": "",
+   "description": "Number of bad observations in the along-scan (AL) direction",
+   "via": "tap_schema"
+  },
+  "astrometric_gof_al": {
+   "unit": "",
+   "description": "Goodness of fit statistic of model wrt along-scan observations",
+   "via": "tap_schema"
+  },
+  "astrometric_chi2_al": {
+   "unit": "",
+   "description": "AL chi-square value",
+   "via": "tap_schema"
+  },
+  "astrometric_excess_noise": {
+   "unit": "mas",
+   "description": "Excess noise of the source",
+   "via": "tap_schema"
+  },
+  "astrometric_excess_noise_sig": {
+   "unit": "",
+   "description": "Significance of excess noise",
+   "via": "tap_schema"
+  },
+  "astrometric_params_solved": {
+   "unit": "",
+   "description": "Which parameters have been solved for?",
+   "via": "tap_schema"
+  },
+  "astrometric_primary_flag": {
+   "unit": "",
+   "description": "Primary or seconday",
+   "via": "tap_schema"
+  },
+  "nu_eff_used_in_astrometry": {
+   "unit": "um**-1",
+   "description": "Effective wavenumber of the source used in the astrometric solution",
+   "via": "tap_schema"
+  },
+  "pseudocolour": {
+   "unit": "um**-1",
+   "description": "Astrometrically estimated pseudocolour of the source",
+   "via": "tap_schema"
+  },
+  "pseudocolour_error": {
+   "unit": "um**-1",
+   "description": "Standard error of the pseudocolour of the source",
+   "via": "tap_schema"
+  },
+  "ra_pseudocolour_corr": {
+   "unit": "",
+   "description": "Correlation between right ascension and pseudocolour",
+   "via": "tap_schema"
+  },
+  "dec_pseudocolour_corr": {
+   "unit": "",
+   "description": "Correlation between declination and pseudocolour",
+   "via": "tap_schema"
+  },
+  "parallax_pseudocolour_corr": {
+   "unit": "",
+   "description": "Correlation between parallax and pseudocolour",
+   "via": "tap_schema"
+  },
+  "pmra_pseudocolour_corr": {
+   "unit": "",
+   "description": "Correlation between proper motion in right asension and pseudocolour",
+   "via": "tap_schema"
+  },
+  "pmdec_pseudocolour_corr": {
+   "unit": "",
+   "description": "Correlation between proper motion in declination and pseudocolour",
+   "via": "tap_schema"
+  },
+  "astrometric_matched_transits": {
+   "unit": "",
+   "description": "Matched FOV transits used in the AGIS solution",
+   "via": "tap_schema"
+  },
+  "visibility_periods_used": {
+   "unit": "",
+   "description": "Number of visibility periods used in Astrometric solution",
+   "via": "tap_schema"
+  },
+  "astrometric_sigma5d_max": {
+   "unit": "mas",
+   "description": "The longest semi-major axis of the 5-d error ellipsoid",
+   "via": "tap_schema"
+  },
+  "matched_transits": {
+   "unit": "",
+   "description": "The number of transits matched to this source",
+   "via": "tap_schema"
+  },
+  "new_matched_transits": {
+   "unit": "",
+   "description": "The number of transits newly incorporated into an existing source in the current cycle",
+   "via": "tap_schema"
+  },
+  "matched_transits_removed": {
+   "unit": "",
+   "description": "The number of transits removed from an existing source in the current cycle",
+   "via": "tap_schema"
+  },
+  "ipd_gof_harmonic_amplitude": {
+   "unit": "",
+   "description": "Amplitude of the IPD GoF versus position angle of scan",
+   "via": "tap_schema"
+  },
+  "ipd_gof_harmonic_phase": {
+   "unit": "deg",
+   "description": "Phase of the IPD GoF versus position angle of scan",
+   "via": "tap_schema"
+  },
+  "ipd_frac_multi_peak": {
+   "unit": "",
+   "description": "Percent of successful-IPD windows with more than one peak",
+   "via": "tap_schema"
+  },
+  "ipd_frac_odd_win": {
+   "unit": "",
+   "description": "Percent of transits with truncated windows or multiple gate",
+   "via": "tap_schema"
+  },
+  "ruwe": {
+   "unit": "",
+   "description": "Renormalised unit weight error",
+   "via": "tap_schema"
+  },
+  "scan_direction_strength_k2": {
+   "unit": "",
+   "description": "Degree of concentration of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_strength_k3": {
+   "unit": "",
+   "description": "Degree of concentration of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_strength_k4": {
+   "unit": "",
+   "description": "Degree of concentration of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_mean_k1": {
+   "unit": "deg",
+   "description": "Mean position angle of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_mean_k2": {
+   "unit": "deg",
+   "description": "Mean position angle of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_mean_k3": {
+   "unit": "deg",
+   "description": "Mean position angle of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "scan_direction_mean_k4": {
+   "unit": "deg",
+   "description": "Mean position angle of scan directions across the source",
+   "via": "tap_schema"
+  },
+  "duplicated_source": {
+   "unit": "",
+   "description": "Source with multiple source identifiers",
+   "via": "tap_schema"
+  },
+  "phot_g_n_obs": {
+   "unit": "",
+   "description": "Number of observations contributing to G photometry",
+   "via": "tap_schema"
+  },
+  "phot_g_mean_flux": {
+   "unit": "'electron'.s**-1",
+   "description": "G-band mean flux",
+   "via": "tap_schema"
+  },
+  "phot_g_mean_flux_error": {
+   "unit": "'electron'.s**-1",
+   "description": "Error on G-band mean flux",
+   "via": "tap_schema"
+  },
+  "phot_g_mean_flux_over_error": {
+   "unit": "",
+   "description": "G-band mean flux divided by its error",
+   "via": "tap_schema"
+  },
+  "phot_g_mean_mag": {
+   "unit": "mag",
+   "description": "G-band mean magnitude",
+   "via": "tap_schema"
+  },
+  "phot_bp_n_obs": {
+   "unit": "",
+   "description": "Number of observations contributing to BP photometry",
+   "via": "tap_schema"
+  },
+  "phot_bp_mean_flux": {
+   "unit": "'electron'.s**-1",
+   "description": "Integrated BP mean flux",
+   "via": "tap_schema"
+  },
+  "phot_bp_mean_flux_error": {
+   "unit": "'electron'.s**-1",
+   "description": "Error on the integrated BP mean flux",
+   "via": "tap_schema"
+  },
+  "phot_bp_mean_flux_over_error": {
+   "unit": "",
+   "description": "Integrated BP mean flux divided by its error",
+   "via": "tap_schema"
+  },
+  "phot_bp_mean_mag": {
+   "unit": "mag",
+   "description": "Integrated BP mean magnitude",
+   "via": "tap_schema"
+  },
+  "phot_rp_n_obs": {
+   "unit": "",
+   "description": "Number of observations contributing to RP photometry",
+   "via": "tap_schema"
+  },
+  "phot_rp_mean_flux": {
+   "unit": "'electron'.s**-1",
+   "description": "Integrated RP mean flux",
+   "via": "tap_schema"
+  },
+  "phot_rp_mean_flux_error": {
+   "unit": "'electron'.s**-1",
+   "description": "Error on the integrated RP mean flux",
+   "via": "tap_schema"
+  },
+  "phot_rp_mean_flux_over_error": {
+   "unit": "",
+   "description": "Integrated RP mean flux divided by its error",
+   "via": "tap_schema"
+  },
+  "phot_rp_mean_mag": {
+   "unit": "mag",
+   "description": "Integrated RP mean magnitude",
+   "via": "tap_schema"
+  },
+  "phot_bp_rp_excess_factor": {
+   "unit": "",
+   "description": "BP/RP excess factor",
+   "via": "tap_schema"
+  },
+  "phot_bp_n_contaminated_transits": {
+   "unit": "",
+   "description": "Number of BP contaminated transits",
+   "via": "tap_schema"
+  },
+  "phot_bp_n_blended_transits": {
+   "unit": "",
+   "description": "Number of BP blended transits",
+   "via": "tap_schema"
+  },
+  "phot_rp_n_contaminated_transits": {
+   "unit": "",
+   "description": "Number of RP contaminated transits",
+   "via": "tap_schema"
+  },
+  "phot_rp_n_blended_transits": {
+   "unit": "",
+   "description": "Number of RP blended transits",
+   "via": "tap_schema"
+  },
+  "phot_proc_mode": {
+   "unit": "",
+   "description": "Photometry processing mode",
+   "via": "tap_schema"
+  },
+  "bp_rp": {
+   "unit": "mag",
+   "description": "BP - RP colour",
+   "via": "tap_schema"
+  },
+  "bp_g": {
+   "unit": "mag",
+   "description": "BP - G colour",
+   "via": "tap_schema"
+  },
+  "g_rp": {
+   "unit": "mag",
+   "description": "G - RP colour",
+   "via": "tap_schema"
+  },
+  "radial_velocity": {
+   "unit": "km.s**-1",
+   "description": "Radial velocity ",
+   "via": "tap_schema"
+  },
+  "radial_velocity_error": {
+   "unit": "km.s**-1",
+   "description": "Radial velocity error ",
+   "via": "tap_schema"
+  },
+  "rv_method_used": {
+   "unit": "",
+   "description": "Method used to obtain the radial velocity",
+   "via": "tap_schema"
+  },
+  "rv_nb_transits": {
+   "unit": "",
+   "description": "Number of transits used to compute the radial velocity ",
+   "via": "tap_schema"
+  },
+  "rv_nb_deblended_transits": {
+   "unit": "",
+   "description": "Number of valid transits that have undergone deblending",
+   "via": "tap_schema"
+  },
+  "rv_visibility_periods_used": {
+   "unit": "",
+   "description": "Number of visibility periods used to estimate the radial velocity",
+   "via": "tap_schema"
+  },
+  "rv_expected_sig_to_noise": {
+   "unit": "",
+   "description": "Expected signal to noise ratio in the combination of the spectra used to obtain the radial velocity",
+   "via": "tap_schema"
+  },
+  "rv_renormalised_gof": {
+   "unit": "",
+   "description": "Radial velocity renormalised goodness of fit",
+   "via": "tap_schema"
+  },
+  "rv_chisq_pvalue": {
+   "unit": "",
+   "description": "P-value for constancy based on a chi-squared criterion",
+   "via": "tap_schema"
+  },
+  "rv_time_duration": {
+   "unit": "d",
+   "description": "Time coverage of the radial velocity time series",
+   "via": "tap_schema"
+  },
+  "rv_amplitude_robust": {
+   "unit": "km.s**-1",
+   "description": "Total amplitude in the radial velocity time series after outlier removal",
+   "via": "tap_schema"
+  },
+  "rv_template_teff": {
+   "unit": "K",
+   "description": "Teff of the template used to compute the radial velocity ",
+   "via": "tap_schema"
+  },
+  "rv_template_logg": {
+   "unit": "log(cm.s**-2)",
+   "description": "Logg of the template used to compute the radial velocity ",
+   "via": "tap_schema"
+  },
+  "rv_template_fe_h": {
+   "unit": "'dex'",
+   "description": "[Fe/H] of the template used to compute the radial velocityy",
+   "via": "tap_schema"
+  },
+  "rv_atm_param_origin": {
+   "unit": "",
+   "description": "Origin of the atmospheric parameters associated to the template",
+   "via": "tap_schema"
+  },
+  "vbroad": {
+   "unit": "km.s**-1",
+   "description": "Spectral line broadening parameter",
+   "via": "tap_schema"
+  },
+  "vbroad_error": {
+   "unit": "km.s**-1",
+   "description": "Uncertainty on the spectral line broadening",
+   "via": "tap_schema"
+  },
+  "vbroad_nb_transits": {
+   "unit": "",
+   "description": "Number of transits used to compute vbroad",
+   "via": "tap_schema"
+  },
+  "grvs_mag": {
+   "unit": "mag",
+   "description": "Integrated Grvs magnitude",
+   "via": "tap_schema"
+  },
+  "grvs_mag_error": {
+   "unit": "mag",
+   "description": "Grvs magnitude uncertainty",
+   "via": "tap_schema"
+  },
+  "grvs_mag_nb_transits": {
+   "unit": "",
+   "description": "Number of transits used to compute Grvs",
+   "via": "tap_schema"
+  },
+  "rvs_spec_sig_to_noise": {
+   "unit": "",
+   "description": "Signal to noise ratio in the mean RVS spectrum",
+   "via": "tap_schema"
+  },
+  "phot_variable_flag": {
+   "unit": "",
+   "description": "Photometric variability flag",
+   "via": "tap_schema"
+  },
+  "l": {
+   "unit": "deg",
+   "description": "Galactic longitude",
+   "via": "tap_schema"
+  },
+  "b": {
+   "unit": "deg",
+   "description": "Galactic latitude",
+   "via": "tap_schema"
+  },
+  "ecl_lon": {
+   "unit": "deg",
+   "description": "Ecliptic longitude",
+   "via": "tap_schema"
+  },
+  "ecl_lat": {
+   "unit": "deg",
+   "description": "Ecliptic latitude",
+   "via": "tap_schema"
+  },
+  "in_qso_candidates": {
+   "unit": "",
+   "description": "Flag indicating the availability of additional information in the QSO candidates table",
+   "via": "tap_schema"
+  },
+  "in_galaxy_candidates": {
+   "unit": "",
+   "description": "Flag indicating the availability of additional information in the galaxy candidates table",
+   "via": "tap_schema"
+  },
+  "non_single_star": {
+   "unit": "",
+   "description": "Flag indicating the availability of additional information in the various Non-Single Star tables",
+   "via": "tap_schema"
+  },
+  "has_xp_continuous": {
+   "unit": "",
+   "description": "Flag indicating the availability of mean BP/RP spectrum in continuous representation for this source",
+   "via": "tap_schema"
+  },
+  "has_xp_sampled": {
+   "unit": "",
+   "description": "Flag indicating the availability of mean BP/RP spectrum in sampled form for this source",
+   "via": "tap_schema"
+  },
+  "has_rvs": {
+   "unit": "",
+   "description": "Flag indicating the availability of mean RVS spectrum for this source",
+   "via": "tap_schema"
+  },
+  "has_epoch_photometry": {
+   "unit": "",
+   "description": "Flag indicating the availability of epoch photometry for this source",
+   "via": "tap_schema"
+  },
+  "has_epoch_rv": {
+   "unit": "",
+   "description": "Flag indicating the availability of epoch radial velocity for this source",
+   "via": "tap_schema"
+  },
+  "has_mcmc_gspphot": {
+   "unit": "",
+   "description": "Flag indicating the availability of GSP-Phot MCMC samples for this source",
+   "via": "tap_schema"
+  },
+  "has_mcmc_msc": {
+   "unit": "",
+   "description": "Flag indicating the availability of MSC MCMC samples for this source",
+   "via": "tap_schema"
+  },
+  "in_andromeda_survey": {
+   "unit": "",
+   "description": "Flag indicating that the source is present in the Gaia Andromeda Photometric Survey (GAPS)",
+   "via": "tap_schema"
+  },
+  "classprob_dsc_combmod_quasar": {
+   "unit": "",
+   "description": "Probability from DSC-Combmod of being a quasar (data used: BP/RP spectrum, photometry, astrometry)",
+   "via": "tap_schema"
+  },
+  "classprob_dsc_combmod_galaxy": {
+   "unit": "",
+   "description": "Probability from DSC-Combmod of being a galaxy (data used: BP/RP spectrum, photometry, astrometry)",
+   "via": "tap_schema"
+  },
+  "classprob_dsc_combmod_star": {
+   "unit": "",
+   "description": "Probability from DSC-Combmod of being a single star (but not a white dwarf) (data used: BP/RP spectrum, photometry, astrometry)",
+   "via": "tap_schema"
+  },
+  "teff_gspphot": {
+   "unit": "K",
+   "description": "Effective temperature from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "teff_gspphot_lower": {
+   "unit": "K",
+   "description": "Lower confidence level (16%) of effective temperature from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "teff_gspphot_upper": {
+   "unit": "K",
+   "description": "Upper confidence level (84%) of effective temperature from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "logg_gspphot": {
+   "unit": "log(cm.s**-2)",
+   "description": "Surface gravity from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "logg_gspphot_lower": {
+   "unit": "log(cm.s**-2)",
+   "description": "Lower confidence level (16%) of surface gravity from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "logg_gspphot_upper": {
+   "unit": "log(cm.s**-2)",
+   "description": "Upper confidence level (84%) of surface gravity from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "mh_gspphot": {
+   "unit": "'dex'",
+   "description": "Iron abundance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "mh_gspphot_lower": {
+   "unit": "'dex'",
+   "description": "Lower confidence level (16%) of iron abundance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "mh_gspphot_upper": {
+   "unit": "'dex'",
+   "description": "Upper confidence level (84%) of iron abundance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "distance_gspphot": {
+   "unit": "pc",
+   "description": "Distance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "distance_gspphot_lower": {
+   "unit": "pc",
+   "description": "Lower confidence level (16%) of distance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "distance_gspphot_upper": {
+   "unit": "pc",
+   "description": "Upper confidence level (84%) of distance from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "azero_gspphot": {
+   "unit": "mag",
+   "description": "Monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "azero_gspphot_lower": {
+   "unit": "mag",
+   "description": "Lower confidence level (16%) of monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "azero_gspphot_upper": {
+   "unit": "mag",
+   "description": "Upper confidence level (84%) of monochromatic extinction $A_0$ at 547.7nm from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ag_gspphot": {
+   "unit": "mag",
+   "description": "Extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ag_gspphot_lower": {
+   "unit": "mag",
+   "description": "Lower confidence level (16%) of extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ag_gspphot_upper": {
+   "unit": "mag",
+   "description": "Upper confidence level (84%) of extinction in G band from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ebpminrp_gspphot": {
+   "unit": "mag",
+   "description": "Reddening $E(G_{\\rm BP} - G_{\\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ebpminrp_gspphot_lower": {
+   "unit": "mag",
+   "description": "Lower confidence level (16%) of reddening  $E(G_{\\rm BP} - G_{\\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "ebpminrp_gspphot_upper": {
+   "unit": "mag",
+   "description": "Upper confidence level (84%) of reddening  $E(G_{\\rm BP} - G_{\\rm RP})$ from GSP-Phot Aeneas best library using BP/RP spectra",
+   "via": "tap_schema"
+  },
+  "libname_gspphot": {
+   "unit": "",
+   "description": "Name of library that achieves the highest mean log-posterior in MCMC samples and was used to derive GSP-Phot parameters in this table",
+   "via": "tap_schema"
+  }
+ }
+}

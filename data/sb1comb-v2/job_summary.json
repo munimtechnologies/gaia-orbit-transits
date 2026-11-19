@@ -1,0 +1,59 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-sb1comb-v2",
+ "id": "1f9e80d74b1e",
+ "field": "astrophysics",
+ "run": "20261119T110759Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-19T19:04:49.409555+00:00",
+ "finished_at": "2026-11-19T19:08:28.240118+00:00",
+ "duration_seconds": 218,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 150.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-python",
+   "cmd": "python fetch_comb.py --wait-min 120",
+   "exit": 0,
+   "seconds": 4
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_sb1_combine",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python sb1_combine.py --fetch https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1rob-v1 --chunks 0-7 --out-dir /out",
+   "exit": 0,
+   "seconds": 2
+  }
+ ],
+ "out_files": [
+  "combined_report.md",
+  "combined_summary.json"
+ ],
+ "out_files_total": 2,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] {\"chunks_used\": [\"k0\", \"k1\", \"k2\", \"k3\", \"k4\", \"k5\", \"k6\", \"k7\"], \"missing\": [], \"primary\": {\"R0\": true, \"C1\": true, \"C2\": true, \"C3\": false, \"H1\": true, \"H1b\": true, \"H2\": true, \"H3\": true, \"H4\": true, \"R1\": null, \"D1\": null}, \"rho_sub_primary\": {\"rho\": 0.013441332298205218, \"ci95\": [0.004687213184753111, 0.027930736265698752]}, \"rho_sub_amend1\": {\"rho\": 0.019140534580783335, \"ci95\": [0.006674618561602707, 0.03977352925288002]}, \"removed\": {\"giant_cmd\": 398, \"clamped\": 479, \"no_distance\": 11}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261119T110759Z-astrophysics\\sb1comb)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

@@ -1,8 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
-"""youth_rv_check 0.1.0 -- pre-registered follow-up of TIC 71945261 (Gaia DR3 6853008555751131648).
+"""youth_rv_check 0.1.1 -- pre-registered follow-up of TIC 71945261 (Gaia DR3 6853008555751131648).
 
 MV2 of Munim, Inc.; made with AI agents working in his name. Apache-2.0.
 Rules: findings/2026-11-19-tic71945261-followup-prereg.md (written before this job ran).
+
+0.1.1 (2026-11-19): fixes to_bjd only. In 0.1.0 an 8-digit calendar date such as "20000101"
+parsed as a float first and was returned as if it were a Julian date; the built-in self-test
+caught this and the v1 job stopped before reading any data. Dates are now recognised before
+the numeric branch, and only 2,400,000-2,600,000 is accepted as a JD. Nothing else changed.
 
 Steps (each one records its own error and never stops the others):
   1. Gaia DR3 astrometry + SB1 orbit of the target, and of AU Mic (positive control, beta Pic MG).
@@ -29,7 +34,7 @@ import traceback
 import urllib.parse
 import urllib.request
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 TARGET = 6853008555751131648
 AUMIC = (311.2897, -31.3409)
 GAIA_TAP = "https://gea.esac.esa.int/tap-server/tap/sync"
@@ -85,20 +90,39 @@ def predict(t_bjd, orb, K, n=2000, seed=1):
     return med, 0.5 * (vals[int(0.8413 * n)] - vals[int(0.1587 * n)])
 
 
+def _calendar_jd(y, m, d):
+    """JD at noon UT of a calendar date (the night of observation, +-0.5 d)."""
+    a = (14 - m) // 12
+    yy, mm = y + 4800 - a, m + 12 * a - 3
+    return d + (153 * mm + 2) // 5 + 365 * yy + yy // 4 - yy // 100 + yy // 400 - 32045
+
+
+def _as_date(s):
+    s = s.strip()
+    if s.endswith(".0"):
+        s = s[:-2]
+    s = s.replace("-", "").replace("/", "")
+    if len(s) == 8 and s.isdigit():
+        y, m, d = int(s[:4]), int(s[4:6]), int(s[6:8])
+        if 1800 <= y <= 2100 and 1 <= m <= 12 and 1 <= d <= 31:
+            return y, m, d
+    return None
+
+
 def to_bjd(name, value):
     """Best-effort epoch parsing; returns (bjd, precision_days) or None."""
+    if value is None:
+        return None
+    ymd = _as_date(str(value))
+    if ymd:
+        return float(_calendar_jd(*ymd)), 0.5
     try:
         v = float(value)
     except (TypeError, ValueError):
-        s = str(value).strip().replace("-", "")
-        if len(s) == 8 and s.isdigit():
-            y, m, d = int(s[:4]), int(s[4:6]), int(s[6:8])
-            a = (14 - m) // 12
-            yy, mm = y + 4800 - a, m + 12 * a - 3
-            jdn = d + (153 * mm + 2) // 5 + 365 * yy + yy // 4 - yy // 100 + yy // 400 - 32045
-            return jdn - 0.5 + 0.5, 0.5  # night of observation, +-0.5 d
         return None
-    if v > 2400000:
+    if math.isnan(v):
+        return None
+    if 2400000 < v < 2600000:
         return v, 0.001
     if 40000 < v < 80000:
         return v + 2400000.5, 0.001
@@ -113,7 +137,12 @@ def self_test():
     assert abs(predict(J2016_BJD + 0.5, o, 10.0, n=10)[0] + 5.0) < 1e-6
     assert abs(kepler_E(1.0, 0.5) - 0.5 * math.sin(kepler_E(1.0, 0.5)) - 1.0) < 1e-10
     assert to_bjd("MJD", 55000.0) == (2455000.5, 0.001)
-    assert to_bjd("Obsdate", "20000101")[0] == 2451545.0
+    assert to_bjd("Obsdate", "20000101") == (2451545.0, 0.5)
+    assert to_bjd("Obsdate", "2000-01-01") == (2451545.0, 0.5)
+    assert to_bjd("Obsdate", 20000101.0) == (2451545.0, 0.5)
+    assert to_bjd("HJD", "2455000.25") == (2455000.25, 0.001)
+    assert to_bjd("x", "nan") is None and to_bjd("x", "abc") is None
+    assert to_bjd("x", 12345678.0) is None
     return True
 
 
