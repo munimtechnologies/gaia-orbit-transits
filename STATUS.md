@@ -1,4 +1,4 @@
-# gaia-orbit-transits: current status (2026-11-18, v0.23.0)
+# gaia-orbit-transits: current status (2026-11-19, v0.24.0)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
@@ -9,48 +9,51 @@ holds.
    `findings/2026-11-18-calib-window-results.md`.
    - Of 162 near-edge-on DR3 orbits that TESS covered, 50 eclipse within ±3σ of Gaia's
      predicted time, where the published errors predict 69 (p = 1.4 × 10⁻⁴).
-   - **The shortfall is real, not a timing artefact.** With windows three times wider,
-     58 eclipse against 80.7 expected (ratio 0.72, p = 2 × 10⁻⁵).
-   - **Gaia DR3's predicted conjunction times are too optimistic by ×1.8** (95%:
-     1.2–2.8), measured from 49 real eclipses.
-   - **If the orbits are right, σ(cos i) is understated by k = 2.1 (1.4–3.4).** This matches
-     Makarov's (2025) simulated factor of 2.3. As far as we know it is the first measurement
-     with real eclipses.
-   - The same data fit "about a third (14–56%) of these orbits are wrong" equally well.
-     **Gaia DR4 will decide.** The test is pre-registered
-     (`findings/2026-11-18-calib-dr4-prereg.md`, amendment 1) and its release-day code is in
-     0.21.0 (`dr4_fetch.py`, `calib_dr4_run.py`).
-     - A DR3 dress rehearsal (gaia-calibdr4-reh-v1) is still waiting for compute.
+   - With windows three times wider, 58 eclipse against 80.7 expected (ratio 0.72,
+     p = 2 × 10⁻⁵).
+   - **Gaia DR3's predicted conjunction times are too optimistic by ×1.8** (95%: 1.2–2.8).
+     **If the orbits are right, σ(cos i) is understated by k = 2.1 (1.4–3.4).**
+   - "About a third (14–56%) of these orbits are wrong" fits equally well. **Gaia DR4 will
+     decide.** There are two pre-registered tests:
+     - `findings/2026-11-18-calib-dr4-prereg.md` (amendment 1), which uses DR4's published
+       orbits;
+     - **new in 0.24.0:** `findings/2026-11-19-dr4-wobble-prereg.md`. It looks for the
+       photocentre wobble at the DR3 period in DR4's raw along-scan epoch astrometry, for the
+       eclipsing and the non-eclipsing targets separately. It is rehearsed on ESA's
+       pre-released epoch astrometry.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?**
    - **0.1.0** (`findings/2026-11-18-sb1-transit-results.md`): ρ = 0.10 (0.03–0.22) from 512
      orbits. The hit rule was fooled by outlying points.
-   - **0.2.0, the outlier-proof rerun, first chunk in (0.23.0).** This is interim and
-     descriptive; the grade combines all 8 chunks.
-     (`findings/2026-11-18-sb1-robust-k7-interim.md`)
-     - Chunk 7: 2 robust hits in 443 sensitive stars, against 82.1 expected if every orbit
-       were real. ρ = 0.024 (0.003–0.088).
-     - **No transit in 322 brown-dwarf-mass orbits, where 61 were expected.**
-     - The median rule removed 26 of the 28 hits the old rule would have made.
-   - **One survivor: TIC 71945261 (Gaia DR3 6853008555751131648).**
-     - A clean ~6% eclipse at the Gaia period, on a star that is not a TOI and not in VSX
-       or the TESS EB catalogue.
-     - It is about three times deeper than Gaia's 0.097 M☉ companion allows.
-     - Either Gaia's mass is wrong or the companion is oversized. A pre-registered fit
-       separates the two (`findings/2026-11-18-tic71945261-prereg.md`, `eblm_single.py`,
-       job gaia-tic71945261-v1).
-   - The Gaia DR4 test of *why* is pre-registered, with release-day code
-     (`dr4_sb1_reality.py`, amendments 1–2). Its DR3 rehearsal (gaia-sb1real-reh-v1) is
-     queued.
-3. **Are M dwarfs in 1–2-day orbits inflated?** Graded against BHAC15 in 0.21.0:
-   `findings/2026-11-18-eblm-infl-results.md`.
-   - Median of **+2.2% (95% CI +0.3% to +7.1%)** from 14 systems: **INCONCLUSIVE**, as
-     pre-registered.
-   - It moves to DR4. Chunks gaia-eblm-rest-a/b-v1 are queued.
+   - **0.2.0, the outlier-proof rerun: 2 of 8 chunks are in.** These are interim and
+     descriptive, and the grade combines all 8 chunks.
+     (`findings/2026-11-18-sb1-robust-k7-interim.md`,
+     `findings/2026-11-19-sb1-robust-k0-interim.md`)
+     - Chunks 0 and 7 summed: 9 robust hits in 944 sensitive stars, against 170 expected
+       if every orbit were real. ρ (substellar size) = 0.018 (0.004–0.052).
+     - **No substellar-size transit in 679 brown-dwarf-mass orbits, where 127 were
+       expected.** At 95%, fewer than 3% are both real and that light.
+     - The median rule removed 65 of the 74 hits the old rule would have made.
+   - **A flaw found and fixed before the rest of the data (amendment 1,
+     `findings/2026-11-19-sb1-robust-amendment-1.md`).** In 17.6% of the pool (1,132 stars),
+     luminous stars with no Gaia radius were given a clamped 1.9 R☉ main-sequence radius,
+     which biases ρ low. The primary grade stays as pre-registered. A secondary grade (A1)
+     without them is computed by the new `sb1_combine.py` (job gaia-sb1comb-v1).
+   - **Survivors and rejections (D1):**
+     - **TIC 71945261** (chunk 7): a clean ~6% eclipse, about three times deeper than Gaia's
+       0.097 M☉ companion allows. A pre-registered fit is queued
+       (`findings/2026-11-18-tic71945261-prereg.md`).
+     - **TIC 324597856** (chunk 0): rejected as a brown dwarf. It has a secondary eclipse half
+       as deep as the primary, so the companion is a star. It is a probable new eclipsing
+       binary whose Gaia orbit (K, e) is distorted, most likely by blended lines.
+   - The Gaia DR4 test of *why* the orbits fail is pre-registered, with release-day code
+     (`dr4_sb1_reality.py`, amendments 1–2; amendment 1 above adds the radius rule).
+3. **Are M dwarfs in 1–2-day orbits inflated?** +2.2% (95% CI +0.3% to +7.1%) from 14
+   systems: **INCONCLUSIVE**, as pre-registered (`findings/2026-11-18-eblm-infl-results.md`).
+   It moves to DR4.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
-  (`findings/2026-11-18-selflens-vet-results.md`). No candidate is claimed. Four rule
-  changes are written down for DR4.
+  (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
 - **CD-48 897 (TIC 200743349) is not a new discovery of ours.** *Eclipses by Appointment*
@@ -64,33 +67,34 @@ holds.
 
 ## Lessons the pipeline now encodes
 - **A box depth is a mean, so a few outliers can fake a transit.** Fold searches require
-  the in-box median to agree with the mean (`sb1_robust.py`). In chunk 7 this removed 26 of
-  28 hits.
+  the in-box median to agree with the mean (`sb1_robust.py`).
+- **A fallback table that clamps can carry a whole population through a cut.** Check what
+  every fallback value does at the table's edges, and count how many rows sit exactly on a
+  fallback value.
 - **Never skip a window that is too wide; cap it.**
 - A query that silently drops columns changes the sample. Jobs now stop instead.
-- **Rehearse release-day code on the previous release.**
+- **Rehearse release-day code on the previous release** (or on a pre-release sample).
 - **Read every table that can hold the thing you count.**
 - **Check that a catalogue service is actually up before reading "no rows" as "not
-  listed".** VizieR returned empty results while its database was down on 2026-11-18.
+  listed".**
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), Gaia DR3 vari_eclipsing_binary,
-ExoFOP, SIMBAD, the Chopard-Vilhem Zenodo deposits (10.5281/zenodo.22998328 and
-10.5281/zenodo.23342416) and the *Eclipses by Appointment* claim tables.
+the ZTF (Chen et al. 2020) and ASAS-SN variable catalogues, Green et al. (2023) TESS
+ellipsoidal candidates, ExoFOP, SIMBAD, the Chopard-Vilhem Zenodo deposits
+(10.5281/zenodo.22998328 and 10.5281/zenodo.23342416) and the *Eclipses by Appointment*
+claim tables.
 
 ## Gaia DR4 (2 December 2026)
-- Tables (ESA contents page, read 2026-11-18):
-  - `nss_two_body_orbit` (5.9M) + `_supp`;
-  - `rvs_two_body_orbit` (639k);
-  - `dr3_neighbourhood` (2.45B);
-  - `nss_masses`, `nss_acceleration_astro`.
-  - DataLink-only epoch products: RVS epoch parameters, epoch astrometry and epoch
-    photometry.
+- Tables: `nss_two_body_orbit` (5.9M) + `_supp`, `rvs_two_body_orbit` (639k),
+  `dr3_neighbourhood`, `nss_masses` and `nss_acceleration_astro`. DataLink-only epoch
+  products: RVS epoch parameters, epoch astrometry (`EPOCH_ASTROMETRY`) and epoch photometry.
 - Pre-registered order:
   1. the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py`, `calib_dr4_run.py`);
-  2. the SB1 transit-rate test (0.2.0 rules) on DR4's RVS SB1 orbits;
-  3. the inclination and timing calibration on DR4's own orbits;
-  4. EBLM inflation;
-  5. the RV transit screen;
-  6. exoplanet candidates;
-  7. self-lensing.
+  2. the wobble test (`dr4_wobble.py`, owed before release);
+  3. the SB1 transit-rate test (0.2.0 rules plus amendment 1) on DR4's RVS SB1 orbits;
+  4. the inclination and timing calibration on DR4's own orbits;
+  5. EBLM inflation;
+  6. the RV transit screen;
+  7. exoplanet candidates;
+  8. self-lensing.
