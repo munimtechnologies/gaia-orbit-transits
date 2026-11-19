@@ -12,16 +12,32 @@ depths. This module replaces that TESS stage:
  1. same Gaia sample and classes (eblm_screen.sample_adql / classify, unchanged);
  2. same TESS light curves and detrending (eblm_screen.load_tess / detrend, unchanged);
  3. BLS with real errors, only to find the phase of the primary eclipse;
- 4. a physical eclipse model fitted to the phase-binned light curve: a circular orbit,
-    a quadratic limb-darkened primary (ring integration, exact for any k, b), the
-    companion's occultation, and harmonics up to 3rd order for ellipsoidal, reflection
-    and beaming variation; exposure-time smoothing;
+ 4. a physical eclipse model fitted to the phase-binned light curve: a quadratic
+    limb-darkened primary (ring integration, exact for any k, b), the companion's
+    occultation, and harmonics up to 3rd order for ellipsoidal, reflection and beaming
+    variation; exposure-time smoothing;
  5. detection from the chi-square gain of the eclipse model (snr_fit);
  6. the primary's radius from the light curve (a/R1 and Kepler's law with the Gaia SB1
     mass), so the companion's radius does not rest on the FLAME radius alone;
  7. the true companion mass from the SB1 mass function and the fitted inclination;
- 8. pre-registered verdicts (findings/2026-11-17-eblm-fit-prereg.md) and the
-    short-period radius-inflation statistic.
+ 8. pre-registered verdicts and the short-period radius-inflation statistic.
+
+0.2.0 (fixes fixed in findings/2026-11-19-eblm-holdout-prereg.md before any holdout fit,
+after 0.1.0 failed its outside check, findings/2026-11-19-eblm-control-results.md):
+ (a) the ellipsoidal amplitude's error includes red noise: the larger of the white-noise
+     error times a time-binned beta factor (Winn et al. 2008 style, bins P/16, P/8, P/4)
+     and the segment-to-segment scatter of the amplitude with the eclipse shape fixed
+     (segments = TESS data split at gaps > 3 d, long stretches cut to <= 27.4 d);
+ (b) the occultation phase comes from Gaia's e and omega (exact conjunction phases) and
+     is then free within +-0.15 of that phase (grid step 0.0025);
+ (c) the grazing check runs before the mass-consistency check; both are reported
+     (verdict and mass_check);
+ (d) unit tests (test_eblm_fit.py, stdlib + numpy) run as the job's first step;
+ (e) eccentric geometry, needed by (b): with a significant Gaia eccentricity
+     (e >= 3 sigma_e, or e >= 0.05 when sigma_e is missing), the fitted transit chord
+     speed is converted to a/R1 = A sqrt(1-e^2) / (1 + e sin w) and the impact parameter
+     to cos i = b (1 + e sin w) / (a/R1 (1-e^2)); the occultation uses its own impact
+     parameter and chord speed. With e = 0 every formula reduces to 0.1.0's.
 """
 import argparse
 import csv
@@ -35,9 +51,12 @@ import traceback
 import urllib.parse
 import urllib.request
 
-import eblm_screen as es
+try:
+    import eblm_screen as es
+except ImportError:  # only the Gaia/TESS stages need it; the unit tests do not
+    es = None
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 VIZIER_ASU = ["https://vizier.cfa.harvard.edu/viz-bin/asu-tsv",
               "https://vizier.cds.unistra.fr/viz-bin/asu-tsv"]
 BD_MAX = 0.075
@@ -59,6 +78,17 @@ V1_IDS = ["4531797363284853888", "3094854481749076736", "996712994297110272",
           "5557223240440494080"]
 E6_IDS = ["4531797363284853888", "1458828115020019328", "1866019155321938560",
           "2346634757461218816", "4865466912871027200"]
+
+# 0.2.0 constants (fixed before any holdout fit)
+PHI2_HALF_WINDOW = 0.15
+PHI2_STEP = 0.0025
+ECC_MIN_SIGNIF = 3.0
+ECC_MIN_NO_ERR = 0.05
+SEG_GAP_DAYS = 3.0
+SEG_MAX_DAYS = 30.0
+SEG_PART_DAYS = 27.4
+BETA_FRACTIONS = (1.0 / 16.0, 1.0 / 8.0, 1.0 / 4.0)
+CIRCULAR = (0.5, 1.0, 1.0)   # (phi2, occultation b ratio, occultation chord-speed ratio)
 
 
 def log(*a):
@@ -113,6 +143,73 @@ def m2_from_fm(fm, m1):
     return 0.5 * (lo + hi)
 
 
+# ---------------------------------------------------------------- 0.2.0: eccentric geometry
+def _fnum(x):
+    try:
+        v = float(x)
+        return v if math.isfinite(v) else float("nan")
+    except (TypeError, ValueError):
+        return float("nan")
+
+
+def ecc_used(e, e_err):
+    """The eccentricity the fit uses: Gaia's e if significant (e >= 3 sigma_e; or e >= 0.05
+    when sigma_e is missing), else 0 (circular)."""
+    e, e_err = _fnum(e), _fnum(e_err)
+    if not (e == e and 0.0 < e < 0.95):
+        return 0.0
+    if e_err == e_err and e_err > 0:
+        return e if e >= ECC_MIN_SIGNIF * e_err else 0.0
+    return e if e >= ECC_MIN_NO_ERR else 0.0
+
+
+def mean_anomaly(f, e):
+    """Mean anomaly for true anomaly f (radians) and eccentricity e."""
+    E = 2.0 * math.atan2(math.sqrt(1.0 - e) * math.sin(f / 2.0), math.sqrt(1.0 + e) * math.cos(f / 2.0))
+    return E - e * math.sin(E)
+
+
+def phi2_from_gaia(e, omega_deg):
+    """Phase of the occultation after the primary eclipse (transit of the companion).
+
+    Gaia's omega is the RV argument of periastron of the primary: transit at
+    f = pi/2 - omega, occultation at f = 3 pi/2 - omega (eblm_screen.conjunction_offset).
+    To first order this is 0.5 + (2/pi) e cos(omega)."""
+    e = _fnum(e)
+    om = _fnum(omega_deg)
+    if not (e == e and e > 0 and om == om):
+        return 0.5
+    w = math.radians(om)
+    m_tr = mean_anomaly(0.5 * math.pi - w, e)
+    m_oc = mean_anomaly(1.5 * math.pi - w, e)
+    return ((m_oc - m_tr) / (2.0 * math.pi)) % 1.0
+
+
+def occ_geometry(e, omega_deg):
+    """(phi2, b_occ / b_tr, chord speed at occultation / at transit)."""
+    e = _fnum(e)
+    om = _fnum(omega_deg)
+    if not (e == e and e > 0 and om == om):
+        return CIRCULAR
+    s = e * math.sin(math.radians(om))
+    return (phi2_from_gaia(e, om), (1.0 + s) / (1.0 - s), (1.0 - s) / (1.0 + s))
+
+
+def true_geometry(a_r_fit, b_fit, e, omega_deg):
+    """(a/R1, cos i) from the fitted transit chord speed a_r_fit and impact parameter b_fit.
+    The circular model's x = a_r sin(2 pi phase) has chord speed 2 pi a_r per phase; an
+    eccentric orbit's speed at transit is 2 pi (a/R1) (1 + e sin w) / sqrt(1 - e^2)."""
+    e = _fnum(e)
+    om = _fnum(omega_deg)
+    if not (e == e and e > 0 and om == om):
+        e, s = 0.0, 0.0
+    else:
+        s = e * math.sin(math.radians(om))
+    a_r = a_r_fit * math.sqrt(1.0 - e * e) / (1.0 + s)
+    cosi = min(abs(b_fit) * (1.0 + s) / (a_r * (1.0 - e * e)), 1.0)
+    return a_r, cosi
+
+
 # ---------------------------------------------------------------- eclipse geometry
 def circle_overlap(d, k):
     """Overlap area of the unit circle and a circle of radius k at centre distance d."""
@@ -152,11 +249,14 @@ def blocked_fraction(z, k, u1, u2, n=300):
     return out
 
 
-def eclipse_shapes(phase, k, b, a_r, u1, u2, exp_phase=0.0, nsub=5):
-    """(D, O) at each phase (0 = primary eclipse, circular orbit). D: fraction of the
-    primary's light blocked by the companion. O: fraction of the companion's disc hidden
-    behind the primary. Averaged over an exposure of exp_phase (in phase units)."""
+def eclipse_shapes(phase, k, b, a_r, u1, u2, exp_phase=0.0, nsub=5, geom=CIRCULAR):
+    """(D, O) at each phase (0 = primary eclipse). D: fraction of the primary's light
+    blocked by the companion. O: fraction of the companion's disc hidden behind the
+    primary, centred on phase geom[0] with impact parameter b * geom[1] and chord speed
+    a_r * geom[2]. Averaged over an exposure of exp_phase (in phase units). With
+    geom = CIRCULAR this is exactly 0.1.0's circular model."""
     import numpy as np
+    phi2, b_ratio, v_ratio = geom
     ph = np.atleast_1d(np.asarray(phase, float))
     if exp_phase > 0 and nsub > 1:
         offs = (np.arange(nsub) + 0.5) / nsub - 0.5
@@ -168,14 +268,19 @@ def eclipse_shapes(phase, k, b, a_r, u1, u2, exp_phase=0.0, nsub=5):
     y = b * np.cos(w)
     z = np.sqrt(x * x + y * y)
     front = np.cos(w) > 0
+    w2 = 2.0 * math.pi * (p2 - (phi2 - 0.5))
+    x2 = a_r * v_ratio * np.sin(w2)
+    y2 = b * b_ratio * np.cos(w2)
+    z2 = np.sqrt(x2 * x2 + y2 * y2)
+    back = np.cos(w2) < 0
     D = np.zeros_like(z)
     O = np.zeros_like(z)
     mf = front & (z < 1.0 + k)
     if np.any(mf):
         D[mf] = blocked_fraction(z[mf], k, u1, u2)
-    mb = (~front) & (z < 1.0 + k)
+    mb = back & (z2 < 1.0 + k)
     if np.any(mb):
-        O[mb] = circle_overlap(z[mb], k) / (math.pi * k * k)
+        O[mb] = circle_overlap(z2[mb], k) / (math.pi * k * k)
     return D.reshape(-1, nsub).mean(axis=1), O.reshape(-1, nsub).mean(axis=1)
 
 
@@ -186,13 +291,13 @@ def harmonics(phase):
             np.cos(3 * w), np.sin(3 * w)]
 
 
-def design(phase, theta, u1, u2, exp_phase):
+def design(phase, theta, u1, u2, exp_phase, geom=CIRCULAR):
     """Columns of the linear part: h_j (1 - D) for 7 harmonics, then (D - O) whose
     coefficient is the occultation depth Ds (companion light diluting the transit)."""
     import numpy as np
     dphi, k, b, lar = theta
     p = np.asarray(phase, float) - dphi
-    D, O = eclipse_shapes(p, k, abs(b), math.exp(lar), u1, u2, exp_phase)
+    D, O = eclipse_shapes(p, k, abs(b), math.exp(lar), u1, u2, exp_phase, geom=geom)
     cols = [h * (1.0 - D) for h in harmonics(p)] + [D - O]
     return np.vstack(cols).T, D, O
 
@@ -213,10 +318,10 @@ def in_bounds(theta):
             and a_r > 1.0 + k and 1.2 <= a_r <= 80.0)
 
 
-def chi2_of(theta, ph, y, sig, u1, u2, exp_phase):
+def chi2_of(theta, ph, y, sig, u1, u2, exp_phase, geom=CIRCULAR):
     if not in_bounds(theta):
         return 1e30
-    A, _, _ = design(ph, theta, u1, u2, exp_phase)
+    A, _, _ = design(ph, theta, u1, u2, exp_phase, geom)
     return lin_solve(A, y, sig)[1]
 
 
@@ -262,15 +367,17 @@ def nelder_mead(fun, x0, step, maxiter=1500, xtol=1e-6, ftol=1e-3):
     return pts[i], float(vals[i])
 
 
-def fit_eclipse(ph, y, sig, teff, exp_phase, k0, ar0, b_starts=(0.1, 0.5, 0.85), u_shift=(0.0, 0.0)):
-    """Fit (dphi, k, b, a/R1) by Nelder-Mead with the linear part solved exactly at every
-    step. Returns a dict of the best fit, its linear coefficients and their covariance."""
+def fit_eclipse(ph, y, sig, teff, exp_phase, k0, ar0, b_starts=(0.1, 0.5, 0.85), u_shift=(0.0, 0.0),
+                geom=CIRCULAR):
+    """Fit (dphi, k, b, a_r) by Nelder-Mead with the linear part solved exactly at every
+    step. a_r is the transit chord-speed parameter (= a/R1 for a circular orbit). Returns
+    a dict of the best fit, its linear coefficients and their covariance."""
     import numpy as np
     u1, u2 = ld_coeffs(teff)
     u1, u2 = u1 + u_shift[0], u2 + u_shift[1]
     k0 = min(max(k0, 0.02), 0.6)
     ar0 = min(max(ar0, 1.3 + k0), 60.0)
-    f = lambda th: chi2_of(th, ph, y, sig, u1, u2, exp_phase)
+    f = lambda th: chi2_of(th, ph, y, sig, u1, u2, exp_phase, geom)
     best = None
     for b0 in b_starts:
         th0 = [0.0, k0, b0, math.log(ar0)]
@@ -279,7 +386,7 @@ def fit_eclipse(ph, y, sig, teff, exp_phase, k0, ar0, b_starts=(0.1, 0.5, 0.85),
         if best is None or v < best[1]:
             best = (x, v)
     th, chi2 = best
-    A, D, O = design(ph, th, u1, u2, exp_phase)
+    A, D, O = design(ph, th, u1, u2, exp_phase, geom)
     coef, chi2, Aw = lin_solve(A, y, sig)
     dof = max(len(y) - A.shape[1] - 4, 1)
     red = chi2 / dof
@@ -291,9 +398,132 @@ def fit_eclipse(ph, y, sig, teff, exp_phase, k0, ar0, b_starts=(0.1, 0.5, 0.85),
     c0 = coef[0]
     return {"dphi": float(th[0]), "k": float(th[1]), "b": float(abs(th[2])), "a_r": float(math.exp(th[3])),
             "u1": u1, "u2": u2, "chi2": chi2, "chi2_red": red, "snr_fit": snr, "coef": coef, "cov": cov,
+            "geom": tuple(float(g) for g in geom),
             "Ds": float(coef[7]), "err_Ds": float(math.sqrt(max(cov[7, 7], 0.0))),
             "a_ell": float(-coef[3] / c0), "err_a_ell": float(math.sqrt(max(cov[3, 3], 0.0)) / abs(c0)),
             "depth_model": float(np.max(D) * (1.0 - coef[7])) if D.size else float("nan")}
+
+
+def _theta(fit):
+    return (fit["dphi"], fit["k"], fit["b"], math.log(fit["a_r"]))
+
+
+def scan_phi2(ph, y, sig, fit, exp_phase, center, half=PHI2_HALF_WINDOW, step=PHI2_STEP):
+    """Best occultation phase within center +- half, eclipse shape fixed (fix b).
+    Returns (phi2_best, chi2_best, chi2_at_center)."""
+    th = _theta(fit)
+    g = fit.get("geom", CIRCULAR)
+    n = int(round(half / step))
+    best = None
+    chi_c = float("nan")
+    for i in range(-n, n + 1):
+        p2 = center + i * step
+        c2 = lin_solve(design(ph, th, fit["u1"], fit["u2"], exp_phase, (p2, g[1], g[2]))[0], y, sig)[1]
+        if i == 0:
+            chi_c = c2
+        if best is None or c2 < best[1]:
+            best = (p2, c2)
+    return best[0], best[1], chi_c
+
+
+# ---------------------------------------------------------------- 0.2.0: red noise (fix a)
+def segments(t, gap=SEG_GAP_DAYS, max_len=SEG_MAX_DAYS, part=SEG_PART_DAYS):
+    """Index arrays of data segments: split at gaps > gap days; any stretch longer than
+    max_len days is cut into equal parts no longer than part days."""
+    import numpy as np
+    t = np.asarray(t, float)
+    if t.size == 0:
+        return []
+    cuts = np.where(np.diff(t) > gap)[0] + 1
+    out = []
+    for idx in np.split(np.arange(t.size), cuts):
+        if idx.size == 0:
+            continue
+        span = t[idx[-1]] - t[idx[0]]
+        if span > max_len:
+            n = int(math.ceil(span / part))
+            edges = t[idx[0]] + span * np.arange(1, n) / n
+            for sub in np.split(idx, np.searchsorted(t[idx], edges)):
+                if sub.size:
+                    out.append(sub)
+        else:
+            out.append(idx)
+    return out
+
+
+def beta_factor(t, r, widths, min_bins=8, min_per_bin=3):
+    """Time-correlated noise factor: max over bin widths of the rms of binned residuals
+    divided by its white-noise expectation (never below 1)."""
+    import numpy as np
+    t = np.asarray(t, float)
+    r = np.asarray(r, float)
+    ok = np.isfinite(t) & np.isfinite(r)
+    t, r = t[ok], r[ok]
+    if r.size < min_bins * min_per_bin:
+        return 1.0, {}
+    s1 = float(np.std(r))
+    if not s1 > 0:
+        return 1.0, {}
+    betas = {}
+    for w in widths:
+        if not w > 0:
+            continue
+        idx = np.floor((t - t[0]) / w).astype(np.int64)
+        _, inv, cnt = np.unique(idx, return_inverse=True, return_counts=True)
+        sums = np.bincount(inv, weights=r)
+        keep = cnt >= min_per_bin
+        m = int(keep.sum())
+        if m < min_bins:
+            continue
+        means = sums[keep] / cnt[keep]
+        nbar = float(np.mean(cnt[keep]))
+        expect = s1 / math.sqrt(nbar) * math.sqrt(m / (m - 1.0))
+        betas[f"{w:.5g}"] = float(np.std(means) / expect)
+    beta = max([1.0] + list(betas.values()))
+    return beta, betas
+
+
+def segment_amplitudes(t, f, P, t0, fit, exp_phase, min_cycles=1.5, min_points=200, nbins=200):
+    """Ellipsoidal amplitude in each segment with the eclipse shape fixed."""
+    import numpy as np
+    th = _theta(fit)
+    g = fit.get("geom", CIRCULAR)
+    amps = []
+    for idx in segments(t):
+        ts, fs = np.asarray(t)[idx], np.asarray(f)[idx]
+        if ts.size < min_points or ts[-1] - ts[0] < min_cycles * P:
+            continue
+        ph, y, sig, _ = phase_bin(ts, fs, P, t0, nbins=nbins, min_n=2)
+        if y.size < 50:
+            continue
+        A = design(ph, th, fit["u1"], fit["u2"], exp_phase, g)[0]
+        coef = lin_solve(A, y, sig)[0]
+        if coef[0] != 0:
+            amps.append(float(-coef[3] / coef[0]))
+    return amps
+
+
+def segment_scatter(amps):
+    """Standard error of the mean amplitude from segment-to-segment scatter (NaN if < 2)."""
+    if len(amps) < 2:
+        return float("nan")
+    m = sum(amps) / len(amps)
+    var = sum((a - m) ** 2 for a in amps) / (len(amps) - 1)
+    return math.sqrt(var / len(amps))
+
+
+def combine_err(white, beta, seg):
+    """Fix (a): the larger of white x beta and the segment scatter (NaNs ignored)."""
+    cands = [x for x in (white * beta if white == white and beta == beta else float("nan"), seg)
+             if x == x]
+    return max(cands) if cands else float("nan")
+
+
+def time_model(t, P, t0, fit, exp_phase):
+    import numpy as np
+    ph = ((np.asarray(t) - t0) / P + 0.5) % 1.0 - 0.5
+    A = design(ph, _theta(fit), fit["u1"], fit["u2"], exp_phase, fit.get("geom", CIRCULAR))[0]
+    return A @ fit["coef"]
 
 
 def phase_bin(t, f, P, t0, nbins=1000, min_n=3):
@@ -308,15 +538,23 @@ def phase_bin(t, f, P, t0, nbins=1000, min_n=3):
     sp = np.bincount(idx, weights=ph, minlength=nbins)
     good = cnt >= min_n
     mf = np.where(cnt > 0, sf / np.maximum(cnt, 1), np.nan)
-    sd = es.robust_sd(np.asarray(f) - mf[idx])
+    sd = robust_sd(np.asarray(f) - mf[idx])
     return (sp[good] / cnt[good], mf[good], sd / np.sqrt(cnt[good]), cnt[good])
+
+
+def robust_sd(x):
+    import numpy as np
+    x = np.asarray(x, float)
+    x = x[np.isfinite(x)]
+    return float(1.4826 * np.median(np.abs(x - np.median(x)))) if x.size > 1 else float("nan")
 
 
 def odd_even(t, f, P, t0, fit, exp_phase):
     """Separate transit amplitudes for odd and even epochs (time series, best shape)."""
     import numpy as np
     ph = ((t - t0) / P + 0.5) % 1.0 - 0.5 - fit["dphi"]
-    D, O = eclipse_shapes(ph, fit["k"], fit["b"], fit["a_r"], fit["u1"], fit["u2"], exp_phase)
+    D, O = eclipse_shapes(ph, fit["k"], fit["b"], fit["a_r"], fit["u1"], fit["u2"], exp_phase,
+                          geom=fit.get("geom", CIRCULAR))
     ep = np.round((t - t0) / P - fit["dphi"]).astype(np.int64)
     odd = (np.abs(ep) % 2) == 1
     if (D[odd] > 0).sum() < 5 or (D[~odd] > 0).sum() < 5:
@@ -324,29 +562,31 @@ def odd_even(t, f, P, t0, fit, exp_phase):
     X = np.vstack(harmonics(ph) + [-D * odd, -D * (~odd), -O]).T
     coef, *_ = np.linalg.lstsq(X, f, rcond=None)
     r = f - X @ coef
-    sd = es.robust_sd(r)
+    sd = robust_sd(r)
     cov = np.linalg.pinv(X.T @ X) * sd ** 2
     return {"A_odd": float(coef[7]), "err_odd": float(math.sqrt(max(cov[7, 7], 0))),
             "A_even": float(coef[8]), "err_even": float(math.sqrt(max(cov[8, 8], 0)))}
 
 
 # ---------------------------------------------------------------- physics and verdict
-def derive(c, fit, teff1):
-    """Masses and radii from the fit plus the Gaia SB1 orbit (c: eblm_screen.classify row)."""
+def derive(c, fit, teff1, e=0.0, omega_deg=float("nan")):
+    """Masses and radii from the fit plus the Gaia SB1 orbit (c: eblm_screen.classify row).
+    e, omega: the eccentricity used by the fit (0 = circular) and Gaia's omega."""
     out = {}
-    a_r, b, k = fit["a_r"], fit["b"], fit["k"]
-    cosi = min(b / a_r, 1.0)
-    sini = math.sqrt(1.0 - cosi * cosi)
+    k = fit["k"]
+    a_r, cosi = true_geometry(fit["a_r"], fit["b"], e, omega_deg)
+    out["a_r_true"] = a_r
+    sini = math.sqrt(max(1.0 - cosi * cosi, 0.0))
     out["inc_deg"] = math.degrees(math.acos(cosi))
     m1 = c.get("m1_flame", float("nan"))
     out["m1_source"] = "flame" if m1 == m1 and m1 > 0 else "default_1.3"
     m1 = m1 if m1 == m1 and m1 > 0 else 1.3
     out["m1"] = m1
     fm = c["fm"]
-    m2 = m2_from_fm(fm / sini ** 3, m1)
+    m2 = m2_from_fm(fm / sini ** 3, m1) if sini > 0 else float("nan")
     out["m2"] = m2
     k_hi = c["m2_hi2"]
-    out["m2_hi2"] = k_hi / sini if k_hi == k_hi else float("nan")    # first order in sin i
+    out["m2_hi2"] = k_hi / sini if k_hi == k_hi and sini > 0 else float("nan")    # first order in sin i
     a = es.semi_major_axis_rsun(c["period"], m1 + m2)
     out["a_rsun"] = a
     r1 = a / a_r
@@ -368,8 +608,21 @@ def derive(c, fit, teff1):
     return out
 
 
+def mass_check(v):
+    """Ellipsoidal mass-consistency check alone (0.1.0 rule, 0.2.0 error bar)."""
+    a, ea, pr = (v.get(key, float("nan")) for key in ("a_ell", "err_a_ell", "ell_pred_fit"))
+    if not (a == a and ea == ea and pr == pr):
+        return "MASS_NA", []
+    if a - 3 * ea > 2 * pr:
+        return "MASS_TENSION_HEAVIER", [f"ellipsoidal {a:.5f} > 2 x predicted {pr:.5f}"]
+    if a + 3 * ea < 0.5 * pr:
+        return "MASS_TENSION_LIGHTER", [f"ellipsoidal {a:.5f} < 0.5 x predicted {pr:.5f}"]
+    return "MASS_OK", []
+
+
 def verdict(v):
-    """Pre-registered rules (findings/2026-11-17-eblm-fit-prereg.md), applied in order."""
+    """0.1.0's pre-registered rules (findings/2026-11-17-eblm-fit-prereg.md) with fix (c):
+    the grazing check now runs before the mass-consistency check."""
     g = lambda key: v.get(key, float("nan"))
     if not (g("snr_fit") >= 10):
         return "NO_ECLIPSE", [f"snr_fit {g('snr_fit'):.1f}"]
@@ -377,16 +630,14 @@ def verdict(v):
     if ao == ao and ae == ae:
         if abs(ao - ae) > 3 * math.hypot(eo, ee) and abs(ao - ae) > 0.1 * 0.5 * (ao + ae):
             return "TWIN_AT_2P", [f"odd {ao:.4f} vs even {ae:.4f}"]
-    a, ea, pr = g("a_ell"), g("err_a_ell"), g("ell_pred_fit")
-    if a - 3 * ea > 2 * pr:
-        return "MASS_TENSION_HEAVIER", [f"ellipsoidal {a:.5f} > 2 x predicted {pr:.5f}"]
-    if a + 3 * ea < 0.5 * pr:
-        return "MASS_TENSION_LIGHTER", [f"ellipsoidal {a:.5f} < 0.5 x predicted {pr:.5f}"]
-    if g("t2_lo3") > 1.15 * g("t_allow"):
-        return "TOO_LUMINOUS", [f"T2 > {g('t2_lo3'):.0f} K (3 sigma) vs at most {g('t_allow'):.0f} K for an M dwarf"]
     pre = "BD_" if g("m2_hi2") < BD_MAX else ""
     if g("b") > 1.0 - g("k"):
         return pre + "EBLM_GRAZING", [f"b {g('b'):.2f} > 1 - k"]
+    mc, why = mass_check(v)
+    if mc in ("MASS_TENSION_HEAVIER", "MASS_TENSION_LIGHTER"):
+        return mc, why
+    if g("t2_lo3") > 1.15 * g("t_allow"):
+        return "TOO_LUMINOUS", [f"T2 > {g('t2_lo3'):.0f} K (3 sigma) vs at most {g('t_allow'):.0f} K for an M dwarf"]
     reasons = [f"R2 {g('r2'):.3f} vs MS {g('r_ms'):.3f} R_sun ({100 * g('infl'):+.0f}%)"]
     if g("infl") > 0.3:
         return pre + "EBLM_LARGE_RADIUS", reasons
@@ -475,10 +726,13 @@ def catalogues(ra, dec):
 
 # ---------------------------------------------------------------- one system
 def vet_fit(c, data_dir, max_sectors, plot_dir=None):
+    """c: an eblm_screen.classify row; 0.2.0 also reads c['e_err'] and c['omega'] (Gaia's
+    eccentricity_error and arg_periastron) when present."""
     import numpy as np
     from astropy.timeseries import BoxLeastSquares
     res = {"source_id": c["source_id"], "period_gaia": c["period"], "m2_sini": c["m2"], "fm": c["fm"],
-           "ra": c.get("ra", ""), "dec": c.get("dec", ""), "G": c.get("phot_g_mean_mag", "")}
+           "ra": c.get("ra", ""), "dec": c.get("dec", ""), "G": c.get("phot_g_mean_mag", ""),
+           "eblm_fit_version": VERSION}
     tic, tmag = es.resolve_tic(c["source_id"], c["ra"], c["dec"])
     res.update({"tic": tic, "tmag": tmag})
     if tic is None:
@@ -500,7 +754,7 @@ def vet_fit(c, data_dir, max_sectors, plot_dir=None):
     bt = np.bincount(inv, weights=t) / cnt
     bf = np.bincount(inv, weights=fd) / cnt
     exp_d = max(10.0 / 1440, cad)
-    sd = es.robust_sd(np.diff(bf)) / math.sqrt(2.0)
+    sd = robust_sd(np.diff(bf)) / math.sqrt(2.0)
     a_r_guess = c["a_rsun"] / c["r1_flame"] if c.get("r1_flame") == c.get("r1_flame") and c.get("r1_flame") else 4.0
     dur_c = P0 / math.pi * math.asin(min(1.0, 1.0 / max(a_r_guess, 1.01)))
     durs = np.clip(np.array([0.5, 0.7, 0.85, 1.0, 1.2]) * dur_c, 0.02, 0.4 * P0)
@@ -518,21 +772,50 @@ def vet_fit(c, data_dir, max_sectors, plot_dir=None):
     dmin = float(np.min(np.convolve(y[near], np.ones(5) / 5, mode="valid"))) if near.sum() > 5 else base
     k0 = math.sqrt(max(base - dmin, 1e-4))
     teff1 = es._f(c, "teff_gspphot")
-    fit = fit_eclipse(ph, y, sig, teff1, exp_d / P, k0, a_r_guess)
+    # fix (b) + (e): eccentric geometry from Gaia, then a free occultation phase
+    e_u = ecc_used(c.get("e", 0.0), c.get("e_err", float("nan")))
+    om = _fnum(c.get("omega", float("nan")))
+    if not (om == om):
+        e_u = 0.0
+    geom0 = occ_geometry(e_u, om) if e_u > 0 else CIRCULAR
+    res.update({"e_gaia": c.get("e", ""), "e_err_gaia": c.get("e_err", ""), "omega_gaia": c.get("omega", ""),
+                "e_used": e_u, "phi2_center": geom0[0]})
+    fit = fit_eclipse(ph, y, sig, teff1, exp_d / P, k0, a_r_guess, geom=geom0)
+    p2, chi_best, chi_c = scan_phi2(ph, y, sig, fit, exp_d / P, geom0[0])
+    res.update({"phi2_fit": p2, "dchi2_phi2": chi_c - chi_best})
+    if abs(p2 - geom0[0]) > 0.5 * PHI2_STEP:
+        fit = fit_eclipse(ph, y, sig, teff1, exp_d / P, fit["k"], fit["a_r"], b_starts=(fit["b"],),
+                          geom=(p2, geom0[1], geom0[2]))
     res.update({key: fit[key] for key in ("dphi", "k", "b", "a_r", "u1", "u2", "chi2_red", "snr_fit", "Ds",
                                           "err_Ds", "a_ell", "err_a_ell", "depth_model")})
+    # fix (a): red-noise error of the ellipsoidal amplitude
+    white = fit["err_a_ell"]
+    try:
+        resid = bf - time_model(bt, P, t0, fit, exp_d / P)
+        beta, betas = beta_factor(bt, resid, [P * q for q in BETA_FRACTIONS])
+    except Exception as exc:  # noqa: BLE001
+        beta, betas = 1.0, {"error": str(exc)[:120]}
+    try:
+        amps = segment_amplitudes(bt, bf, P, t0, fit, exp_d / P)
+    except Exception as exc:  # noqa: BLE001
+        amps, res["seg_error"] = [], str(exc)[:120]
+    seg = segment_scatter(amps)
+    res.update({"err_a_ell_white": white, "beta_red": beta, "beta_by_width": json.dumps(betas),
+                "n_seg_amp": len(amps), "seg_amps": ";".join(f"{a:.6g}" for a in amps),
+                "err_a_ell_seg": seg, "err_a_ell": combine_err(white, beta, seg)})
     res["teff1"] = teff1
     res.update(odd_even(bt, bf, P, t0, fit, exp_d / P))
-    res.update(derive(c, fit, teff1))
+    res.update(derive(c, fit, teff1, e_u, om))
     gd = es.mag_to_flux(c["ecl1_mag"]) if c.get("ecl1_mag") == c.get("ecl1_mag") else float("nan")
     res["gaia_depth_flux"] = gd
     res["depth_ratio_gaia"] = fit["depth_model"] / gd if gd and gd == gd else float("nan")
+    res["mass_check"] = mass_check(res)[0]
     label, reasons = verdict(res)
     res["verdict"], res["reasons"] = label, reasons
     if is_clean_eblm(res) or label.endswith("EBLM_GRAZING"):
         try:
             f2 = fit_eclipse(ph, y, sig, teff1, exp_d / P, fit["k"], fit["a_r"], b_starts=(fit["b"],),
-                             u_shift=(0.1, 0.0))
+                             u_shift=(0.1, 0.0), geom=fit["geom"])
             res["k_ld_shift"] = f2["k"]
         except Exception as exc:
             res["k_ld_shift_error"] = str(exc)[:120]
@@ -549,8 +832,7 @@ def plot_fit(c, res, ph, y, fit, exp_phase, path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    th = (fit["dphi"], fit["k"], fit["b"], math.log(fit["a_r"]))
-    A, _, _ = design(ph, th, fit["u1"], fit["u2"], exp_phase)
+    A, _, _ = design(ph, _theta(fit), fit["u1"], fit["u2"], exp_phase, fit.get("geom", CIRCULAR))
     model = A @ fit["coef"]
     x = (ph + 0.25) % 1.0 - 0.25
     o = np.argsort(x)
@@ -558,10 +840,10 @@ def plot_fit(c, res, ph, y, fit, exp_phase, path):
     a1.plot(x, y, ".", ms=2, color="0.5")
     a1.plot(x[o], model[o], "r-", lw=1)
     a1.set_title(f"Gaia DR3 {c['source_id']} = TIC {res.get('tic')}, P = {res.get('P_tess', 0):.6f} d: "
-                 f"{res.get('verdict')}", fontsize=9)
-    a1.text(0.01, 0.03, f"k={fit['k']:.4f} b={fit['b']:.2f} a/R1={fit['a_r']:.2f} Ds={fit['Ds']:.5f} "
-            f"snr={fit['snr_fit']:.0f} R2={res.get('r2', float('nan')):.3f} m2={res.get('m2', float('nan')):.3f}",
-            transform=a1.transAxes, fontsize=8)
+                 f"{res.get('verdict')} (eblm_fit {VERSION})", fontsize=9)
+    a1.text(0.01, 0.03, f"k={fit['k']:.4f} b={fit['b']:.2f} a_r={fit['a_r']:.2f} Ds={fit['Ds']:.5f} "
+            f"phi2={res.get('phi2_fit', 0.5):.3f} snr={fit['snr_fit']:.0f} R2={res.get('r2', float('nan')):.3f} "
+            f"m2={res.get('m2', float('nan')):.3f}", transform=a1.transAxes, fontsize=8)
     a2.plot(x, y - model, ".", ms=2, color="0.3")
     a2.set_xlabel("phase (0 = primary eclipse)")
     fig.tight_layout()
@@ -569,7 +851,7 @@ def plot_fit(c, res, ph, y, fit, exp_phase, path):
     plt.close(fig)
 
 
-# ---------------------------------------------------------------- grading
+# ---------------------------------------------------------------- grading (0.1.0 sample run)
 def grade(vets):
     import numpy as np
     with_data = [v for v in vets if v.get("snr_fit") == v.get("snr_fit") and "snr_fit" in v]
@@ -608,12 +890,14 @@ def grade(vets):
     return g
 
 
-FIT_COLS = ["source_id", "tic", "tmag", "G", "verdict", "period_gaia", "P_tess", "t0_btjd", "sectors",
-            "cadence_min", "noise_10min", "snr_bls", "snr_fit", "chi2_red", "k", "b", "a_r", "inc_deg", "dphi",
-            "u1", "u2", "k_ld_shift", "Ds", "err_Ds", "a_ell", "err_a_ell", "ell_pred_fit", "ell_ratio_fit",
-            "A_odd", "err_odd", "A_even", "err_even", "teff1", "m1", "m1_source", "fm", "m2_sini", "m2",
-            "m2_hi2", "a_rsun", "r1_lc", "r1_flame", "r1_ratio", "r2", "r2_flame", "r_ms", "infl",
-            "infl_flame", "t2", "t2_lo3", "t_allow", "depth_model", "gaia_depth_flux", "depth_ratio_gaia",
+FIT_COLS = ["source_id", "tic", "tmag", "G", "verdict", "mass_check", "eblm_fit_version", "period_gaia", "P_tess",
+            "t0_btjd", "sectors", "cadence_min", "noise_10min", "snr_bls", "snr_fit", "chi2_red", "k", "b", "a_r",
+            "a_r_true", "inc_deg", "dphi", "e_gaia", "e_err_gaia", "omega_gaia", "e_used", "phi2_center",
+            "phi2_fit", "dchi2_phi2", "u1", "u2", "k_ld_shift", "Ds", "err_Ds", "a_ell", "err_a_ell",
+            "err_a_ell_white", "beta_red", "beta_by_width", "n_seg_amp", "seg_amps", "err_a_ell_seg",
+            "ell_pred_fit", "ell_ratio_fit", "A_odd", "err_odd", "A_even", "err_even", "teff1", "m1", "m1_source",
+            "fm", "m2_sini", "m2", "m2_hi2", "a_rsun", "r1_lc", "r1_flame", "r1_ratio", "r2", "r2_flame", "r_ms",
+            "infl", "infl_flame", "t2", "t2_lo3", "t_allow", "depth_model", "gaia_depth_flux", "depth_ratio_gaia",
             "vsx_n", "vsx_name", "vsx_type", "vsx_period", "tess_eb_n", "tess_eb_name", "ra", "dec", "reasons"]
 
 
@@ -642,18 +926,19 @@ def report(vets, summary):
         lines.append(f"- {k_}: {n_}")
     lines += ["", "## Grades", "", "```", json.dumps(summary.get("grades", {}), indent=1, default=str), "```", "",
               "## Clean EBLM fits (sorted by companion mass)", "",
-              "| Gaia DR3 | TIC | P (d) | m2 (M_sun) | R2 (R_sun) | R_MS | infl | R1 lc/FLAME | b | snr | VSX |",
-              "|---|---|---|---|---|---|---|---|---|---|---|"]
+              "| Gaia DR3 | TIC | P (d) | m2 (M_sun) | R2 (R_sun) | R_MS | infl | R1 lc/FLAME | b | e used | phi2 | snr | mass check |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     clean = sorted([v for v in vets if is_clean_eblm(v)], key=lambda v: v.get("m2", 9))
     for v in clean:
         lines.append(f"| {v['source_id']} | {v.get('tic')} | {v.get('period_gaia', 0):.5f} | {v.get('m2', 0):.3f} | "
                      f"{v.get('r2', 0):.3f} | {v.get('r_ms', 0):.3f} | {100 * v.get('infl', 0):+.0f}% | "
-                     f"{v.get('r1_ratio', float('nan')):.2f} | {v.get('b', 0):.2f} | {v.get('snr_fit', 0):.0f} | "
-                     f"{v.get('vsx_type', '')} |")
+                     f"{v.get('r1_ratio', float('nan')):.2f} | {v.get('b', 0):.2f} | {v.get('e_used', 0):.3f} | "
+                     f"{v.get('phi2_fit', 0.5):.3f} | {v.get('snr_fit', 0):.0f} | {v.get('mass_check', '')} |")
     lines += ["", "## Other verdicts", ""]
     for v in vets:
         if not is_clean_eblm(v):
-            lines.append(f"- {v['source_id']} (TIC {v.get('tic')}): {v.get('verdict')} {v.get('reasons', '')}")
+            lines.append(f"- {v['source_id']} (TIC {v.get('tic')}): {v.get('verdict')} "
+                         f"(mass check {v.get('mass_check', '')}) {v.get('reasons', '')}")
     return "\n".join(lines) + "\n"
 
 
@@ -674,6 +959,8 @@ def main(argv=None):
     os.makedirs(plot_dir, exist_ok=True)
     raw = es.tap_csv(es.GAIA_TAP, es.sample_adql(a.schema))
     rows = [es.classify(r) for r in raw]
+    for r, c in zip(raw, rows):
+        c["omega"] = _fnum(r.get("arg_periastron"))
     eblm = sorted([r for r in rows if r["cls"] == "eblm_like" and r["fm"] < 0.3], key=lambda r: r["m2"])
     log("sample", len(rows), "eblm_like", len(eblm))
     summary = {"version": VERSION, "schema": a.schema, "n_sample": len(rows), "n_eblm_like": len(eblm)}

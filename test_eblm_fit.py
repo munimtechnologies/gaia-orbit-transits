@@ -1,163 +1,175 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for eblm_fit.py (MV2 of Munim, Inc.; made with AI agents). Expected values worked
-by hand; see the comments."""
-import math
-import unittest
+"""Unit tests for eblm_fit 0.2.0 (gaia-orbit-transits, MV2 of Munim, Inc.; made with AI agents).
 
-import numpy as np
+Stdlib tests always run; tests that need numpy are skipped when numpy is missing."""
+import math
+import random
+import unittest
 
 import eblm_fit as ef
 
-
-class TestGeometry(unittest.TestCase):
-    def test_circle_overlap(self):
-        # two unit circles one radius apart: 2 pi / 3 - sqrt(3) / 2
-        self.assertAlmostEqual(float(ef.circle_overlap(1.0, 1.0)[0]), 2 * math.pi / 3 - math.sqrt(3) / 2, places=10)
-        # small circle fully inside: pi k^2 = pi / 16
-        self.assertAlmostEqual(float(ef.circle_overlap(0.5, 0.25)[0]), math.pi / 16, places=12)
-        self.assertEqual(float(ef.circle_overlap(2.0, 0.5)[0]), 0.0)
-
-    def test_blocked_uniform_central(self):
-        # uniform disc, k = 0.1 at the centre: k^2 exactly (0.1 falls on a ring edge for n = 400)
-        self.assertAlmostEqual(float(ef.blocked_fraction([0.0], 0.1, 0.0, 0.0, n=400)[0]), 0.01, places=12)
-
-    def test_blocked_uniform_partial(self):
-        # uniform disc, k = 1 at z = 1: overlap area / pi = 0.3910022
-        exp = (2 * math.pi / 3 - math.sqrt(3) / 2) / math.pi
-        self.assertAlmostEqual(float(ef.blocked_fraction([1.0], 1.0, 0.0, 0.0, n=4000)[0]), exp, delta=1e-3)
-
-    def test_blocked_limb_darkened(self):
-        # u1 = 0.4, u2 = 0.2, k = 0.1 central: (0.01 - 0.4 k^4 / 4 - ...) / (1 - u1/3 - u2/6)
-        # = 0.00998997 / 0.8333333 = 0.0119880
-        self.assertAlmostEqual(float(ef.blocked_fraction([0.0], 0.1, 0.4, 0.2, n=400)[0]), 0.011988, delta=2e-5)
-
-    def test_outside_is_zero(self):
-        self.assertEqual(float(ef.blocked_fraction([1.2], 0.1, 0.4, 0.2)[0]), 0.0)
-
-    def test_eclipse_shapes(self):
-        D, O = ef.eclipse_shapes([0.0, 0.5, 0.25], 0.1, 0.0, 5.0, 0.0, 0.0)
-        self.assertAlmostEqual(float(D[0]), 0.01, places=10)
-        self.assertAlmostEqual(float(O[0]), 0.0, places=12)
-        self.assertAlmostEqual(float(D[1]), 0.0, places=12)
-        self.assertAlmostEqual(float(O[1]), 1.0, places=10)
-        self.assertEqual(float(D[2]), 0.0)
-        self.assertEqual(float(O[2]), 0.0)
+try:
+    import numpy as np
+    HAVE_NP = True
+except ImportError:  # the stdlib-only publish check
+    np = None
+    HAVE_NP = False
 
 
-class TestTables(unittest.TestCase):
-    def test_ld(self):
-        self.assertEqual(ef.ld_coeffs(6000), (0.33, 0.25))
-        u1, u2 = ef.ld_coeffs(float("nan"))           # 6500 K: half-way between 6000 and 7000
-        self.assertAlmostEqual(u1, 0.29, places=12)
-        self.assertAlmostEqual(u2, 0.275, places=12)
-        self.assertEqual(ef.ld_coeffs(3000), (0.48, 0.17))
-        self.assertEqual(ef.ld_coeffs(12000), (0.13, 0.32))
+class TestEccentricGeometry(unittest.TestCase):
+    def test_version(self):
+        self.assertEqual(ef.VERSION, "0.2.0")
 
-    def test_ms_teff_and_ceiling(self):
-        self.assertAlmostEqual(ef.ms_teff(0.25), 3250.0, places=9)
-        # T1 = 6400 K, a/R1 = 4: T_irr = 3200 K; (3150^4 + 3200^4)^(1/4) = 3776.1 K
-        self.assertAlmostEqual(ef.t_allowed(0.2, 6400.0, 4.0), 3776.1, delta=1.0)
+    def test_phi2_circular(self):
+        self.assertEqual(ef.phi2_from_gaia(0.0, 37.0), 0.5)
+        self.assertEqual(ef.phi2_from_gaia(float("nan"), 37.0), 0.5)
+        self.assertEqual(ef.phi2_from_gaia(0.2, float("nan")), 0.5)
 
-    def test_m2_from_fm(self):
-        # m1 = 1, m2 = 0.5: f = 0.125 / 2.25
-        self.assertAlmostEqual(ef.m2_from_fm(0.125 / 2.25, 1.0), 0.5, places=6)
+    def test_phi2_first_order(self):
+        for e, om in ((0.1, 0.0), (0.05, 60.0), (0.1, 180.0), (0.08, 300.0)):
+            approx = 0.5 + 2.0 / math.pi * e * math.cos(math.radians(om))
+            self.assertAlmostEqual(ef.phi2_from_gaia(e, om), approx, delta=1.5e-3)
+
+    def test_phi2_omega_90_is_half(self):
+        self.assertAlmostEqual(ef.phi2_from_gaia(0.3, 90.0), 0.5, places=9)
+        self.assertAlmostEqual(ef.phi2_from_gaia(0.3, 270.0), 0.5, places=9)
+
+    def test_phi2_large_e_known_value(self):
+        # e = 0.1, omega = 0: hand computation gives 0.56355 (first order 0.56366)
+        self.assertAlmostEqual(ef.phi2_from_gaia(0.1, 0.0), 0.56355, delta=2e-4)
+
+    def test_occ_geometry(self):
+        self.assertEqual(ef.occ_geometry(0.0, 10.0), ef.CIRCULAR)
+        p2, br, vr = ef.occ_geometry(0.2, 90.0)
+        self.assertAlmostEqual(p2, 0.5, places=9)
+        self.assertAlmostEqual(br, 1.2 / 0.8, places=9)
+        self.assertAlmostEqual(vr, 0.8 / 1.2, places=9)
+
+    def test_true_geometry_circular_is_identity(self):
+        a_r, cosi = ef.true_geometry(8.0, 0.4, 0.0, 30.0)
+        self.assertAlmostEqual(a_r, 8.0)
+        self.assertAlmostEqual(cosi, 0.05)
+
+    def test_true_geometry_eccentric(self):
+        # e = 0.3, omega = 90: transit at periastron, chord speed (1 + e)/sqrt(1 - e^2)
+        e = 0.3
+        a_r, cosi = ef.true_geometry(10.0, 0.5, e, 90.0)
+        self.assertAlmostEqual(a_r, 10.0 * math.sqrt(1 - e * e) / 1.3, places=9)
+        # separation at transit = a (1 - e): b = a cos i (1 - e) / R1
+        self.assertAlmostEqual(cosi * a_r * (1 - e), 0.5, places=9)
+
+    def test_ecc_used(self):
+        self.assertEqual(ef.ecc_used(0.36, 0.01), 0.36)
+        self.assertEqual(ef.ecc_used(0.05, 0.03), 0.0)
+        self.assertEqual(ef.ecc_used(float("nan"), float("nan")), 0.0)
+        self.assertEqual(ef.ecc_used("", ""), 0.0)
+        self.assertEqual(ef.ecc_used(0.1, float("nan")), 0.1)
+        self.assertEqual(ef.ecc_used(0.03, None), 0.0)
+        self.assertEqual(ef.ecc_used(0.99, 0.001), 0.0)
 
 
-class TestFit(unittest.TestCase):
-    def test_nelder_mead(self):
-        x, v = ef.nelder_mead(lambda p: (p[0] - 1) ** 2 + 10 * (p[1] + 2) ** 2, [0.0, 0.0], [0.5, 0.5])
-        self.assertLess(abs(x[0] - 1), 1e-3)
-        self.assertLess(abs(x[1] + 2), 1e-3)
+class TestVerdictOrder(unittest.TestCase):
+    def base(self, **kw):
+        v = {"snr_fit": 50.0, "b": 0.2, "k": 0.1, "a_ell": 0.0001, "err_a_ell": 0.00001,
+             "ell_pred_fit": 0.0001, "t2_lo3": float("nan"), "t_allow": 3000.0, "m2_hi2": 0.2,
+             "r2": 0.2, "r_ms": 0.2, "infl": 0.0}
+        v.update(kw)
+        return v
 
-    def test_synthetic_recovery(self):
+    def test_consistent(self):
+        self.assertEqual(ef.verdict(self.base())[0], "EBLM_CONSISTENT")
+        self.assertEqual(ef.mass_check(self.base())[0], "MASS_OK")
+
+    def test_mass_tension_when_not_grazing(self):
+        v = self.base(a_ell=0.001)
+        self.assertEqual(ef.verdict(v)[0], "MASS_TENSION_HEAVIER")
+        v = self.base(a_ell=-0.001)
+        self.assertEqual(ef.verdict(v)[0], "MASS_TENSION_LIGHTER")
+
+    def test_grazing_before_mass(self):
+        v = self.base(a_ell=0.001, b=0.95, k=0.1)
+        self.assertEqual(ef.verdict(v)[0], "EBLM_GRAZING")
+        self.assertEqual(ef.mass_check(v)[0], "MASS_TENSION_HEAVIER")
+        v["m2_hi2"] = 0.05
+        self.assertEqual(ef.verdict(v)[0], "BD_EBLM_GRAZING")
+
+    def test_no_eclipse_and_twin_first(self):
+        self.assertEqual(ef.verdict(self.base(snr_fit=5.0, b=0.95))[0], "NO_ECLIPSE")
+        v = self.base(b=0.95, A_odd=0.05, A_even=0.03, err_odd=0.001, err_even=0.001)
+        self.assertEqual(ef.verdict(v)[0], "TWIN_AT_2P")
+
+    def test_mass_na(self):
+        self.assertEqual(ef.mass_check(self.base(err_a_ell=float("nan")))[0], "MASS_NA")
+
+
+class TestErrors(unittest.TestCase):
+    def test_segment_scatter(self):
+        self.assertTrue(math.isnan(ef.segment_scatter([1.0])))
+        self.assertAlmostEqual(ef.segment_scatter([1.0, 3.0]), 1.0)
+        self.assertAlmostEqual(ef.segment_scatter([2.0, 2.0, 2.0]), 0.0)
+
+    def test_combine_err(self):
+        self.assertAlmostEqual(ef.combine_err(1e-5, 2.0, float("nan")), 2e-5)
+        self.assertAlmostEqual(ef.combine_err(1e-5, 2.0, 5e-5), 5e-5)
+        self.assertAlmostEqual(ef.combine_err(1e-5, 1.0, 5e-6), 1e-5)
+        self.assertTrue(math.isnan(ef.combine_err(float("nan"), 1.0, float("nan"))))
+
+
+@unittest.skipUnless(HAVE_NP, "numpy not installed")
+class TestNumpyParts(unittest.TestCase):
+    def test_circular_shapes_match_01(self):
+        ph = np.linspace(-0.5, 0.5, 2001)
+        D, O = ef.eclipse_shapes(ph, 0.1, 0.0, 6.0, 0.4, 0.2)
+        self.assertGreater(D[1000], 0.009)            # centre of transit
+        self.assertAlmostEqual(float(O[0]), 1.0, places=6)   # phase -0.5: full occultation
+        self.assertEqual(float(D[0]), 0.0)
+
+    def test_shifted_occultation(self):
+        ph = np.array([0.5, 0.6, -0.4])
+        D, O = ef.eclipse_shapes(ph, 0.1, 0.0, 6.0, 0.4, 0.2, geom=(0.6, 1.0, 1.0))
+        self.assertEqual(float(O[0]), 0.0)
+        self.assertAlmostEqual(float(O[1]), 1.0, places=6)
+        self.assertAlmostEqual(float(O[2]), 1.0, places=6)   # same phase, wrapped
+        self.assertTrue(np.all(D == 0))
+
+    def test_occultation_impact_ratio(self):
+        # b_occ = b * ratio: a large ratio makes the occultation miss
+        D, O = ef.eclipse_shapes(np.array([0.5]), 0.1, 0.8, 6.0, 0.4, 0.2, geom=(0.5, 1.5, 1.0))
+        self.assertEqual(float(O[0]), 0.0)
+
+    def test_segments(self):
+        t = np.concatenate([np.arange(0, 13, 0.01), np.arange(14, 27, 0.01), np.arange(60, 125, 0.01)])
+        segs = ef.segments(t)
+        spans = [t[s[-1]] - t[s[0]] for s in segs]
+        self.assertEqual(sum(len(s) for s in segs), t.size)
+        self.assertTrue(all(sp <= ef.SEG_PART_DAYS + 0.02 for sp in spans))
+        self.assertEqual(len(segs), 1 + 3)   # 0-27 joined (gap 1 d); 60-125 cut in 3
+
+    def test_beta_white_and_red(self):
         rng = np.random.default_rng(1)
+        t = np.arange(0, 54, 10.0 / 1440)
+        white = rng.normal(0, 1e-3, t.size)
+        b_w, _ = ef.beta_factor(t, white, [0.25, 0.5, 1.0])
+        self.assertLess(b_w, 1.5)
+        red = white + 1e-3 * np.sin(2 * np.pi * t / 3.1)
+        b_r, _ = ef.beta_factor(t, red, [0.25, 0.5, 1.0])
+        self.assertGreater(b_r, 3.0)
+
+    def test_fit_recovers_shifted_occultation(self):
+        rng = np.random.default_rng(7)
         ph = (np.arange(1000) + 0.5) / 1000 - 0.5
-        truth = (0.002, 0.15, 0.3, math.log(4.0))
-        u1, u2 = ef.ld_coeffs(6500)
-        A, _, _ = ef.design(ph, truth, u1, u2, 0.01)
-        coef = np.array([1.0, 0.001, 0.0, -0.01, 0.0, 0.0005, 0.0, 0.0008])
-        y = A @ coef + rng.normal(0, 3e-4, ph.size)
-        sig = np.full(ph.size, 3e-4)
-        fit = ef.fit_eclipse(ph, y, sig, 6500, 0.01, 0.12, 3.5)
-        self.assertLess(abs(fit["k"] - 0.15), 0.01)
-        self.assertLess(abs(fit["b"] - 0.3), 0.2)
-        self.assertLess(abs(fit["a_r"] - 4.0), 0.4)
-        self.assertLess(abs(fit["dphi"] - 0.002), 0.002)
-        self.assertLess(abs(fit["Ds"] - 0.0008), 0.0003)
-        self.assertLess(abs(fit["a_ell"] - 0.01), 0.001)
-        self.assertGreater(fit["snr_fit"], 50)
-
-    def test_derive(self):
-        c = {"fm": 0.125 / 2.25, "m1_flame": 1.0, "m2_hi2": 0.55, "period": 1.0, "r1_flame": 1.0}
-        fit = {"a_r": 4.0, "b": 0.0, "k": 0.1, "a_ell": 0.0, "Ds": 0.0, "err_Ds": 0.0}
-        d = ef.derive(c, fit, 6000.0)
-        self.assertAlmostEqual(d["inc_deg"], 90.0, places=9)
-        self.assertAlmostEqual(d["m2"], 0.5, places=6)
-        # Kepler: 1 d, 1.5 M_sun -> a = 0.022403 AU = 4.8173 R_sun
-        self.assertAlmostEqual(d["a_rsun"], 4.8173, delta=0.002)
-        self.assertAlmostEqual(d["r1_lc"], d["a_rsun"] / 4.0, places=12)
-        self.assertAlmostEqual(d["r2"], 0.1 * d["r1_lc"], places=12)
-        self.assertAlmostEqual(d["r_ms"], 0.47, places=9)
-        self.assertAlmostEqual(d["infl"], d["r2"] / 0.47 - 1, places=12)
-        self.assertTrue(d["t2"] != d["t2"])
-        self.assertEqual(d["m1_source"], "flame")
-
-
-class TestVerdict(unittest.TestCase):
-    BASE = dict(snr_fit=50, A_odd=1.0, err_odd=0.01, A_even=1.0, err_even=0.01, a_ell=0.01, err_a_ell=0.001,
-                ell_pred_fit=0.01, t2_lo3=3000.0, t_allow=4000.0, m2_hi2=0.3, b=0.2, k=0.15, r2=0.3,
-                r_ms=0.27, infl=0.111)
-
-    def v(self, **kw):
-        d = dict(self.BASE)
-        d.update(kw)
-        return ef.verdict(d)[0]
-
-    def test_rules(self):
-        self.assertEqual(self.v(), "EBLM_CONSISTENT")
-        self.assertEqual(self.v(snr_fit=5), "NO_ECLIPSE")
-        self.assertEqual(self.v(snr_fit=float("nan")), "NO_ECLIPSE")
-        self.assertEqual(self.v(A_even=0.8), "TWIN_AT_2P")
-        self.assertEqual(self.v(A_even=0.95), "EBLM_CONSISTENT")     # 3 sigma but under 10%
-        self.assertEqual(self.v(a_ell=0.03), "MASS_TENSION_HEAVIER")
-        self.assertEqual(self.v(a_ell=0.001), "MASS_TENSION_LIGHTER")
-        self.assertEqual(self.v(a_ell=0.0025), "EBLM_CONSISTENT")    # 0.0055 is not < 0.005
-        self.assertEqual(self.v(t2_lo3=5000.0), "TOO_LUMINOUS")       # > 1.15 x 4000
-        self.assertEqual(self.v(t2_lo3=float("nan")), "EBLM_CONSISTENT")
-        self.assertEqual(self.v(b=0.9), "EBLM_GRAZING")
-        self.assertEqual(self.v(infl=0.4), "EBLM_LARGE_RADIUS")
-        self.assertEqual(self.v(infl=-0.4), "EBLM_SMALL_RADIUS")
-        self.assertEqual(self.v(m2_hi2=0.07), "BD_EBLM_CONSISTENT")
-
-
-class TestStats(unittest.TestCase):
-    def test_inflation_labels(self):
-        s = ef.inflation_stats([0.1] * 10)
-        self.assertEqual(s["label"], "INFLATED")
-        self.assertAlmostEqual(s["median"], 0.1, places=12)
-        self.assertEqual(ef.inflation_stats([-0.02, 0.0, 0.02] * 4)["label"], "CONSISTENT")
-        self.assertEqual(ef.inflation_stats([-0.1] * 5)["label"], "DEFLATED")
-        self.assertEqual(ef.inflation_stats([0.5, -0.5, 0.4, -0.4, 0.45, -0.45])["label"], "INCONCLUSIVE")
-        self.assertEqual(ef.inflation_stats([1.0, 2.0])["label"], "TOO_FEW")
-
-    def test_grade(self):
-        vets = [{"source_id": "1", "snr_fit": 20.0, "verdict": "EBLM_CONSISTENT", "r1_ratio": 1.0, "infl": 0.1,
-                 "infl_flame": 0.1, "period_gaia": 1.0, "depth_ratio_gaia": 0.9},
-                {"source_id": "2", "snr_fit": 5.0, "verdict": "NO_ECLIPSE"},
-                {"source_id": "3", "verdict": "NO_TESS_DATA"}]
-        g = ef.grade(vets)
-        self.assertEqual(g["G1"]["n_with_data"], 2)
-        self.assertEqual(g["G1"]["n_detected"], 1)
-        self.assertFalse(g["G1"]["pass"])
-        self.assertTrue(g["G2"]["pass"])
-        self.assertFalse(g["G3"]["pass"])
-        self.assertTrue(g["E5_redo"]["pass"])
-
-    def test_parse_asu_tsv(self):
-        text = ("#comment\n\n_r\tName\tType\n\t\t\n-----\t----\t----\n1.2\tHIP 2964\tVAR\n\n")
-        rows = ef.parse_asu_tsv(text)
-        self.assertEqual(rows, [{"_r": "1.2", "Name": "HIP 2964", "Type": "VAR"}])
-        self.assertEqual(ef.parse_asu_tsv("#only comments\n"), [])
+        geom = (0.58, 1.0, 1.0)
+        A, _, _ = ef.design(ph, (0.0, 0.12, 0.3, math.log(7.0)), 0.4, 0.2, 0.001, geom)
+        coef = np.zeros(8)
+        coef[0] = 1.0
+        coef[3] = -2e-4
+        coef[7] = 2e-3
+        y = A @ coef + rng.normal(0, 1e-4, ph.size)
+        sig = np.full(ph.size, 1e-4)
+        fit = ef.fit_eclipse(ph, y, sig, 5800.0, 0.001, 0.12, 7.0, b_starts=(0.3,), geom=ef.CIRCULAR)
+        p2, chi_best, chi_c = ef.scan_phi2(ph, y, sig, fit, 0.001, 0.5)
+        self.assertAlmostEqual(p2, 0.58, delta=0.01)
+        self.assertGreater(chi_c - chi_best, 25.0)
 
 
 if __name__ == "__main__":
