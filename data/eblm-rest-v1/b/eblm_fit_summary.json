@@ -1,0 +1,104 @@
+{
+ "version": "0.1.0",
+ "wrapper": "0.1.0",
+ "code_sha": "10b5aeb917c9c52492e7435de93ff1843fcf0999",
+ "schema": "gaiadr3",
+ "n_sample": 1605,
+ "n_eblm_like": 167,
+ "n_done_v1": 70,
+ "n_done_matched": 70,
+ "part": 1,
+ "n_parts": 2,
+ "n_todo": 48,
+ "n_vetted": 48,
+ "verdicts": {
+  "EBLM_CONSISTENT": 16,
+  "EBLM_LARGE_RADIUS": 3,
+  "EBLM_GRAZING": 20,
+  "NO_TESS_DATA": 1,
+  "MASS_TENSION_LIGHTER": 2,
+  "TWIN_AT_2P": 5,
+  "MASS_TENSION_HEAVIER": 1
+ },
+ "grades_this_part_descriptive": {
+  "G1": {
+   "n_with_data": 47,
+   "n_detected": 47,
+   "pass": true
+  },
+  "G2": {
+   "n": 11,
+   "median_r1_lc_over_flame": 1.027028383325462,
+   "pass": true
+  },
+  "G3": {
+   "n_clean_eblm": 19,
+   "pass": true
+  },
+  "G4": {
+   "inflation_lc_radius": {
+    "n": 19,
+    "median": 0.07926486865851023,
+    "ci95": [
+     0.015312151603679824,
+     0.11684587458972939
+    ],
+    "label": "INCONCLUSIVE"
+   },
+   "inflation_flame_radius": {
+    "n": 11,
+    "median": 0.02949523007282817,
+    "ci95": [
+     -0.02109233434457647,
+     0.0636256230504082
+    ],
+    "label": "CONSISTENT"
+   },
+   "P_lt_1.5d": {
+    "n": 4,
+    "median": 0.02903118633416668,
+    "ci95": [
+     -0.11188569937099935,
+     0.09930947284589786
+    ],
+    "label": "INCONCLUSIVE"
+   },
+   "P_ge_1.5d": {
+    "n": 15,
+    "median": 0.08476482199347246,
+    "ci95": [
+     0.015312151603679824,
+     0.11754977275645628
+    ],
+    "label": "INCONCLUSIVE"
+   },
+   "outcome": "INCONCLUSIVE"
+  },
+  "G5": {
+   "n_too_luminous": 0,
+   "pass": false
+  },
+  "G6": {
+   "n_v1_vetted": 0,
+   "n_detected": 0,
+   "pass": false
+  },
+  "E6": {
+   "n": 0,
+   "n_large_radius": 0,
+   "verdicts": {},
+   "pass": true
+  },
+  "E5_redo": {
+   "n": 47,
+   "median_tess_over_gaia_depth": 0.8177497614438031,
+   "pass": true
+  },
+  "catalogues": {
+   "n_checked": 48,
+   "n_in_vsx": 37,
+   "n_in_tess_eb": 2
+  }
+ },
+ "minutes": 44.18979736963908
+}
