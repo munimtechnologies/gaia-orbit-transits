@@ -45,12 +45,17 @@ holds.
    - **Eclipsing companions found by the search (D1 and others):**
      - **BD+65 286** (TIC 50453242, chunk 3): a V ≈ 9.7 F star eclipsed every 1.6465 days by
        the ~0.1 M☉ companion of its Gaia orbit (0.4% deep, flat-bottomed, at Gaia's predicted
-       conjunction in all three sectors). NASA's SPOC pipeline flagged the dip in 2022 (sector
-       52 TCE), but it is not a TOI and no catalogue or paper lists it as an eclipsing
-       system. A pre-registered fit is queued (`findings/2026-11-19-bd65-286-prereg.md`).
+       conjunction in all three sectors). **Prior art, corrected 19 Nov:** Green et al. 2023
+       list it as a TESS ellipsoidal binary candidate with the same period, and NASA's SPOC
+       pipeline flagged the dip in 2022 (sector 52 TCE). No catalogue or paper identifies it
+       as an *eclipsing* system or ties the eclipse, the ellipsoidal signal and the Gaia orbit
+       to one ~0.1 M☉ star; that link and the fit's mass and radius are the new part.
+       Remaining catalogue checks are done (ASAS-SN, ZTF, Kostov+ 2025, Chopard-Vilhem: none
+       list it): `findings/2026-11-19-bd65-286-prior-art-addendum.md`. A pre-registered fit
+       is queued (`findings/2026-11-19-bd65-286-prereg.md`).
      - **TIC 71945261** (chunk 7): a clean ~6% eclipse, about three times deeper than Gaia's
-       0.097 M☉ companion allows. A pre-registered fit is queued
-       (`findings/2026-11-18-tic71945261-prereg.md`).
+       0.097 M☉ companion allows. Not in Green et al. 2023 or Kostov+ 2025. A pre-registered
+       fit is queued (`findings/2026-11-18-tic71945261-prereg.md`).
      - **TOI-7247.01** (chunk 5): already a TOI. TFOP calls it a false positive from the Gaia
        orbit; a 2026 RAVEN upload calls it a likely planet. It is fitted in the BD+65 286 job.
      - **TIC 324597856** (chunk 0): rejected as a brown dwarf. It has a secondary eclipse half
@@ -70,6 +75,9 @@ holds.
   (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
+- **BD+65 286's variability and period were already published** (Green et al. 2023,
+  ellipsoidal candidate). Our pre-registration missed that catalogue; the claim is narrowed
+  in `findings/2026-11-19-bd65-286-prior-art-addendum.md`.
 - **CD-48 897 (TIC 200743349) is not a new discovery of ours.** *Eclipses by Appointment*
   (github.com/Snowstar38/eclipses-by-appointment) listed it first (claim Q031).
 - TOI-710.01 was already a TFOP false positive.
@@ -92,17 +100,23 @@ holds.
 - **Rehearse release-day code on the previous release** (or on a pre-release sample).
 - **Read every table that can hold the thing you count.**
 - **Check that a catalogue service is actually up before reading "no rows" as "not
-  listed".** CDS Strasbourg (SIMBAD, VizieR) has been degraded since 9 November, and the CfA
-  VizieR mirror was down on 19 November; the CfA SIMBAD mirror worked.
+  listed".** CDS Strasbourg (SIMBAD, VizieR) has been degraded since 9 November. The CfA
+  VizieR mirror was down early on 19 November and back by 09:12 UTC; the CfA SIMBAD mirror
+  worked.
 - **A threshold-crossing event is not a catalogue entry, but it is prior art.** Before calling
   an eclipse new, query the SPOC DV TCE list on MAST and credit any detection.
+- **A close binary with an eclipse usually also has an ellipsoidal or reflection signal, and
+  that may already be catalogued.** Run the whole prior-art list below before writing
+  "not in any catalogue", including the ellipsoidal and machine-learning EB lists.
 
 ## Prior-art sources we check for every eclipsing system
-AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), Gaia DR3 vari_eclipsing_binary,
-the ZTF (Chen et al. 2020) and ASAS-SN variable catalogues, Green et al. (2023) TESS
-ellipsoidal candidates, ExoFOP, the SPOC TCE list (MAST DV API), SIMBAD, the Chopard-Vilhem
-Zenodo deposits (10.5281/zenodo.22998328 and 10.5281/zenodo.23342416) and the *Eclipses by
-Appointment* claim tables.
+AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
+(Kostov et al. 2025, J/ApJS/279/50, including its unvetted list), Gaia DR3
+vari_eclipsing_binary and vari_classifier_result, the ZTF (Chen et al. 2020) and ASAS-SN
+variable catalogues, Green et al. (2023) TESS ellipsoidal candidates (J/MNRAS/522/29), ExoFOP,
+the SPOC TCE list (MAST DV API), SIMBAD, the Chopard-Vilhem Zenodo deposits
+(10.5281/zenodo.22998328 and 10.5281/zenodo.23342416) and the *Eclipses by Appointment* claim
+tables.
 
 ## Gaia DR4 (2 December 2026)
 - Tables: `nss_two_body_orbit` (5.9M) + `_supp`, `rvs_two_body_orbit` (639k),
