@@ -1,0 +1,74 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "tyc6340-period-v1",
+ "id": "29e4f632966d",
+ "field": "astrophysics",
+ "run": "20261120T132511Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T14:20:15.308602+00:00",
+ "finished_at": "2026-11-20T14:27:24.882605+00:00",
+ "duration_seconds": 429,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 120.0
+ },
+ "peak_memory_gb": 0.06,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir skypatrol",
+   "exit": 0,
+   "seconds": 36
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_tyc_period",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python tyc_period.py --self-test",
+   "exit": 0,
+   "seconds": 20
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python fetch_asassn.py --out-dir /data/asassn-tyc6340",
+   "exit": 0,
+   "seconds": 16
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python tyc_period.py --data-dir /data/wasp-tyc6340 --asassn-dir /data/asassn-tyc6340 --out-dir /out",
+   "exit": 0,
+   "seconds": 115
+  }
+ ],
+ "out_files": [
+  "asassn_folded.csv",
+  "common_mode.csv",
+  "tyc_period_report.md",
+  "tyc_period_summary.json",
+  "wasp_wide_scan.csv"
+ ],
+ "out_files_total": 5,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stdout] ] 1SWASP J202147.79-220743.2 rows 9237\n[B] 1SWASP J202225.43-220021.0 depth 0.0045 z 1.12\n[B] 1SWASP J202227.26-215958.9 depth -0.0019 z -0.41\n[B] 1SWASP J202154.71-220127.7 depth -0.0064 z -4.34\n[B] 1SWASP J202226.81-215939.2 depth 0.0018 z 0.28\n[B] 1SWASP J202224.40-215920.3 depth 0.0024 z 0.39\n[B] 1SWASP J202154.46-220110.6 depth -0.0085 z -4.51\n[B] 1SWASP J202222.71-220952.0 depth 0.0015 z 0.73\n[B] 1SWASP J202150.34-220132.3 depth -0.0113 z -0.82\n[B] 1SWASP J202149.39-220650.1 depth 0.0111 z 0.53\n[B] 1SWASP J202225.33-215811.9 depth 0.0031 z 1.22\n[B] 1SWASP J202150.36-220042.7 depth -0.0009 z -0.17\n[B] 1SWASP J202147.79-220743.2 depth 0.0005 z 0.32\n[C] wide best P 2.328780 snr 65.91\n[A] controls max 7.14\n[A] injection snr 5.30 passed False\n[A] box best P 2.329208 snr 6.79\n[boot] 25/150\n[boot] 50/150\n[boot] 75/150\n[boot] 100/150\n[boot] 125/150\n[boot] 150/150\n[A] widening bootstrap grid (edge 0.83)\n[boot] 25/150\n[boot] 50/150\n[boot] 75/150\n[boot] 100/150\n[boot] 125/150\n[boot] 150/150\n{\"A\": \"ASASSN_INSENSITIVE\", \"branch\": \"BRANCH_UNTESTABLE\", \"tess_link\": \"EPHEMERIS_INCONSISTENT\", \"wasp_link\": \"WASP_LINK_UNTESTABLE\", \"blend\": \"BLEND_UNRESOLVED\", \"P\": 2.329195, \"B\": \"COMMON_CLEAN\"}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T132511Z-astrophysics\\period)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
