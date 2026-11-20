@@ -8,13 +8,18 @@ commit that published it, so a release-day job's workdir only has to hold this f
 
     python fetch_release.py GROUP [URL::LOCALNAME ...]
 
-GROUP is one of: sb1real, d3a1, calib, wobble, d5, d5grade. Extra URL::LOCALNAME pairs fetch
-inputs that earlier release-day jobs committed to the repo (for example a records CSV).
+GROUP is one of: sb1real, d3a1, calib, wobble, d5, d5grade, qcut4. Extra URL::LOCALNAME pairs
+fetch inputs that earlier jobs committed to the repo (for example a records CSV).
 Exit 1 if any file cannot be fetched or is empty: never run a step on a partial set.
 
 2026-11-19 (run 41): dr4_fetch 0.2.0, calib_dr4_run 0.1.1, dr4_sb1_reality 0.1.1 and
 dr4_d5_rate 0.1.1 re-pinned to 25020a830eb9594182a6f8ed9c4aefc185dfd9af (release v0.28.0,
 calib-dr4 amendment 2: the neighbourhood table's new-release id column is read from TAP_SCHEMA).
+2026-11-20 (run 50): new group qcut4 for Q4 of the quality-cut test
+(findings/2026-11-20-quality-cut-prereg.md): qcut_dr4 0.1.0 pinned at its publishing commit
+(release v0.34.0) and qcut 0.1.0 at its publishing commit (release v0.32.0). DR3_COMBINED_URL
+names the committed combined grade (data/sb1comb-v2/), which the D3 and D5 grade steps read;
+the runbook had pointed at data/sb1comb/, which was never created. No module or rule changed.
 """
 import os
 import sys
@@ -22,8 +27,13 @@ import time
 import urllib.request
 
 RAW = "https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/%s/%s"
+MAIN_RAW = "https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/"
+# The graded DR3 combined result (gaia-sb1comb-v2), as committed on 19 Nov 2026.
+DR3_COMBINED_URL = MAIN_RAW + "data/sb1comb-v2/combined_summary.json"
 
 V028 = "25020a830eb9594182a6f8ed9c4aefc185dfd9af"   # release v0.28.0
+V032 = "2cbdd5b01e6d9bc093afb376b1d176bb8104826d"   # release v0.32.0 (qcut 0.1.0)
+V034 = "47ffeb67f21388d71122e7a01daa9e4df4f0a1bd"   # release v0.34.0 (qcut_dr4 0.1.0)
 
 # path in repo -> full commit SHA of the commit that published it
 PIN = {
@@ -43,12 +53,15 @@ PIN = {
     "data/calib-window-v1/window_targets.csv": "74736a623df08f3231deb5c0cbc77694fea3b330",
     "dr4_wobble.py": "ea4f08302e25275daa58b7e9e9f6173f78b3e88d",
     "dr4_d3_a1.py": "1e94a8aa30ce0f7457e786cce5c91ad474a9d118",
+    "qcut.py": V032,
+    "qcut_dr4.py": V034,
 }
 VERSIONS = {"sb1_transit.py": 'VERSION = "0.1.0"', "sb1_robust.py": 'VERSION = "0.2.0"',
             "sb1_combine.py": 'VERSION = "0.1.0"', "dr4_fetch.py": 'VERSION = "0.2.0"',
             "calib_dr4_run.py": 'VERSION = "0.1.1"',
             "dr4_sb1_reality.py": 'VERSION = "0.1.1"', "dr4_d3_a1.py": 'VERSION = "0.1.0"',
-            "dr4_d5_rate.py": 'VERSION = "0.1.1"'}
+            "dr4_d5_rate.py": 'VERSION = "0.1.1"',
+            "qcut.py": 'VERSION = "0.1.0"', "qcut_dr4.py": 'VERSION = "0.1.0"'}
 SEARCH = ["sb1_transit.py", "sb1_robust.py", "dipsearch.py", "vet_event.py"]
 GROUPS = {
     "sb1real": ["dr4_fetch.py", "dr4_sb1_reality.py"] + SEARCH,
@@ -59,6 +72,7 @@ GROUPS = {
     "wobble": ["dr4_fetch.py", "dr4_wobble.py"],
     "d5": ["dr4_fetch.py", "dr4_sb1_reality.py", "sb1_combine.py", "dr4_d5_rate.py"] + SEARCH,
     "d5grade": ["dr4_fetch.py", "dr4_sb1_reality.py", "sb1_combine.py", "dr4_d5_rate.py"],
+    "qcut4": ["qcut.py", "qcut_dr4.py"],
 }
 
 
