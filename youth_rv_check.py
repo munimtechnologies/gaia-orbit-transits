@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""youth_rv_check 0.1.1 -- pre-registered follow-up of TIC 71945261 (Gaia DR3 6853008555751131648).
+"""youth_rv_check 0.1.2 -- pre-registered follow-up of TIC 71945261 (Gaia DR3 6853008555751131648).
 
 MV2 of Munim, Inc.; made with AI agents working in his name. Apache-2.0.
 Rules: findings/2026-11-19-tic71945261-followup-prereg.md (written before this job ran).
@@ -8,6 +8,15 @@ Rules: findings/2026-11-19-tic71945261-followup-prereg.md (written before this j
 parsed as a float first and was returned as if it were a Julian date; the built-in self-test
 caught this and the v1 job stopped before reading any data. Dates are now recognised before
 the numeric branch, and only 2,400,000-2,600,000 is accepted as a JD. Nothing else changed.
+
+0.1.2 (2026-11-20): operational fixes only; no rule, threshold, catalogue or reading changed.
+The v2 job hit its 45-minute limit with no output at all, so which network call hung is not
+known. Now: every stage logs with a timestamp; a 60 s socket timeout covers every connection;
+Gaia TAP tries 3 times (120 s each); VizieR calls have a 30 s timeout per server; the BANYAN
+install runs in the job's setup step (here only `pip show`, 60 s timeout); the result JSON is
+rewritten after every stage, so a timeout leaves partial results; and once --budget-min
+minutes have passed, the remaining 0.3-degree VizieR *control* cones are skipped and recorded
+as "skipped_budget" (target cones always run).
 
 Steps (each one records its own error and never stops the others):
   1. Gaia DR3 astrometry + SB1 orbit of the target, and of AU Mic (positive control, beta Pic MG).
@@ -27,6 +36,7 @@ import json
 import math
 import os
 import random
+import socket
 import subprocess
 import sys
 import time
@@ -34,7 +44,7 @@ import traceback
 import urllib.parse
 import urllib.request
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 TARGET = 6853008555751131648
 AUMIC = (311.2897, -31.3409)
 GAIA_TAP = "https://gea.esac.esa.int/tap-server/tap/sync"
@@ -54,6 +64,11 @@ CATALOGUES = [
 GAIA_COLS = ("g.source_id, g.ra, g.dec, g.parallax, g.parallax_error, g.pmra, g.pmra_error, "
              "g.pmdec, g.pmdec_error, g.radial_velocity, g.radial_velocity_error, "
              "g.rv_nb_transits, g.rv_amplitude_robust, g.phot_g_mean_mag, g.bp_rp, g.l, g.b")
+T0 = time.time()
+
+
+def log(*a):
+    print("[%6.1f min]" % ((time.time() - T0) / 60.0), *a, flush=True)
 
 
 # ------------------------------------------------------------------ pure helpers
@@ -165,16 +180,18 @@ def reading_youth(target, control):
 
 
 # ------------------------------------------------------------------ network helpers
-def tap(adql, tries=4):
+def tap(adql, tries=3):
     data = urllib.parse.urlencode({"REQUEST": "doQuery", "LANG": "ADQL", "FORMAT": "csv",
                                    "QUERY": adql}).encode()
     last = None
     for i in range(tries):
         try:
-            with urllib.request.urlopen(GAIA_TAP, data=data, timeout=180) as r:
+            log("Gaia TAP try", i + 1)
+            with urllib.request.urlopen(GAIA_TAP, data=data, timeout=120) as r:
                 return list(csv.DictReader(io.StringIO(r.read().decode("utf-8", "replace"))))
         except Exception as exc:  # noqa: BLE001
             last = exc
+            log("Gaia TAP failed", exc)
             time.sleep(15 * (i + 1))
     raise RuntimeError("Gaia TAP failed: %r" % (last,))
 
@@ -237,6 +254,7 @@ def vizier_cone(cat, ra, dec, radius_arcsec):
         try:
             v = Vizier(columns=["**", "+_r"], row_limit=50)
             v.VIZIER_SERVER = server
+            v.TIMEOUT = 30
             res = v.query_region(SkyCoord(ra, dec, unit="deg"), radius=radius_arcsec * u.arcsec,
                                  catalog=cat)
             tables = []
@@ -248,6 +266,7 @@ def vizier_cone(cat, ra, dec, radius_arcsec):
             return {"server": server, "tables": tables}
         except Exception as exc:  # noqa: BLE001
             errs.append("%s: %r" % (server, exc))
+            log("VizieR", cat, server, "failed", repr(exc)[:200])
     return {"error": errs}
 
 
@@ -278,12 +297,25 @@ def find_rvs(vz):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", required=True)
-    ap.add_argument("--install-banyan", action="store_true")
+    ap.add_argument("--install-banyan", action="store_true",
+                    help="0.1.2: ignored for installing (setup does it); kept for compatibility")
+    ap.add_argument("--budget-min", type=float, default=40.0)
     a = ap.parse_args()
+    socket.setdefaulttimeout(60)
     os.makedirs(a.out_dir, exist_ok=True)
+    jpath = os.path.join(a.out_dir, "youth_rv_check.json")
     R = {"version": VERSION, "target": str(TARGET), "started": time.strftime("%Y-%m-%dT%H:%M:%SZ",
                                                                             time.gmtime())}
+
+    def save(stage):
+        R["last_stage"] = stage
+        R["elapsed_min"] = round((time.time() - T0) / 60.0, 2)
+        with open(jpath, "w") as fh:
+            json.dump(R, fh, indent=1, default=str)
+        log("saved after", stage)
+
     R["self_test"] = self_test()
+    log("self-test passed")
 
     # 1. Gaia rows
     tgt = ctl = orb = None
@@ -309,16 +341,15 @@ def main():
         R["gaia_control_aumic"] = ctl
     except Exception as exc:  # noqa: BLE001
         R["gaia_control_error"] = repr(exc)
+    save("gaia")
 
-    # 2. BANYAN Sigma
-    if a.install_banyan:
-        p = subprocess.run([sys.executable, "-m", "pip", "install", "-q",
-                            "git+https://github.com/jgagneastro/banyan_sigma.git"],
-                           capture_output=True, text=True)
-        R["banyan_install"] = {"exit": p.returncode, "tail": (p.stdout + p.stderr)[-1500:]}
+    # 2. BANYAN Sigma (installed by the job's setup step)
+    try:
         q = subprocess.run([sys.executable, "-m", "pip", "show", "banyan_sigma"],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, timeout=60)
         R["banyan_version"] = q.stdout[-500:]
+    except Exception as exc:  # noqa: BLE001
+        R["banyan_version"] = "error %r" % (exc,)
     bres = {}
     for label, row, rv, erv in (
             ("target_with_rv", tgt, orb and orb["gamma"],
@@ -333,6 +364,7 @@ def main():
             use_rv = rv is not None and erv is not None
             if label.endswith("with_rv") and not use_rv:
                 raise RuntimeError("no RV")
+            log("BANYAN", label)
             bres[label] = banyan(row, use_rv, rv, erv)
         except Exception as exc:  # noqa: BLE001
             bres[label] = {"error": repr(exc), "trace": traceback.format_exc()[-800:]}
@@ -342,22 +374,30 @@ def main():
         ctl_res = bres.get("control_aumic_no_rv")
     R["youth_reading"] = reading_youth(bres.get("target_with_rv", {}), ctl_res)
     R["youth_reading_no_rv"] = reading_youth(bres.get("target_no_rv", {}), ctl_res)
+    log("youth reading", R["youth_reading"], "/ no RV", R["youth_reading_no_rv"])
 
     # 3. UVW
     try:
         R["uvw"] = uvw(tgt, orb["gamma"])
     except Exception as exc:  # noqa: BLE001
         R["uvw_error"] = repr(exc)
+    save("banyan+uvw")
 
     # 4. VizieR
     vz = {}
+    R["vizier"] = vz
     ra, dec = (tgt["ra"], tgt["dec"]) if tgt else (305.561178, -22.073752)
     for cat, name in CATALOGUES:
+        log("VizieR target cone", cat)
         vz[cat] = {"name": name, "target": vizier_cone(cat, ra, dec, 10.0)}
-        c = vizier_cone(cat, ra, dec, 1080.0)
-        vz[cat]["control_0p3deg_n"] = (sum(t["n"] for t in c.get("tables", []))
-                                       if "tables" in c else c)
-    R["vizier"] = vz
+        if (time.time() - T0) / 60.0 > a.budget_min:
+            vz[cat]["control_0p3deg_n"] = "skipped_budget"
+        else:
+            log("VizieR control cone", cat)
+            c = vizier_cone(cat, ra, dec, 1080.0)
+            vz[cat]["control_0p3deg_n"] = (sum(t["n"] for t in c.get("tables", []))
+                                           if "tables" in c else c)
+        save("vizier " + cat)
 
     # 5. archival RVs vs the Gaia orbit
     tests = []
@@ -392,8 +432,7 @@ def main():
             "two_K_heavy": 2 * K_HEAVY, "rv_nb_transits": tgt.get("rv_nb_transits"),
             "note": "max-min of the epoch RVs after outlier rejection; cannot exceed 2K by much"}
     R["finished"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    with open(os.path.join(a.out_dir, "youth_rv_check.json"), "w") as fh:
-        json.dump(R, fh, indent=1, default=str)
+    save("done")
     lines = ["# youth_rv_check %s: TIC 71945261" % VERSION, "",
              "- youth reading (with RV): **%s**; without RV: %s" % (R["youth_reading"],
                                                                  R["youth_reading_no_rv"]),
