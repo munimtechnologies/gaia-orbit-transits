@@ -1,0 +1,60 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "tyc6340-wasp-v1",
+ "id": "1ea254582921",
+ "field": "astrophysics",
+ "run": "20261120T091336Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "blade",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T12:22:40.873247+00:00",
+ "finished_at": "2026-11-20T12:24:04.350942+00:00",
+ "duration_seconds": 83,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 60.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": null,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_wasp_tyc",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python wasp_tyc.py --self-test",
+   "exit": 0,
+   "seconds": 6
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python wasp_tyc.py --data-dir /data/wasp-tyc6340 --out-dir /out",
+   "exit": 0,
+   "seconds": 41
+  }
+ ],
+ "out_files": [
+  "wasp_tyc_folded.csv",
+  "wasp_tyc_report.md",
+  "wasp_tyc_summary.json"
+ ],
+ "out_files_total": 3,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-03-python stdout] [fetch] target rows 9236\n[fetch] 1SWASP J202215.96-220458.7 rows 9134\n[fetch] 1SWASP J202209.46-220414.3 rows 9169\n[fetch] 1SWASP J202211.21-220522.8 rows 9221\n[stage] loaded 12:22:53\n[stage] controls 12:22:54\n[stage] injection 12:22:55\n[stage] box 12:22:56\n[stage] fit 12:22:57\n[boot] 25/150\n[boot] 50/150\n[boot] 75/150\n[boot] 100/150\n[boot] 125/150\n[boot] 150/150\n[stage] bootstrap 12:23:24\n[stage] ephemeris 12:23:24\n[stage] blend 12:23:26\n[stage] done 12:23:26\n{\"label\": \"WASP_INSENSITIVE\", \"ephemeris\": \"EPHEMERIS_INCONSISTENT\", \"P_comb\": 2.3295592973147943, \"blend\": \"BLEND_UNRESOLVED\", \"depth_mag\": 0.0742719455360089, \"snr_box\": 22.2074196177446, \"control_max\": 22.41249325819821}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T091336Z-astrophysics\\wasp)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

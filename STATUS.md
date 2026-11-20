@@ -4,18 +4,42 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Pre-registered 20 Nov (~10:00 UTC): TYC 6340-23-1 in SuperWASP 2006-2008
+## Newest (20 Nov, ~14:30 UTC): the SuperWASP check of TYC 6340-23-1 was insensitive; a period question
 
-`findings/2026-11-20-tyc6340-wasp-prereg.md`, code `wasp_tyc.py` 0.1.0 (job tyc6340-wasp-v1).
-The public SuperWASP DR1 archive holds a 2006-2008 light curve of the target
-(1SWASP J202214.65-220425.1, 9,236 points) and of three neighbours, one of them a V ≈ 11.25 star
-only 38″ away. Three graded questions: is the eclipse seen by this independent instrument 17-19
-years before TESS (with controls and an injection test); does a single linear ephemeris join WASP
-and TESS (expected period precision about 1e-6 d, 100× Gaia's); and is the eclipse on the target
-rather than a neighbour (paired depth test)? Predictions: detected 80%, unique ephemeris 85%,
-on target 70%.
+**Graded:** `findings/2026-11-20-tyc6340-wasp-results.md` (data `data/tyc6340-wasp-v1/`), under
+`findings/2026-11-20-tyc6340-wasp-prereg.md`.
+- Detection label **WASP_INSENSITIVE**. The injection control failed (0.03 mag planted eclipse:
+  statistic 19.7, below the control maximum of 22.4), and the target scored 22.2 with
+  bootstrap depth S/N 3.8. We had predicted DETECTED (80%): **wrong**. Ephemeris and blend
+  labels were not graded. **The eclipse is not replicated by this test**, and nothing about the
+  system changes.
+- Why: our design ran the detection statistic before the per-night detrending (χ²_red 33.6
+  before, 2.8 after), the search window ended at 2.3298 d where the best period sat, and 53% of
+  bootstrap fits hit the grid edge. Lessons are recorded in the results note.
+- Reported, not graded: the fold at SuperWASP's own best period (2.32974 d) shows a 0.074 mag
+  dip. That period is **5.8σ from Gaia DR3's 2.32893 ± 0.00014 d**, and the WASP ephemeris
+  misses the TESS eclipse by 0.23 in phase. The same dip appears in the 38″ neighbour (expected:
+  it sits inside the WASP aperture) and weakly in a 75″ neighbour (leak or a field systematic?).
+- Prior art: the AAVSO VSX API returns no variable within 3′ (control query on Algol worked).
 
-## Newest results (20 Nov, ~07:00 UTC)
+**Pre-registered next:** `findings/2026-11-20-tyc6340-period-prereg.md`, code `tyc_period.py` 0.1.0
+and `fetch_asassn.py` 0.1.0 (job tyc6340-period-v1):
+- **ASAS-SN Sky Patrol (2013-2025)**, an independent instrument overlapping the TESS epoch, with
+  controls and an injection test. It asks whether ASAS-SN sees the eclipse, which period branch
+  is right (Gaia's 2.3289 d or WASP's 2.3297 d), whether ASAS-SN and TESS join on one ephemeris
+  (σ_P ~ 2e-6 d expected), whether the 2006-2008 WASP dip lines up with it, and whether the
+  eclipse is on the target rather than the 38″ star (8″ pixels separate them).
+- **A SuperWASP common-mode test:** 12 comparison stars 4.7-7.1′ away folded at the v1 ephemeris.
+  If 4 or more show the dip, v1's dip was a field systematic.
+- Predictions: ASAS-SN detected 65%; Gaia branch 75% if detected; on target 70%; common-mode
+  CLEAN 40% / MIXED 25% / COMMON 30%.
+
+**Gaia DR4 release-day rehearsal passed** (job gaia-fetchrel-check-v3, data
+`data/gaia-fetchrel-check-v3/`): all pinned modules load, the corrected data path is in
+place (the old one returns 404, as it should), the combined-summary inputs reproduce
+(ρ_sub 0.0134 primary, 0.0191 amendment 1), and the quality-cut grader imports.
+
+## Results of 20 Nov (~07:00 UTC)
 
 **1. Gaia's own quality columns cannot single out the real low-mass SB1 orbits**
 (`findings/2026-11-20-quality-cut-results.md`, data `data/qcut-v1/`). Graded under
@@ -47,7 +71,8 @@ mass-check failure, four radii 11-20% too small. Our predictions (VALIDATED 50%;
 **3. Pre-registered before DR4: an independent test of TYC 6340-23-1's mass**
 (`findings/2026-11-20-tyc6340-dr4-k-prereg.md`, `tyc_k_dr4.py` 0.1.0). Only Gaia DR4 velocity
 epochs after DR3's data window (28 May 2017) are used, and K is graded against Gaia DR3's 16.16
-km/s and the 32.4 km/s a normal-size companion would need. Release-day step (a5).
+km/s and the 32.4 km/s a normal-size companion would need. Release-day step (a5). Its fixed
+period stays as registered; any better period from tyc6340-period-v1 is reported only.
 
 ## Graded earlier on 20 Nov (~04:30 UTC)
 **TIC 71945261 (TYC 6340-23-1) does not move like a member of any known young group**
@@ -56,6 +81,7 @@ AU Mic control passed (0.927); target young-association probability **0.004** �
 **FIELD_KINEMATIC**; UVW (−19.6, −14.8, −6.3) km/s. No archival RV in RAVE DR6, GALAH DR3 or
 APOGEE DR17, so the K question stays open (now pre-registered for DR4, above). The label stays
 **B_OVERSIZED_COMPANION**; **we do not call it inflated** until a spectrum checks lithium and K.
+Write-up: https://www.munimtech.com/research/tyc-6340-23-1-oversized-companion
 
 ## Graded 19 Nov (~23:15 UTC)
 **Face-on stars cannot explain the missing transits: most of Gaia DR3's brown-dwarf-mass SB1
@@ -97,8 +123,9 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
        (`findings/2026-11-19-tic71945261-fit-results.md`; prior art
        `findings/2026-11-19-tic71945261-prior-art.md`): a new 2.3287-day eclipsing system (6.1%
        deep, 0.39% occultation) whose companion is **0.224 R☉** at Gaia's 0.097 M☉, **1.9×** the
-       main-sequence value. FIELD_KINEMATIC. Open: Gaia's K (DR4 test pre-registered), youth
-       outside known groups, independent radius confirmation, and the SuperWASP check above.
+       main-sequence value. FIELD_KINEMATIC. SuperWASP check insensitive (above). Open: the
+       period and an independent detection (ASAS-SN, queued), Gaia's K (DR4), youth outside
+       known groups, independent radius confirmation.
      - **BD+65 286** (TIC 50453242): companion 0.100 M☉, 0.122 R☉. **Label not adopted.**
      - TOI-7247.01: our prediction failed. TIC 324597856: rejected as a brown dwarf.
        TIC 135050395: the known EBLM J1219-39. TIC 202283090: TOI-6218.01.
@@ -147,6 +174,9 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
 - **Every network call needs a timeout, and every long job should save partial results.**
 - **A one-sector discovery needs an older, independent light curve:** check the ground-based
   archives (SuperWASP DR1, ASAS-SN) for an earlier record and for the neighbours' light curves.
+- **Run a detection statistic on detrended data, or the injection test cannot pass**; make the
+  search window wider than the prior and report edge hits; never accept a bootstrap in which most
+  draws end on the grid edge (SuperWASP check, 20 Nov).
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -161,7 +191,7 @@ found as SuperWASP candidates.
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** All Gaia-TAP jobs that needed DR3 before the closure have run.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
-  pinning every module to the commit that published it.
+  pinning every module to the commit that published it. Rehearsal passed 20 Nov (above).
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4, (c2) D5 grade; later (d), (f)-(h).
   (e) EBLM inflation is cancelled.

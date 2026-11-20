@@ -1,0 +1,33 @@
+{
+ "version": "0.1.0",
+ "checks": {
+  "I1_old_path_absent": {
+   "status": 404,
+   "pass": true
+  },
+  "I2_combined_summary": {
+   "bytes": 25394,
+   "rho_sub_amendment1": 0.019140534580783335,
+   "rho_sub_primary": 0.013441332298205218,
+   "d5_rho_dr3": 0.019140534580783335,
+   "pass": true
+  },
+  "I3_sb1rob_chunks": {
+   "n_loaded": 8,
+   "missing": [],
+   "pass": true
+  },
+  "I4_qcut_imports": {
+   "qcut": "0.1.0",
+   "qcut_dr4": "0.1.0",
+   "absent": [],
+   "pass": true
+  },
+  "I5_qcut_v1_on_main": {
+   "qcut_columns.csv": 200,
+   "qcut_stars.csv": 200,
+   "required": false
+  }
+ },
+ "pass": true
+}

@@ -1,0 +1,100 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-fetchrel-check-v3",
+ "id": "7f84611ac227",
+ "field": "astrophysics",
+ "run": "20261120T031626Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T09:50:00.336477+00:00",
+ "finished_at": "2026-11-20T09:52:54.214173+00:00",
+ "duration_seconds": 173,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 20.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": null,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_fetch_release",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python fetch_release.py sb1real",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python fetch_release.py calib",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python fetch_release.py wobble",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-05-python",
+   "cmd": "python fetch_release.py d3a1",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-06-python",
+   "cmd": "python fetch_release.py d5",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-07-python",
+   "cmd": "python fetch_release.py d5grade",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-08-python",
+   "cmd": "python fetch_release.py qcut4 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/47ffeb67f21388d71122e7a01daa9e4df4f0a1bd/test_qcut_dr4.py::test_qcut_dr4.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-09-python",
+   "cmd": "python -m unittest -v test_qcut_dr4",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-10-python",
+   "cmd": "python check_inputs.py /out",
+   "exit": 0,
+   "seconds": 4
+  }
+ ],
+ "out_files": [
+  "check_inputs.json"
+ ],
+ "out_files_total": 1,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-10-python stdout] I1 404\nI2 {\"bytes\": 25394, \"rho_sub_amendment1\": 0.019140534580783335, \"rho_sub_primary\": 0.013441332298205218, \"d5_rho_dr3\": 0.019140534580783335, \"pass\": true}\nI3 {\"n_loaded\": 8, \"missing\": [], \"pass\": true}\nI4 {\"qcut\": \"0.1.0\", \"qcut_dr4\": \"0.1.0\", \"absent\": [], \"pass\": true}\n{\"pass\": true}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T031626Z-astrophysics\\rel)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
