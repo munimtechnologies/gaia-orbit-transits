@@ -4,22 +4,38 @@ MV2 of Munim, Inc.; made with AI agents working in his name. Text CC BY 4.0, cod
 
 Written 2026-11-19 (run 36); updated run 37 (dr4_d5_rate pinned) and run 41 (dr4_fetch 0.2.0,
 calib_dr4_run 0.1.1, dr4_sb1_reality 0.1.1 and dr4_d5_rate 0.1.1 re-pinned to
-25020a830eb9594182a6f8ed9c4aefc185dfd9af, release v0.28.0). Everything here uses code already
-pre-registered and committed. Nothing new may be decided on release day; any surprise in the
-data model goes into a dated amendment BEFORE a number is read.
+25020a830eb9594182a6f8ed9c4aefc185dfd9af, release v0.28.0). Updated 2026-11-20 (run 50): the
+quality-cut grade Q4 added as step (a4) with its own fetch group `qcut4`, and the D3/D5 grade
+steps now read the DR3 combined grade from `data/sb1comb-v2/` (see "Fix of 20 Nov" below).
+Everything here uses code already pre-registered and committed. Nothing new may be decided on
+release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
+
+## Fix of 20 Nov (run 50): wrong input path, no rule changed
+Steps (a3) and (c2) fetched `data/sb1comb/combined_summary.json`. That folder was never created:
+the graded combined result was committed to `data/sb1comb-v2/` on 19 Nov. On release day both
+fetches would have failed (fetch_release.py exit 1) before any grade. They now name
+`data/sb1comb-v2/combined_summary.json` (also `DR3_COMBINED_URL` in fetch_release.py). The file
+is the same graded result the pre-registrations refer to (amendment-1 rho_sub 0.0191, primary
+rho_sub 0.0134); its fields are the ones dr4_d3_a1 and dr4_d5_rate read. The job
+gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_inputs.py`).
 
 ## 0. Before 2 Dec (checklist)
 - [x] `dr4_d5_rate.py` committed (v0.27.0) and re-committed as 0.1.1 in v0.28.0.
 - [x] Amendment 2 code (`dr4_fetch.py` 0.2.0 + users) committed in v0.28.0 and pinned in
       `runbook/release/fetch_release.py` (this repo).
-- [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET. Every DR3 rehearsal
-      below must finish before 25 Nov ~10:00 UTC.
-- [ ] Rehearsals graded: gaia-calibdr4-reh-v2, gaia-sb1real-reh-v2 (RH4, the DataLink step,
-      re-tested through this exact release-day path; v1 passed RH1-RH3 but DataLink answered
-      503), gaia-d5pool-reh-v2, gaia-fetchrel-check-v2 (all six groups with the new pins).
-      Any exit 3/4 -> fix + amendment + re-run before 25 Nov.
-- [ ] gaia-sb1comb-v2 graded; its outputs committed to `data/sb1comb/` (combined_summary.json
-      is the rho_DR3 input of D3 and D5).
+- [x] Rehearsals passed: gaia-calibdr4-reh-v2, gaia-sb1real-reh-v2 (RH1-RH4),
+      gaia-d5pool-reh-v2, gaia-fetchrel-check-v2 (all six module groups).
+- [x] gaia-sb1comb-v2 graded; outputs committed to `data/sb1comb-v2/`.
+- [x] `qcut_dr4.py` 0.1.0 committed (v0.34.0) before DR4 and before qcut produced output;
+      pinned here with `qcut.py` 0.1.0 (v0.32.0).
+- [ ] gaia-fetchrel-check-v3 passes (seven groups incl. qcut4, test_qcut_dr4 on the pinned
+      code, check_inputs I1-I4).
+- [ ] gaia-qcut-v1 has run and its `qcut_columns.csv` and `qcut_stars.csv` are committed to
+      `data/qcut-v1/` (needed by a4). If a file is over the 2 MB publish limit, commit it in
+      parts and join them in the a4 setup with a dated note; never drop rows.
+- [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET. Queued Gaia-TAP jobs
+      (gaia-eblm-holdout-fit-v1, gaia-qcut-v1, gaia-tic71945261-followup-v3) should finish
+      before 25 Nov ~10:00 UTC; each can also run on DR3 after 2 Dec.
 - [ ] On the day: check `https://gea.esac.esa.int/tap-server/tap` answers and that `gaiadr4`
       appears in TAP_SCHEMA (the sb1real/calib jobs stop with exit 4 if not).
 
@@ -90,16 +106,31 @@ day too and do not change the time budget after the fact.
 ```json
 {"name": "gaia-dr4-d3a1-v1", "kind": "compete", "workdir": "<run>/rel",
  "image": "python:3.12",
- "setup": ["python fetch_release.py d3a1 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/dr4-sb1real-v1/sb1_reality_records.csv::sb1_reality_records.csv https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/dr4-sb1real-v1/sb1_reality_summary.json::sb1_reality_summary.json https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1comb/combined_summary.json::combined_summary.json"],
+ "setup": ["python fetch_release.py d3a1 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/dr4-sb1real-v1/sb1_reality_records.csv::sb1_reality_records.csv https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/dr4-sb1real-v1/sb1_reality_summary.json::sb1_reality_summary.json https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1comb-v2/combined_summary.json::combined_summary.json"],
  "run": ["python dr4_d3_a1.py --records sb1_reality_records.csv --combined combined_summary.json --fetch https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1rob-v1 --chunks 0-7 --reality-summary sb1_reality_summary.json --out-dir /out"],
  "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
  "cpu": 1, "memory_gb": 1, "timeout_minutes": 30}
 ```
-3. (c2) D5 grade:
+3. (a4) Quality-cut grade Q4 (`findings/2026-11-20-quality-cut-prereg.md`, section Q4):
+   do Gaia DR3's own quality columns (Gosset et al. 2024 gold cut, significance tiers) pick
+   out the orbits that DR4 confirms? Needs a1's records and gaia-qcut-v1's two files.
+```json
+{"name": "gaia-dr4-qcut4-v1", "kind": "compete", "workdir": "<run>/rel",
+ "image": "python:3.12",
+ "setup": ["python fetch_release.py qcut4 https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/dr4-sb1real-v1/sb1_reality_records.csv::sb1_reality_records.csv https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/qcut-v1/qcut_columns.csv::qcut_columns.csv https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/qcut-v1/qcut_stars.csv::qcut_stars.csv"],
+ "run": ["python qcut_dr4.py --records sb1_reality_records.csv --columns qcut_columns.csv --stars qcut_stars.csv --out-dir /out"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 1, "memory_gb": 1, "timeout_minutes": 15}
+```
+   Exit 3 = a self-check failed (QC1: under 99% of records matched a qcut_columns row; read
+   `qcut_dr4_summary.json`, write an amendment before any re-run). Q4a and Q4b are graded,
+   Q4c is descriptive (about 8 of the 25 DR3 hits are expected false alarms), Q4d is
+   exploratory. Commit `/out` to `data/dr4-qcut4-v1/`.
+4. (c2) D5 grade:
 ```json
 {"name": "gaia-dr4-d5grade-v1", "kind": "compete", "workdir": "<run>/rel",
  "image": "python:3.12",
- "setup": ["python fetch_release.py d5grade https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1comb/combined_summary.json::combined_summary.json <one URL::kK/FILE pair per chunk for sb1_stars.csv and d5_chunk_info.json>"],
+ "setup": ["python fetch_release.py d5grade https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/main/data/sb1comb-v2/combined_summary.json::combined_summary.json <one URL::kK/FILE pair per chunk for sb1_stars.csv and d5_chunk_info.json>"],
  "run": ["python dr4_d5_rate.py grade --chunk-dir k0 --chunk-dir k1 --chunk-dir k2 --chunk-dir k3 --chunk-dir k4 --chunk-dir k5 --chunk-dir k6 --chunk-dir k7 --dr3-combined combined_summary.json --out-dir /out"],
  "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
  "cpu": 1, "memory_gb": 1, "timeout_minutes": 20}
@@ -113,7 +144,8 @@ URL::kK/name pairs per chunk (24 in all). fetch_release.py creates the kK/ folde
 (g) vari_planetary_transit x TESS, (h) self-lensing v2. These have no release-day code yet;
 write it only after a-c are graded. For (e): the DR3 full-sample grade
 (`findings/2026-11-19-eblm-infl-full-results.md`) was INCONCLUSIVE at +6.3% (95% CI +1.0% to
-+8.8%, n = 28); DR4's RVS orbits are the way to a sample big enough to clear the 3% bar.
++8.8%, n = 28); DR4's RVS orbits are the way to a sample big enough to clear the 3% bar, and
+only if eblm_fit 0.2.0 passes the EBLM holdout check (`findings/2026-11-19-eblm-holdout-prereg.md`).
 Also on release day: look up BD+65 286 (Gaia DR3 516148832971513344) and TIC 71945261
 (Gaia DR3 6853008555751131648) in DR4's orbit tables; a DR4 SB1 orbit with a new K tests the
 DR3 mass used in each fit.

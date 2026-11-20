@@ -7,7 +7,8 @@ holds.
 ## Newest result (19 Nov, ~23:15 UTC)
 **Face-on stars cannot explain the missing transits: most of Gaia DR3's brown-dwarf-mass SB1
 orbits at 1–13 days must be wrong** (`findings/2026-11-19-sb1-robust-amendment-2-results.md`,
-data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**.
+data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**. Write-up:
+https://www.munimtech.com/research/gaia-brown-dwarf-orbits-missing-transits
 - 2,180 brown-dwarf-class orbits with sensitive TESS data; 407.7 transits expected if every
   orbit were real with its minimum mass; **3 seen** (all known TOIs), 0.5 false alarms expected.
 - Allowing heavier stars seen face-on, star by star with Gaia's exact mass function: the
@@ -22,12 +23,19 @@ data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**.
 - Gaia DR4 (2 December 2026) will show which DR3 orbits survive (`dr4_sb1_reality.py`).
 
 ## In progress (20 Nov)
+- **Release-day runbook updated (20 Nov, ~03:30 UTC):** the quality-cut grade Q4 is now step
+  (a4) of `runbook/dr4-release-day.md`, with fetch group `qcut4` in
+  `runbook/release/fetch_release.py` (qcut_dr4 0.1.0 and qcut 0.1.0, each pinned to its
+  publishing commit). The same review found a **wrong input path**: the D3 and D5 grade steps
+  fetched `data/sb1comb/combined_summary.json`, a folder that was never created (the graded
+  result is in `data/sb1comb-v2/`), so both would have stopped on release day. Fixed; no rule
+  changed. Job gaia-fetchrel-check-v3 rehearses every module group and these inputs with the
+  pinned code (`runbook/release/check_inputs.py`).
 - **EBLM holdout set resolved, not yet fitted** (`findings/2026-11-20-eblm-holdout-resolution.md`,
   data `data/eblm-holdout/`). RC1 passed; 14 of 26 EBLM XIX systems matched exactly one Gaia DR3
   SB1 orbit (predicted 8–16); 1 ambiguous, 11 without an SB1 orbit. Their published masses and
   radii were re-checked against EBLM XIX Table 4 before any fit. The fit job
-  (gaia-eblm-holdout-fit-v1, eblm_fit 0.2.0 pinned at 996ced1) refuses to start until these ids
-  are on `main`.
+  (gaia-eblm-holdout-fit-v1, eblm_fit 0.2.0 pinned at 996ced1) is queued.
 - **Quality-cut test** (`findings/2026-11-20-quality-cut-prereg.md`, `qcut.py` 0.1.0, job
   gaia-qcut-v1 queued). Can Gaia's own quality columns pick out the real orbits? (Q1) Gosset et
   al. 2024's "gold sample" cut (efficiency ≥ 0.2, ≥ 20 good RV epochs, significance ≥ 40,
@@ -39,7 +47,7 @@ data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**.
   qcut 0.1.0 produced any output; it imports qcut's gold, tier and amplitude rules.
 - **TIC 71945261 youth and archival-RV check:** the v2 job hit its 45-minute limit with no output
   (a network call hung; which one is unknown). `youth_rv_check.py` 0.1.2 adds logging, hard
-  timeouts and partial saves, with no change to any rule; re-queued as
+  timeouts and partial saves, with no change to any rule; queued as
   gaia-tic71945261-followup-v3.
 
 ## Also on 19 Nov
@@ -74,8 +82,8 @@ is now resolved (above).
    outliers) → 0.2.0 outlier-proof rerun (combined grade) → amendment 1 (trusted radii) →
    amendment 2 (face-on stars; graded MOSTLY_SPURIOUS) → quality-cut test (pre-registered 20 Nov).
    The Gaia DR4 test of *why* the orbits fail is pre-registered with release-day code
-   (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py`, `dr4_d5_rate.py`). All its DR3
-   rehearsals have passed.
+   (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py`, `dr4_d5_rate.py`, `qcut_dr4.py`).
+   All its DR3 rehearsals have passed.
    - **Eclipsing companions found by the search:**
      - **TIC 71945261** (TYC 6340-23-1). Pre-registered label **B_OVERSIZED_COMPANION**
        (`findings/2026-11-19-tic71945261-fit-results.md`): a new 2.3287-day eclipsing system
@@ -122,6 +130,8 @@ is now resolved (above).
   split it.**
 - **Rehearse release-day code on the previous release.** **Read TAP_SCHEMA.** **Pair every empty
   answer with a control query.**
+- **Rehearse the inputs as well as the code:** every URL a release-day step reads from `main`
+  must be fetched in a rehearsal (the `data/sb1comb/` path had never been tested).
 - **A threshold-crossing event is not a catalogue entry, but it is prior art.**
 - **Vet a comparison system like a candidate, and prefer controls with independently
   published answers.** **A white-noise error bar on a small phase-curve term is not an error
