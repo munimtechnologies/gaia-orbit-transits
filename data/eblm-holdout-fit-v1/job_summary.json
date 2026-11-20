@@ -1,0 +1,82 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-eblm-holdout-fit-v1",
+ "id": "b2eaf9ff2e3f",
+ "field": "astrophysics",
+ "run": "20261120T020910Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T05:17:35.570138+00:00",
+ "finished_at": "2026-11-20T05:32:21.772979+00:00",
+ "duration_seconds": 886,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 180.0
+ },
+ "peak_memory_gb": 0.24,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install -r requirements.txt",
+   "exit": 0,
+   "seconds": 74
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_hfit.py --wait-min 40",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_eblm_fit test_eblm_holdout_fit",
+   "exit": 0,
+   "seconds": 3
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python eblm_holdout_fit.py --sha 996ced14d2f4ddd431616b0f2d72d49619bc8095 --ids-csv holdout_ids.csv --max-sectors 8 --data-dir /data/tess --out-dir /out",
+   "exit": 0,
+   "seconds": 702
+  }
+ ],
+ "out_files": [
+  "eblm_fit_results.csv",
+  "eblm_fit_summary.json",
+  "fit_plots/fit_1329183358958814208.png",
+  "fit_plots/fit_1412236069274698880.png",
+  "fit_plots/fit_1431358638065021056.png",
+  "fit_plots/fit_156012354863170304.png",
+  "fit_plots/fit_1730371439418183680.png",
+  "fit_plots/fit_1981814806503811968.png",
+  "fit_plots/fit_2144394917977370880.png",
+  "fit_plots/fit_239279607384683264.png",
+  "fit_plots/fit_2549407310330919168.png",
+  "fit_plots/fit_2839193907753424384.png",
+  "fit_plots/fit_3364103129676374272.png",
+  "fit_plots/fit_431464378685659008.png",
+  "fit_plots/fit_4556083135603641856.png",
+  "fit_plots/fit_796597484292515072.png",
+  "holdout_fit_report.md",
+  "holdout_fit_summary.json",
+  "holdout_fit_vets.json"
+ ],
+ "out_files_total": 19,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stderr] /usr/local/lib/python3.12/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.\n  warnings.warn(\nWARNING: NoResultsWarning: Query returned no results. [astroquery.mast.discovery_portal]\nWarning: 22% (3696/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 23% (3816/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-02-python stdout]  P 6.206148811920838 e 0.0738022137780073 +- 0.035875257\n05:27:22 -> J1640+49 EBLM_CONSISTENT C_NORMAL_COMPANION pass 0.0644585201799317\n05:27:22 fit J1741+21 4556083135603641856 P 6.58341324477571 e 0.01693937356718581 +- 0.02639757\n05:28:06 -> J1741+21 TWIN_AT_2P D_TWIN_AT_2P fail -0.014243909641133867\n05:28:06 fit J1850+50 2144394917977370880 P 9.564626448084958 e 0.26083407627369604 +- 0.08615704\n05:28:51 -> J1850+50 EBLM_CONSISTENT C_NORMAL_COMPANION fail -0.1995299036313979\n05:28:51 fit J2106+02 1730371439418183680 P 8.7327912773442 e 0.03920681553992261 +- 0.059582707\n05:30:22 -> J2106+02 EBLM_CONSISTENT C_NORMAL_COMPANION fail -0.11678887591416076\n05:30:22 fit J2233+43 1981814806503811968 P 8.075147152136772 e 0.054698728748936755 +- 0.055529244\n05:31:01 -> J2233+43 NO_ECLIPSE E_NO_ECLIPSE fail -0.9568314812510945\n05:31:01 fit J2315+23 2839193907753424384 P 9.13014028579003 e 0.17127024883083763 +- 0.059680928\n05:31:41 -> J2315+23 EBLM_CONSISTENT C_NORMAL_COMPANION pass 0.0360738098130311\n{\"n_items\": 14, \"n_testable\": 14, \"n_pass\": 6, \"pass_share\": 0.42857142857142855, \"label\": \"PIPELINE_FAILED\", \"median_r2_offset\": -0.053140265505260964, \"n_labels_changed_without_mass\": 1}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T020910Z-astrophysics\\hfit)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

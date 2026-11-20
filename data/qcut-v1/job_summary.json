@@ -1,0 +1,61 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-qcut-v1",
+ "id": "234d8b5718ed",
+ "field": "astrophysics",
+ "run": "20261120T004906Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T04:15:21.626249+00:00",
+ "finished_at": "2026-11-20T04:19:03.045481+00:00",
+ "duration_seconds": 221,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 60.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-python",
+   "cmd": "python fetch_qcut_deps.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_qcut",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python qcut.py --fetch https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/996ced14d2f4ddd431616b0f2d72d49619bc8095/data/sb1rob-v1 --chunks 0-7 --out-dir /out",
+   "exit": 0,
+   "seconds": 64
+  }
+ ],
+ "out_files": [
+  "qcut_columns.csv",
+  "qcut_report.md",
+  "qcut_stars.csv",
+  "qcut_summary.json"
+ ],
+ "out_files_total": 4,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] {\"Q1\": \"UNDERPOWERED\", \"Q1_sb1_only\": \"UNDERPOWERED\", \"Q2\": \"RISES_PRIMARY_ONLY\", \"Q2_p\": 0.015597977497973894, \"Q3\": {\"efficiency\": false, \"rv_n_good_obs_primary\": false, \"goodness_of_fit\": false, \"conf_spectro_period\": false, \"amp_ratio\": false}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T004906Z-astrophysics\\qcut)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

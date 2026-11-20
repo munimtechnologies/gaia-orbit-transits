@@ -7,6 +7,8 @@ calib_dr4_run 0.1.1, dr4_sb1_reality 0.1.1 and dr4_d5_rate 0.1.1 re-pinned to
 25020a830eb9594182a6f8ed9c4aefc185dfd9af, release v0.28.0). Updated 2026-11-20 (run 50): the
 quality-cut grade Q4 added as step (a4) with its own fetch group `qcut4`, and the D3/D5 grade
 steps now read the DR3 combined grade from `data/sb1comb-v2/` (see "Fix of 20 Nov" below).
+Updated 2026-11-20 (run 52): gaia-qcut-v1 and gaia-eblm-holdout-fit-v1 graded; the EBLM step (e)
+is cancelled (holdout PIPELINE_FAILED); new step (a5), the independent DR4 test of TYC 6340-23-1's K.
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -30,12 +32,14 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
       pinned here with `qcut.py` 0.1.0 (v0.32.0).
 - [ ] gaia-fetchrel-check-v3 passes (seven groups incl. qcut4, test_qcut_dr4 on the pinned
       code, check_inputs I1-I4).
-- [ ] gaia-qcut-v1 has run and its `qcut_columns.csv` and `qcut_stars.csv` are committed to
-      `data/qcut-v1/` (needed by a4). If a file is over the 2 MB publish limit, commit it in
-      parts and join them in the a4 setup with a dated note; never drop rows.
-- [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET. Queued Gaia-TAP jobs
-      (gaia-eblm-holdout-fit-v1, gaia-qcut-v1, gaia-tic71945261-followup-v3) should finish
-      before 25 Nov ~10:00 UTC; each can also run on DR3 after 2 Dec.
+- [x] gaia-qcut-v1 ran (20 Nov, graded: `findings/2026-11-20-quality-cut-results.md`); its
+      `qcut_columns.csv` and `qcut_stars.csv` are committed to `data/qcut-v1/` (run 52; each
+      under 2 MB, no parts needed). Check they are on main before a4.
+- [x] gaia-eblm-holdout-fit-v1 ran (20 Nov): PIPELINE_FAILED, so step (e) is cancelled.
+- [x] gaia-tic71945261-followup-v3 ran (20 Nov): FIELD_KINEMATIC.
+- [x] `tyc_k_dr4.py` 0.1.0 + pre-registration `findings/2026-11-20-tyc6340-dr4-k-prereg.md`
+      committed before DR4 (step a5).
+- [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
 - [ ] On the day: check `https://gea.esac.esa.int/tap-server/tap` answers and that `gaiadr4`
       appears in TAP_SCHEMA (the sb1real/calib jobs stop with exit 4 if not).
 
@@ -43,10 +47,10 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 In the release-day run folder, create `rel/` holding ONLY copies of
 `runbook/release/fetch_release.py` and `runbook/release/requirements.txt` from this repo
 (unchanged). Never put `>=` or quotes in a setup command; use the requirements file. Every
-job below uses that folder as workdir. Data key `gaia-orbit-tess` throughout (no new volume).
-Memory: 1 GB for stdlib steps, 1.5 GB for the TESS search.
+job below uses that folder as workdir (except a5, which uses `tyc/`). Data key `gaia-orbit-tess`
+throughout (no new volume). Memory: 1 GB for stdlib steps, 1.5 GB for the TESS search.
 
-## 2. Jobs, in pre-registered order (file all of step a-c at once; they are independent)
+## 2. Jobs, in pre-registered order (file all of step a-c and a5 at once; they are independent)
 
 (a1) DR3 -> DR4 orbit survival (R0, D1, D2, D4):
 ```json
@@ -71,6 +75,21 @@ naming the type, re-run with `--retrieval-type X` as -v2. Exit 4: amendment from
  "cpu": 1, "memory_gb": 1, "timeout_minutes": 120}
 ```
 Exit 5 (unknown solution type): classify it from the DR4 data model in an amendment first.
+
+(a5) TYC 6340-23-1's K from DR4 epochs after DR3's data window
+(`findings/2026-11-20-tyc6340-dr4-k-prereg.md`). Workdir `tyc/` = copies of
+`runbook/release/fetch_release.py`, `runbook/release/requirements.txt`, `tyc_k_dr4.py` and
+`test_tyc_k_dr4.py` (from main at the commit that published the pre-registration).
+```json
+{"name": "gaia-dr4-tyc-k-v1", "kind": "compete", "workdir": "<run>/tyc",
+ "image": "python:3.12",
+ "setup": ["pip install -r requirements.txt", "python fetch_release.py sb1real"],
+ "run": ["python -m unittest -v test_tyc_k_dr4", "python tyc_k_dr4.py --fetch --out-dir /out"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 1, "memory_gb": 0.5, "timeout_minutes": 20}
+```
+Exit 2 re-file unchanged; 4 or 6: amendment first, then -v2. If a1 hits exit 6, a5 will too:
+use the same amendment and `--retrieval-type`.
 
 (b) Photocentre wobble in DR4 epoch astrometry:
 ```json
@@ -114,6 +133,8 @@ day too and do not change the time budget after the fact.
 3. (a4) Quality-cut grade Q4 (`findings/2026-11-20-quality-cut-prereg.md`, section Q4):
    do Gaia DR3's own quality columns (Gosset et al. 2024 gold cut, significance tiers) pick
    out the orbits that DR4 confirms? Needs a1's records and gaia-qcut-v1's two files.
+   DR3 grade for context (`findings/2026-11-20-quality-cut-results.md`): Q1 UNDERPOWERED (only 9
+   of 2,981 BD+VLMS rate-sample orbits are gold), Q2 RISES_PRIMARY_ONLY (p = 0.016).
 ```json
 {"name": "gaia-dr4-qcut4-v1", "kind": "compete", "workdir": "<run>/rel",
  "image": "python:3.12",
@@ -124,7 +145,7 @@ day too and do not change the time budget after the fact.
 ```
    Exit 3 = a self-check failed (QC1: under 99% of records matched a qcut_columns row; read
    `qcut_dr4_summary.json`, write an amendment before any re-run). Q4a and Q4b are graded,
-   Q4c is descriptive (about 8 of the 25 DR3 hits are expected false alarms), Q4d is
+   Q4c is descriptive (about 7.5 of the 25 DR3 hits are expected false alarms), Q4d is
    exploratory. Commit `/out` to `data/dr4-qcut4-v1/`.
 4. (c2) D5 grade:
 ```json
@@ -140,15 +161,15 @@ day too and do not change the time budget after the fact.
 URL::kK/name pairs per chunk (24 in all). fetch_release.py creates the kK/ folders.
 
 ## 4. Then (later in the order)
-(d) inclination/timing on DR4's own orbits, (e) EBLM inflation, (f) RV transit screen,
-(g) vari_planetary_transit x TESS, (h) self-lensing v2. These have no release-day code yet;
-write it only after a-c are graded. For (e): the DR3 full-sample grade
-(`findings/2026-11-19-eblm-infl-full-results.md`) was INCONCLUSIVE at +6.3% (95% CI +1.0% to
-+8.8%, n = 28); DR4's RVS orbits are the way to a sample big enough to clear the 3% bar, and
-only if eblm_fit 0.2.0 passes the EBLM holdout check (`findings/2026-11-19-eblm-holdout-prereg.md`).
+(d) inclination/timing on DR4's own orbits, (f) RV transit screen, (g) vari_planetary_transit x
+TESS, (h) self-lensing v2. These have no release-day code yet; write it only after a-c are
+graded.
+**(e) EBLM inflation is cancelled**: eblm_fit 0.2.0 failed its pre-registered holdout check
+(`findings/2026-11-20-eblm-holdout-results.md`, 6 of 14 passed), and the pre-registration says no
+EBLM result from this pipeline is published from DR4.
 Also on release day: look up BD+65 286 (Gaia DR3 516148832971513344) and TIC 71945261
-(Gaia DR3 6853008555751131648) in DR4's orbit tables; a DR4 SB1 orbit with a new K tests the
-DR3 mass used in each fit.
+(Gaia DR3 6853008555751131648) in a1's records (DR4 orbit, solution type). For TIC 71945261 the
+graded test is a5; the a1 record is reported only.
 
 ## 5. Publishing
 - Each graded hypothesis: findings note + data commit, then ONE article per clear result
