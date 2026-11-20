@@ -4,6 +4,17 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
+## Pre-registered 20 Nov (~10:00 UTC): TYC 6340-23-1 in SuperWASP 2006-2008
+
+`findings/2026-11-20-tyc6340-wasp-prereg.md`, code `wasp_tyc.py` 0.1.0 (job tyc6340-wasp-v1).
+The public SuperWASP DR1 archive holds a 2006-2008 light curve of the target
+(1SWASP J202214.65-220425.1, 9,236 points) and of three neighbours, one of them a V ≈ 11.25 star
+only 38″ away. Three graded questions: is the eclipse seen by this independent instrument 17-19
+years before TESS (with controls and an injection test); does a single linear ephemeris join WASP
+and TESS (expected period precision about 1e-6 d, 100× Gaia's); and is the eclipse on the target
+rather than a neighbour (paired depth test)? Predictions: detected 80%, unique ephemeris 85%,
+on target 70%.
+
 ## Newest results (20 Nov, ~07:00 UTC)
 
 **1. Gaia's own quality columns cannot single out the real low-mass SB1 orbits**
@@ -87,7 +98,7 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
        `findings/2026-11-19-tic71945261-prior-art.md`): a new 2.3287-day eclipsing system (6.1%
        deep, 0.39% occultation) whose companion is **0.224 R☉** at Gaia's 0.097 M☉, **1.9×** the
        main-sequence value. FIELD_KINEMATIC. Open: Gaia's K (DR4 test pre-registered), youth
-       outside known groups, independent radius confirmation.
+       outside known groups, independent radius confirmation, and the SuperWASP check above.
      - **BD+65 286** (TIC 50453242): companion 0.100 M☉, 0.122 R☉. **Label not adopted.**
      - TOI-7247.01: our prediction failed. TIC 324597856: rejected as a brown dwarf.
        TIC 135050395: the known EBLM J1219-39. TIC 202283090: TOI-6218.01.
@@ -134,13 +145,17 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
 - **Put a self-test in every job and make it run first.**
 - **When a pre-registration says "commit X before Y", make the Y job check that X is committed.**
 - **Every network call needs a timeout, and every long job should save partial results.**
+- **A one-sector discovery needs an older, independent light curve:** check the ground-based
+  archives (SuperWASP DR1, ASAS-SN) for an earlier record and for the neighbours' light curves.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
 (Kostov et al. 2025, J/ApJS/279/50), Gaia DR3 vari_eclipsing_binary and vari_classifier_result,
 the ZTF (Chen et al. 2020) and ASAS-SN variable catalogues, Green et al. (2023) TESS
 ellipsoidal candidates (J/MNRAS/522/29), ExoFOP, the SPOC TCE list (MAST DV API), SIMBAD, the
-Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
+Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables. From 20 Nov also
+the EBLM target tables (EBLM IV, Triaud et al. 2017, J/A+A/608/A129), because EBLM systems were
+found as SuperWASP candidates.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
