@@ -1,0 +1,401 @@
+{
+ "version": "0.1.0",
+ "n_rows": 28,
+ "rc1": {
+  "J0123+38": {
+   "expected": "323261744326472832",
+   "got": "323261744326472832",
+   "pass": true
+  },
+  "J0719+25": {
+   "expected": "870991952855398656",
+   "got": "870991952855398656",
+   "pass": true
+  },
+  "pass": true
+ },
+ "errors": {},
+ "counts": {
+  "MATCH": 14,
+  "AMBIGUOUS": 1,
+  "NO_SB1": 11,
+  "ERROR": 0
+ },
+ "results": {
+  "J0011+63": {
+   "status": "MATCH",
+   "source_id": "431464378685659008",
+   "gaia_P": 5.818881180127522,
+   "gaia_e": 0.20018696989611873,
+   "gaia_K": 31.447815224434205,
+   "G": 11.200223,
+   "dP_frac": 1.0789153949600156e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 5.8188184
+  },
+  "J0040+01": {
+   "status": "MATCH",
+   "source_id": "2549407310330919168",
+   "gaia_P": 7.233789199391321,
+   "gaia_e": 0.07685578104708854,
+   "gaia_K": 12.35533475901615,
+   "G": 10.972068,
+   "dP_frac": -0.00014533846041410589,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 7.2348407
+  },
+  "J0123+38": {
+   "status": "MATCH",
+   "source_id": "323261744326472832",
+   "gaia_P": 7.950031658171331,
+   "gaia_e": 0.053550233119574825,
+   "gaia_K": 26.98318592889414,
+   "G": 11.939672,
+   "dP_frac": -0.0003664480846052531,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "resolver_control",
+   "P_pub": 7.952946
+  },
+  "J0128+39": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 12.7686776
+  },
+  "J0211+36": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 5.6573869
+  },
+  "J0316+40": {
+   "status": "MATCH",
+   "source_id": "239279607384683264",
+   "gaia_P": 10.618460851000421,
+   "gaia_e": 0.08294516714333117,
+   "gaia_K": 22.10106040486594,
+   "G": 10.752433,
+   "dP_frac": -3.107218192661615e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 10.6187908
+  },
+  "J0410+37": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 11.5939518
+  },
+  "J0503+41": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.7166255
+  },
+  "J0507+29": {
+   "status": "MATCH",
+   "source_id": "156012354863170304",
+   "gaia_P": 5.568126274293628,
+   "gaia_e": 0.08465491351655513,
+   "gaia_K": 17.37061554027669,
+   "G": 10.420629,
+   "dP_frac": -0.0001732106233661568,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 5.5690909
+  },
+  "J0641+28": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.585524
+  },
+  "J0719+21": {
+   "status": "MATCH",
+   "source_id": "3364103129676374272",
+   "gaia_P": 5.701475880995461,
+   "gaia_e": 0.05866393833305043,
+   "gaia_K": 20.382686411802993,
+   "G": 10.601224,
+   "dP_frac": -2.5276851936687462e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 5.70162
+  },
+  "J0719+25": {
+   "status": "MATCH",
+   "source_id": "870991952855398656",
+   "gaia_P": 7.4559042064094685,
+   "gaia_e": 0.113406527862233,
+   "gaia_K": 14.634620010896544,
+   "G": 11.153982,
+   "dP_frac": -6.1034289285311e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "resolver_control",
+   "P_pub": 7.4563593
+  },
+  "J0942+05": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.2765663
+  },
+  "J0955+36": {
+   "status": "MATCH",
+   "source_id": "796597484292515072",
+   "gaia_P": 7.390347881339125,
+   "gaia_e": 0.0859937386776111,
+   "gaia_K": 28.428945257455418,
+   "G": 12.126533,
+   "dP_frac": -0.00019956087434385523,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 7.391823
+  },
+  "J1624+34": {
+   "status": "MATCH",
+   "source_id": "1329183358958814208",
+   "gaia_P": 9.405972254942345,
+   "gaia_e": 0.36762126045123494,
+   "gaia_K": 16.589054679578055,
+   "G": 10.609984,
+   "dP_frac": -0.00014031083861259865,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 9.4072922
+  },
+  "J1626+57": {
+   "status": "MATCH",
+   "source_id": "1431358638065021056",
+   "gaia_P": 9.12718474194857,
+   "gaia_e": 0.07511909933682258,
+   "gaia_K": 15.151119567947923,
+   "G": 10.446948,
+   "dP_frac": -4.6689988829694585e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 9.12761091
+  },
+  "J1640+49": {
+   "status": "MATCH",
+   "source_id": "1412236069274698880",
+   "gaia_P": 6.206148811920838,
+   "gaia_e": 0.0738022137780073,
+   "gaia_K": 17.990057557787466,
+   "G": 10.311901,
+   "dP_frac": -1.123358431953712e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.20621853
+  },
+  "J1646+38": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 7.063119
+  },
+  "J1741+21": {
+   "status": "MATCH",
+   "source_id": "4556083135603641856",
+   "gaia_P": 6.58341324477571,
+   "gaia_e": 0.01693937356718581,
+   "gaia_K": 19.574525439078737,
+   "G": 12.021002,
+   "dP_frac": 8.825149255440656e-05,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.5828323
+  },
+  "J1850+50": {
+   "status": "MATCH",
+   "source_id": "2144394917977370880",
+   "gaia_P": 9.564626448084958,
+   "gaia_e": 0.26083407627369604,
+   "gaia_K": 22.903058109916287,
+   "G": 12.158255,
+   "dP_frac": -0.00046033414782628644,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 9.5690314
+  },
+  "J1909+29": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 11.3295746
+  },
+  "J2046+06": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 10.1077925
+  },
+  "J2106+02": {
+   "status": "MATCH",
+   "source_id": "1730371439418183680",
+   "gaia_P": 8.7327912773442,
+   "gaia_e": 0.03920681553992261,
+   "gaia_K": 18.825208462416303,
+   "G": 12.091636,
+   "dP_frac": 0.0006806782052463909,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 8.7268511
+  },
+  "J2200+17": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.0137809
+  },
+  "J2207+25": {
+   "status": "NO_SB1",
+   "source_id": "",
+   "other_types_in_box": [],
+   "n_rows_in_box": 0,
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 6.1385626
+  },
+  "J2233+43": {
+   "status": "MATCH",
+   "source_id": "1981814806503811968",
+   "gaia_P": 8.075147152136772,
+   "gaia_e": 0.054698728748936755,
+   "gaia_K": 15.800877760770932,
+   "G": 11.582324,
+   "dP_frac": 0.0001572667101399476,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 8.0738774
+  },
+  "J2303+39": {
+   "status": "AMBIGUOUS",
+   "source_id": "",
+   "candidates": [
+    "1930227262819125376",
+    "1929904972769370752"
+   ],
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 5.9509318
+  },
+  "J2315+23": {
+   "status": "MATCH",
+   "source_id": "2839193907753424384",
+   "gaia_P": 9.13014028579003,
+   "gaia_e": 0.17127024883083763,
+   "gaia_K": 20.17440607796908,
+   "G": 11.311899,
+   "dP_frac": -0.00010888178352528456,
+   "other_types_in_box": [],
+   "simbad": {
+    "error": "RuntimeError(\"TAP failed: <HTTPError 404: 'Not Found'>\")"
+   },
+   "role": "holdout",
+   "P_pub": 9.1311345
+  }
+ }
+}
