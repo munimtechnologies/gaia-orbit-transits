@@ -4,7 +4,23 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest result (19 Nov, ~23:15 UTC)
+## Newest result (20 Nov, ~04:30 UTC)
+**TIC 71945261 (TYC 6340-23-1) does not move like a member of any known young group**
+(`findings/2026-11-20-tic71945261-followup-results.md`, data `data/tic71945261-followup-v3/`).
+Graded under `findings/2026-11-19-tic71945261-followup-prereg.md`:
+- Positive control passed (AU Mic → β Pic MG, 0.927). Target: young-association probability
+  **0.004** (BANYAN Σ with Gaia's systemic velocity) → **FIELD_KINEMATIC**. UVW
+  (−19.6, −14.8, −6.3) km/s.
+- No archival RV in RAVE DR6, GALAH DR3 or APOGEE DR17, so the test of Gaia's K has no verdict.
+  Gaia's own epoch-RV range (32.5 km/s) matches 2K = 32.3 km/s, not the 64.8 km/s a normal-size
+  companion would need, but that is the same data the orbit was fitted to.
+- Consequence, as pre-registered: the label stays **B_OVERSIZED_COMPANION** (companion 0.224 R☉
+  at Gaia's 0.097 M☉, 1.9× the main-sequence radius). Youth is now disfavoured but not excluded;
+  **we do not call it inflated** until a spectrum checks lithium and measures K.
+- Limit: the 0.3° control cones were skipped for time, so the empty RV answers are not formally
+  paired with controls (the same VizieR mirror returned rows for other catalogues that minute).
+
+## Graded 19 Nov (~23:15 UTC)
 **Face-on stars cannot explain the missing transits: most of Gaia DR3's brown-dwarf-mass SB1
 orbits at 1–13 days must be wrong** (`findings/2026-11-19-sb1-robust-amendment-2-results.md`,
 data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**. Write-up:
@@ -20,35 +36,24 @@ https://www.munimtech.com/research/gaia-brown-dwarf-orbits-missing-transits
 - **Caveat:** on the trusted-radius subset (amendment 1, descriptive) the floor bound loosens to
   0.62, giving the weaker label SPURIOUS_UNLESS_DRY_DESERT. Our most likely predicted label
   (SPURIOUS_UNLESS_DRY_DESERT, 55%) was **wrong** for the primary sample; both φ predictions held.
+- Related work that does not test 1–13-day SB1 orbits and so does not conflict: Wallace & Casey
+  2026 (PASA 43, e010; arXiv:2601.03539) and Stevenson et al. 2023 (arXiv:2310.02695).
 - Gaia DR4 (2 December 2026) will show which DR3 orbits survive (`dr4_sb1_reality.py`).
 
 ## In progress (20 Nov)
 - **Release-day runbook updated (20 Nov, ~03:30 UTC):** the quality-cut grade Q4 is now step
   (a4) of `runbook/dr4-release-day.md`, with fetch group `qcut4` in
-  `runbook/release/fetch_release.py` (qcut_dr4 0.1.0 and qcut 0.1.0, each pinned to its
-  publishing commit). The same review found a **wrong input path**: the D3 and D5 grade steps
-  fetched `data/sb1comb/combined_summary.json`, a folder that was never created (the graded
-  result is in `data/sb1comb-v2/`), so both would have stopped on release day. Fixed; no rule
-  changed. Job gaia-fetchrel-check-v3 rehearses every module group and these inputs with the
-  pinned code (`runbook/release/check_inputs.py`).
-- **EBLM holdout set resolved, not yet fitted** (`findings/2026-11-20-eblm-holdout-resolution.md`,
-  data `data/eblm-holdout/`). RC1 passed; 14 of 26 EBLM XIX systems matched exactly one Gaia DR3
-  SB1 orbit (predicted 8–16); 1 ambiguous, 11 without an SB1 orbit. Their published masses and
-  radii were re-checked against EBLM XIX Table 4 before any fit. The fit job
-  (gaia-eblm-holdout-fit-v1, eblm_fit 0.2.0 pinned at 996ced1) is queued.
+  `runbook/release/fetch_release.py` (release v0.35.0). The same review fixed a wrong input path
+  (`data/sb1comb/` → `data/sb1comb-v2/`) in the D3 and D5 grade steps. Job gaia-fetchrel-check-v3
+  rehearses every module group and these inputs with the pinned code.
+- **EBLM holdout fit** (gaia-eblm-holdout-fit-v1, eblm_fit 0.2.0 pinned at 996ced1): 14 EBLM XIX
+  systems resolved (`findings/2026-11-20-eblm-holdout-resolution.md`); queued. eblm_fit 0.2.0's
+  30 unit tests passed in a separate job (gaia-eblmfit020-tests-v1, 20 Nov).
 - **Quality-cut test** (`findings/2026-11-20-quality-cut-prereg.md`, `qcut.py` 0.1.0, job
   gaia-qcut-v1 queued). Can Gaia's own quality columns pick out the real orbits? (Q1) Gosset et
-  al. 2024's "gold sample" cut (efficiency ≥ 0.2, ≥ 20 good RV epochs, significance ≥ 40,
-  P ≥ 2 d); (Q2) do transits become more common with significance; (Q3, exploratory) other
-  quality columns; (Q4) the same cuts against DR4 orbit survival on 2 December. The known
-  transiting controls (TOI-5427, TOI-1712, TOI-2533, WASP-18) have significance of only 7–14,
-  so a real low-mass orbit can sit far below the gold cut. The DR4-day grader for Q4
-  (`qcut_dr4.py` 0.1.0, stdlib, with tests) was committed on 20 Nov, before DR4 and before
-  qcut 0.1.0 produced any output; it imports qcut's gold, tier and amplitude rules.
-- **TIC 71945261 youth and archival-RV check:** the v2 job hit its 45-minute limit with no output
-  (a network call hung; which one is unknown). `youth_rv_check.py` 0.1.2 adds logging, hard
-  timeouts and partial saves, with no change to any rule; queued as
-  gaia-tic71945261-followup-v3.
+  al. 2024's "gold sample" cut; (Q2) do transits become more common with significance; (Q3,
+  exploratory) other quality columns; (Q4) the same cuts against DR4 orbit survival on
+  2 December (`qcut_dr4.py` 0.1.0, committed before any output).
 
 ## Also on 19 Nov
 **The combined grade of the transit test** (`findings/2026-11-19-sb1-robust-combined-results.md`,
@@ -64,8 +69,7 @@ M-dwarf companions (Swayne et al. 2024) passed; 80% was required. The **radii ag
 whose white-noise error bars are far too small at 5.5-8 days; eccentric orbits are not modelled.
 As pre-registered: **BD+65 286's label is not adopted**, the M-dwarf inflation grade carries a
 caveat, and the fit was fixed (eblm_fit 0.2.0, `findings/2026-11-19-eblm-fit-020-build.md`)
-before any Gaia DR4 EBLM run. The fresh control set (`findings/2026-11-19-eblm-holdout-prereg.md`)
-is now resolved (above).
+before any Gaia DR4 EBLM run.
 
 ## Leads
 1. **Do Gaia DR3 inclinations hold up against real eclipses?** Graded in 0.20.0:
@@ -77,22 +81,20 @@ is now resolved (above).
      of these orbits are wrong" fits equally well. **Gaia DR4 will decide**:
      `findings/2026-11-18-calib-dr4-prereg.md` (amendments 1 and 2; DR3 dress rehearsal passes,
      `data/calibdr4-reh-v2/`) and `findings/2026-11-19-dr4-wobble-prereg.md` + amendment 1.
-2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** **Graded: mostly not** (newest
-   result above). History: 0.1.0 (`findings/2026-11-18-sb1-transit-results.md`, fooled by
-   outliers) → 0.2.0 outlier-proof rerun (combined grade) → amendment 1 (trusted radii) →
-   amendment 2 (face-on stars; graded MOSTLY_SPURIOUS) → quality-cut test (pre-registered 20 Nov).
-   The Gaia DR4 test of *why* the orbits fail is pre-registered with release-day code
-   (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py`, `dr4_d5_rate.py`, `qcut_dr4.py`).
-   All its DR3 rehearsals have passed.
+2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** **Graded: mostly not** (above).
+   History: 0.1.0 (`findings/2026-11-18-sb1-transit-results.md`, fooled by outliers) → 0.2.0
+   outlier-proof rerun (combined grade) → amendment 1 (trusted radii) → amendment 2 (face-on
+   stars; graded MOSTLY_SPURIOUS) → quality-cut test (pre-registered 20 Nov). The Gaia DR4 test
+   of *why* the orbits fail is pre-registered with release-day code (`dr4_sb1_reality.py`;
+   amendments 1–3; `dr4_d3_a1.py`, `dr4_d5_rate.py`, `qcut_dr4.py`).
    - **Eclipsing companions found by the search:**
-     - **TIC 71945261** (TYC 6340-23-1). Pre-registered label **B_OVERSIZED_COMPANION**
-       (`findings/2026-11-19-tic71945261-fit-results.md`): a new 2.3287-day eclipsing system
-       (6.1% deep, equal odd/even eclipses, 0.39% occultation) whose companion's radius is
-       **0.224 R☉** at Gaia's 0.097 M☉, **1.9× the main-sequence value**. Youth or a wrong Gaia
-       mass are not yet excluded, so we do not call it "inflated". Its youth and archival-RV check
-       (`findings/2026-11-19-tic71945261-followup-prereg.md`, `youth_rv_check.py` 0.1.2) is
-       queued as gaia-tic71945261-followup-v3. The pipeline's outside check failed on the mass
-       step; the radius scale held, but this label carries the same caveat.
+     - **TIC 71945261** (TYC 6340-23-1). Label **B_OVERSIZED_COMPANION**
+       (`findings/2026-11-19-tic71945261-fit-results.md`; prior art
+       `findings/2026-11-19-tic71945261-prior-art.md`): a new 2.3287-day eclipsing system (6.1%
+       deep, equal odd/even eclipses, 0.39% occultation) whose companion's radius is **0.224 R☉**
+       at Gaia's 0.097 M☉, **1.9× the main-sequence value**. Youth check graded 20 Nov:
+       FIELD_KINEMATIC (above). A wrong Gaia mass and youth outside known groups are not yet
+       excluded. The pipeline's outside check failed on the mass step; the radius scale held.
      - **BD+65 286** (TIC 50453242): companion 0.100 M☉, 0.122 R☉
        (`findings/2026-11-19-bd65-286-fit-results.md`). **Label not adopted** (controls failed).
        Prior art: Green et al. 2023 and NASA SPOC's sector-52 TCE.
@@ -129,9 +131,11 @@ is now resolved (above).
 - **Never skip a window that is too wide; cap it.** **Never truncate a query at the row cap;
   split it.**
 - **Rehearse release-day code on the previous release.** **Read TAP_SCHEMA.** **Pair every empty
-  answer with a control query.**
+  answer with a control query**, and run the controls before the optional extras so a time
+  budget cannot drop them (the TIC 71945261 check lost its controls this way).
+- **Know a survey's footprint before reading its silence** (eRASS1 covers only l = 180–360°).
 - **Rehearse the inputs as well as the code:** every URL a release-day step reads from `main`
-  must be fetched in a rehearsal (the `data/sb1comb/` path had never been tested).
+  must be fetched in a rehearsal.
 - **A threshold-crossing event is not a catalogue entry, but it is prior art.**
 - **Vet a comparison system like a candidate, and prefer controls with independently
   published answers.** **A white-noise error bar on a small phase-curve term is not an error
@@ -151,8 +155,8 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** Still needing the archive before it closes: the EBLM holdout fit
-  (gaia-eblm-holdout-fit-v1), the quality-cut test (gaia-qcut-v1) and the TIC 71945261 youth check
-  (v3). Each can also run on the DR3 tables after 2 December.
+  (gaia-eblm-holdout-fit-v1) and the quality-cut test (gaia-qcut-v1). Both can also run on the
+  DR3 tables after 2 December.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it.
 - Pre-registered order: (1) the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py` with
@@ -160,4 +164,5 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
   (3) the SB1 transit-rate test on DR4's new SB1 orbits (D5); (4) the inclination and timing
   calibration on DR4's own orbits; (5) EBLM inflation (only if eblm_fit 0.2.0 passes the holdout
   check); (6) the RV transit screen; (7) exoplanet candidates; (8) self-lensing.
-- On the day, also look up BD+65 286 and TIC 71945261 in DR4's orbit tables.
+- On the day, also look up BD+65 286 and TIC 71945261 in DR4's orbit tables (DR4 epoch RVs would
+  give an independent-epoch check of TIC 71945261's K).

@@ -1,0 +1,59 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-tic71945261-followup-v3",
+ "id": "649685e5ac51",
+ "field": "astrophysics",
+ "run": "20261120T020910Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "tango",
+ "image": "python:3.12",
+ "started_at": "2026-11-20T02:54:54.377462+00:00",
+ "finished_at": "2026-11-20T03:50:06.530961+00:00",
+ "duration_seconds": 3312,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 90.0
+ },
+ "peak_memory_gb": 0.27,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --timeout 60 numpy scipy pandas astropy astroquery",
+   "exit": 0,
+   "seconds": 22
+  },
+  {
+   "step": "setup-02-pip",
+   "cmd": "pip install --timeout 60 git+https://github.com/jgagneastro/banyan_sigma.git",
+   "exit": 0,
+   "seconds": 25
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python youth_rv_check.py --out-dir /out --budget-min 40",
+   "exit": 0,
+   "seconds": 3069
+  }
+ ],
+ "out_files": [
+  "youth_rv_check.json",
+  "youth_rv_report.md"
+ ],
+ "out_files_total": 2,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-01-python stdout] ier J/A+A/588/A103\n[  51.0 min] VizieR target cone J/A+A/682/A34\n[  51.0 min] VizieR J/A+A/682/A34 vizier.cds.unistra.fr failed HTTPError('404 Client Error: Not Found for url: https://vizier.cds.unistra.fr/viz-bin/votable')\n[  51.0 min] saved after vizier J/A+A/682/A34\n[  51.0 min] VizieR target cone II/335\n[  51.0 min] VizieR II/335 vizier.cds.unistra.fr failed HTTPError('404 Client Error: Not Found for url: https://vizier.cds.unistra.fr/viz-bin/votable')\n[  51.1 min] saved after vizier II/335\n[  51.1 min] VizieR target cone B/vsx\n[  51.1 min] VizieR B/vsx vizier.cds.unistra.fr failed HTTPError('404 Client Error: Not Found for url: https://vizier.cds.unistra.fr/viz-bin/votable')\n[  51.1 min] saved after vizier B/vsx\n[  51.1 min] VizieR target cone IV/39\n[  51.1 min] VizieR IV/39 vizier.cds.unistra.fr failed HTTPError('404 Client Error: Not Found for url: https://vizier.cds.unistra.fr/viz-bin/votable')\n[  51.1 min] saved after vizier IV/39\n[  51.1 min] saved after done\n{\"youth_reading\": \"FIELD_KINEMATIC\", \"uvw\": {\"U\": -19.57, \"V\": -14.84, \"W\": -6.25, \"v_tot\": 25.34, \"note\": \"heliocentric, U towards the Galactic centre, not corrected to the LSR\"}, \"n_archival_rv\": 0, \"verdicts\": []}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T020910Z-astrophysics\\youth)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
