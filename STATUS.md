@@ -1,4 +1,4 @@
-# gaia-orbit-transits: current status (2026-11-19)
+# gaia-orbit-transits: current status (2026-11-20)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
@@ -20,6 +20,18 @@ data `data/incfloor-v1/`). Pre-registered label **MOSTLY_SPURIOUS**.
   0.62, giving the weaker label SPURIOUS_UNLESS_DRY_DESERT. Our most likely predicted label
   (SPURIOUS_UNLESS_DRY_DESERT, 55%) was **wrong** for the primary sample; both φ predictions held.
 - Gaia DR4 (2 December 2026) will show which DR3 orbits survive (`dr4_sb1_reality.py`).
+
+## Next question, pre-registered 20 Nov: can Gaia's own quality columns pick out the real ones?
+`findings/2026-11-20-quality-cut-prereg.md`, code `qcut.py` 0.1.0 (job gaia-qcut-v1, queued).
+Gaia's SB1 paper (Gosset et al. 2024, Appendix J) recommends a "gold sample" (efficiency ≥ 0.2,
+≥ 20 good RV epochs, significance ≥ 40, P ≥ 2 d) with 93% period recovery. We test it, and the
+other quality columns, against the same transit test: (Q1) the gold cut, labelled
+UNDERPOWERED / GOLD_FAILS / GOLD_MIXED / GOLD_PLAUSIBLE; (Q2) whether transits become more common
+with significance (tiers < 10, 10–20, ≥ 20); (Q3, exploratory) efficiency, good-epoch count,
+goodness of fit, period confidence and the RV-amplitude ratio; and (Q4) the same cuts against
+DR4 orbit survival on 2 December. Our predictions are fixed in the file. The known transiting
+controls (TOI-5427, TOI-1712, TOI-2533, WASP-18) have significance of only 7–14, so a real
+low-mass orbit can sit far below the gold cut.
 
 ## Also on 19 Nov
 **The combined grade of the transit test** (`findings/2026-11-19-sb1-robust-combined-results.md`,
@@ -55,9 +67,10 @@ resolved ids are committed.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** **Graded: mostly not** (newest
    result above). History: 0.1.0 (`findings/2026-11-18-sb1-transit-results.md`, fooled by
    outliers) → 0.2.0 outlier-proof rerun (combined grade) → amendment 1 (trusted radii) →
-   amendment 2 (face-on stars; graded MOSTLY_SPURIOUS). The Gaia DR4 test of *why* the orbits fail
-   is pre-registered with release-day code (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py`,
-   `dr4_d5_rate.py`). All its DR3 rehearsals have passed.
+   amendment 2 (face-on stars; graded MOSTLY_SPURIOUS) → quality-cut test (pre-registered 20 Nov).
+   The Gaia DR4 test of *why* the orbits fail is pre-registered with release-day code
+   (`dr4_sb1_reality.py`; amendments 1–3; `dr4_d3_a1.py`, `dr4_d5_rate.py`). All its DR3
+   rehearsals have passed.
    - **Eclipsing companions found by the search:**
      - **TIC 71945261** (TYC 6340-23-1). Pre-registered label **B_OVERSIZED_COMPANION**
        (`findings/2026-11-19-tic71945261-fit-results.md`): a new 2.3287-day eclipsing system
@@ -109,6 +122,7 @@ resolved ids are committed.
   published answers.** **A white-noise error bar on a small phase-curve term is not an error
   bar.**
 - **Put a self-test in every job and make it run first.**
+- **Before testing a published quality cut, check where the known real objects fall on it.**
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -120,12 +134,13 @@ Chopard-Vilhem Zenodo deposits and the *Eclipses by Appointment* claim tables.
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** Still needing the archive before it closes: the TIC 71945261 youth check
-  (v2) and the EBLM holdout resolution. Either can also run on the DR3 tables after 2 December.
+  (v2), the EBLM holdout resolution and the quality-cut test (gaia-qcut-v1). Each can also run
+  on the DR3 tables after 2 December.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it.
 - Pre-registered order: (1) the DR3 → DR4 orbit-survival tests (`dr4_sb1_reality.py` with
-  `dr4_d3_a1.py`, and `calib_dr4_run.py`); (2) the wobble test; (3) the SB1 transit-rate test on
-  DR4's new SB1 orbits (D5); (4) the inclination and timing calibration on DR4's own orbits;
-  (5) EBLM inflation (on hold until eblm_fit 0.2.0 passes a fresh control set); (6) the RV
-  transit screen; (7) exoplanet candidates; (8) self-lensing.
+  `dr4_d3_a1.py`, and `calib_dr4_run.py`), then the quality-cut grade Q4; (2) the wobble test;
+  (3) the SB1 transit-rate test on DR4's new SB1 orbits (D5); (4) the inclination and timing
+  calibration on DR4's own orbits; (5) EBLM inflation (on hold until eblm_fit 0.2.0 passes a
+  fresh control set); (6) the RV transit screen; (7) exoplanet candidates; (8) self-lensing.
 - On the day, also look up BD+65 286 and TIC 71945261 in DR4's orbit tables.
