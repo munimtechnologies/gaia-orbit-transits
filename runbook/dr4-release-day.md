@@ -9,6 +9,8 @@ quality-cut grade Q4 added as step (a4) with its own fetch group `qcut4`, and th
 steps now read the DR3 combined grade from `data/sb1comb-v2/` (see "Fix of 20 Nov" below).
 Updated 2026-11-20 (run 52): gaia-qcut-v1 and gaia-eblm-holdout-fit-v1 graded; the EBLM step (e)
 is cancelled (holdout PIPELINE_FAILED); new step (a5), the independent DR4 test of TYC 6340-23-1's K.
+Updated 2026-11-20 (run 56, ~23:30 UTC): step (a4) also grades Q4e and Q4f
+(`findings/2026-11-20-qcut-q4ef-prereg.md`) from a4's own Q4d output; no new code, no new job.
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -30,8 +32,8 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 - [x] gaia-sb1comb-v2 graded; outputs committed to `data/sb1comb-v2/`.
 - [x] `qcut_dr4.py` 0.1.0 committed (v0.34.0) before DR4 and before qcut produced output;
       pinned here with `qcut.py` 0.1.0 (v0.32.0).
-- [ ] gaia-fetchrel-check-v3 passes (seven groups incl. qcut4, test_qcut_dr4 on the pinned
-      code, check_inputs I1-I4).
+- [x] gaia-fetchrel-check-v3 passed (20 Nov; seven groups incl. qcut4, test_qcut_dr4 on the
+      pinned code, check_inputs I1-I4; data `data/gaia-fetchrel-check-v3/`).
 - [x] gaia-qcut-v1 ran (20 Nov, graded: `findings/2026-11-20-quality-cut-results.md`); its
       `qcut_columns.csv` and `qcut_stars.csv` are committed to `data/qcut-v1/` (run 52; each
       under 2 MB, no parts needed). Check they are on main before a4.
@@ -39,6 +41,9 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 - [x] gaia-tic71945261-followup-v3 ran (20 Nov): FIELD_KINEMATIC.
 - [x] `tyc_k_dr4.py` 0.1.0 + pre-registration `findings/2026-11-20-tyc6340-dr4-k-prereg.md`
       committed before DR4 (step a5).
+- [x] Q4e/Q4f amendment `findings/2026-11-20-qcut-q4ef-prereg.md` committed before DR4.
+- [ ] tyc6340-pixel-v1 (queued 20 Nov) needs Gaia TAP for its field query: if it has not run
+      by 25 Nov 12:00 CET, its Gaia step waits for DR4 day (see its pre-registration).
 - [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
 - [ ] On the day: check `https://gea.esac.esa.int/tap-server/tap` answers and that `gaiadr4`
       appears in TAP_SCHEMA (the sb1real/calib jobs stop with exit 4 if not).
@@ -147,6 +152,11 @@ day too and do not change the time budget after the fact.
    `qcut_dr4_summary.json`, write an amendment before any re-run). Q4a and Q4b are graded,
    Q4c is descriptive (about 7.5 of the 25 DR3 hits are expected false alarms), Q4d is
    exploratory. Commit `/out` to `data/dr4-qcut4-v1/`.
+   **Then grade Q4e and Q4f** (`findings/2026-11-20-qcut-q4ef-prereg.md`) from the Q4d block of
+   `qcut_dr4_summary.json`: for goodness_of_fit, efficiency and rv_n_good_obs_primary take
+   `auc`, n1 = `n_confirmed`, n0 = `n_dropped_or_changed`; z = (auc - 0.5) /
+   sqrt((n1 + n0 + 1) / (12 n1 n0)); one-sided normal p; UNTESTABLE if n1 or n0 < 20.
+   Q4e at alpha 0.05, Q4f at 0.025 per column. Write every z and p in the results note.
 4. (c2) D5 grade:
 ```json
 {"name": "gaia-dr4-d5grade-v1", "kind": "compete", "workdir": "<run>/rel",

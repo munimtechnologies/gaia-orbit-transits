@@ -4,7 +4,21 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (20 Nov, ~20:00 UTC): ASAS-SN insensitive; the SuperWASP dip is not a field systematic; the period tension was ours
+## Newest (20 Nov, ~23:30 UTC): two more quality-cut tests fixed before Gaia DR4
+
+**Pre-registered:** `findings/2026-11-20-qcut-q4ef-prereg.md`, graded on DR4 day at step (a4)
+from the existing `qcut_dr4.py` 0.1.0 output (no new code; runbook updated).
+- **Q4e:** does `goodness_of_fit`, which just missed significance in the transit test
+  (p = 0.0104 against α = 0.01), predict which DR3 orbits DR4 confirms?
+- **Q4f:** two ingredients of Gaia's recommended gold cut (efficiency and the number of good RV
+  epochs) pointed the wrong way in the transit test. Do DR4 survival and the transit test agree
+  on them? If they disagree, DR4 survival is not a stand-in for reality for these orbits, and any
+  reality score must be trained on transits.
+- Predictions: GOF_REPLICATES 75%; YARDSTICKS_DISAGREE 60%.
+
+The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
+
+## Earlier (20 Nov, ~20:00 UTC): ASAS-SN insensitive; the SuperWASP dip is not a field systematic; the period tension was ours
 
 **Graded:** `findings/2026-11-20-tyc6340-period-results.md` (data `data/tyc6340-period-v1/`), under
 `findings/2026-11-20-tyc6340-period-prereg.md`.
@@ -65,7 +79,7 @@ place (the old one returns 404, as it should), the combined-summary inputs repro
   p = 0.016); the substellar-size robustness test gives p = 0.052. Even the top tier is mostly
   not right under the central population (φ 0.12, 95% upper 0.44).
 - **Q3** (exploratory): no column passes Bonferroni α = 0.01 (goodness_of_fit p = 0.0104).
-- Q4 (DR4 confirmation of the same cuts) runs on release day (step a4).
+- Q4 (DR4 confirmation of the same cuts) runs on release day (step a4), now with Q4e/Q4f.
 
 **2. Our EBLM fitting pipeline failed its pre-registered holdout check**
 (`findings/2026-11-20-eblm-holdout-results.md`, data `data/eblm-holdout-fit-v1/`): eblm_fit 0.2.0
@@ -131,7 +145,7 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
 2. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** **Graded: mostly not** (above),
    and Gaia's quality columns do not rescue them (Q1-Q3 above). The DR4 test of *why* they fail
    is pre-registered with release-day code (`dr4_sb1_reality.py`, `dr4_d3_a1.py`,
-   `dr4_d5_rate.py`, `qcut_dr4.py`).
+   `dr4_d5_rate.py`, `qcut_dr4.py`; Q4e/Q4f added 20 Nov).
    - **Eclipsing companions found by the search:**
      - **TIC 71945261** (TYC 6340-23-1). Label **B_OVERSIZED_COMPANION**
        (`findings/2026-11-19-tic71945261-fit-results.md`; prior art
@@ -200,6 +214,10 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
   χ²_red 144 for V = 10.65), and inject at the real signal's depth.
 - **A blended discovery needs a pixel-level test:** which star dims, and the depth with the
   neighbour modelled out, before a radius is quoted.
+- **A near-miss is a hypothesis, not a result:** test it again on data the first test did not
+  use, with the rule written down first (Q4e).
+- **Two yardsticks for "real" can disagree:** a repeat detection measures repeatability; an
+  independent physical test (transits) measures reality (Q4f).
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -217,5 +235,5 @@ found as SuperWASP candidates.
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it. Rehearsal passed 20 Nov (above).
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
-  wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4, (c2) D5 grade; later (d), (f)-(h).
-  (e) EBLM inflation is cancelled.
+  wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; later (d),
+  (f)-(h). (e) EBLM inflation is cancelled.
