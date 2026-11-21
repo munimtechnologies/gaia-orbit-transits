@@ -1,9 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
-"""gaia_vpt_tess 0.1.0: do Gaia's own photometric transit candidates transit in TESS?
+"""gaia_vpt_tess 0.1.1: do Gaia's own photometric transit candidates transit in TESS?
 
 Part of gaia-orbit-transits by MV2 of Munim, Inc. (made with AI agents). Apache-2.0.
 Pre-registration: findings/2026-11-21-vpt-tess-prereg.md (runbook step g).
-Written 2026-11-21, eleven days before Gaia DR4, with no DR4 data seen.
+Amendment 1 (0.1.1, written 2026-11-21 ~16:00 UTC after half of the non-blind DR3 rehearsal,
+before Gaia DR4): findings/2026-11-21-vpt-amendment-1.md. 0.1.1 changes no search step; it
+adds grades and a screen:
+  - control_by_category, G0b_kp and G1b: the control false-alarm rate measured only on known
+    planets whose Gaia period is right (where masking the best box removes the real signal);
+  - G5: how often Gaia's published period matches the known period of a known system;
+  - --rvs-screen: Gaia's own RVS variability test (Katz et al. 2023 criterion) for every
+    candidate, merged into combine with --rvs-file; G2b = planet-like NEW hits that are not
+    RV-variable.
 
 Gaia DR3 published 214 photometric transit candidates (vari_planetary_transit: 173 known
 systems, 41 new, of which Gaia-1b and Gaia-2b were confirmed; Panahi et al. 2022, A&A 663,
@@ -18,6 +26,7 @@ module folds every candidate's TESS light curves at the Gaia period and asks:
       no strong modulation at P, companion radius <= 2 R_Jup)? A list, not a test.
   G3  what share of the NEW signals seen look like eclipsing binaries? (descriptive)
   G4  among candidates missed at P, how many hit at P/2 or 2P? (exploratory)
+  G5  (0.1.1) share of known systems whose Gaia period matches a known period (descriptive)
 
 The TESS search is sb1_transit 0.1.0's, imported unchanged: SPOC 120 s > TESS-SPOC > QLP, up
 to --max-sectors sectors, running-median detrending, a phase-free box fold at the trial
@@ -28,7 +37,7 @@ periods (0.8541 P, 0.9137 P) after masking the best box, and N_INJ = 4 injection
 a candidate in the rate sample.
 
 Exit codes: 0 ok; 2 archive unavailable (re-file unchanged); 3 self-test failed;
-4 a table or column is missing (vpt_schema_error.json says what failed).
+4 a table or column is missing (vpt_schema_error.json / vpt_rvs_error.json say what failed).
 """
 import argparse
 import csv
@@ -43,7 +52,7 @@ import tempfile
 import time
 import traceback
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SEED = 20261121
 
 # ---- pre-registered constants (findings/2026-11-21-vpt-tess-prereg.md) ----
@@ -72,6 +81,19 @@ EXOARCH_URL = ("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query="
                "&format=csv")
 TAP_TIMEOUT = 180
 
+# ---- amendment 1 constants (findings/2026-11-21-vpt-amendment-1.md) ----
+# Gaia DR3 RV variability (Katz et al. 2023, A&A 674, A5): p <= 0.01, gof > 4, >= 10 transits
+RV_P_MAX = 0.01
+RV_GOF_MIN = 4.0
+RV_NTR_MIN = 10
+RV_TEFF_MIN, RV_TEFF_MAX = 3900.0, 8000.0   # rv_template_teff range of the same criterion
+G5_HI, G5_LO = 0.5, 0.2
+G5_MIN_N = 10
+TAP_URLS = ("https://gea.esac.esa.int/tap-server/tap/sync",
+            "https://gaia.ari.uni-heidelberg.de/tap/sync")
+RV_KEYS = ["rv_class", "grvs_mag", "rv_nb_transits", "rv_amplitude_robust", "rv_chisq_pvalue",
+           "rv_renormalised_gof"]
+
 # rough main-sequence radius from absolute G (fallback when FLAME is missing; = sb1_transit)
 _MG = [0.5, 1.5, 2.5, 3.5, 4.4, 5.0, 5.6, 6.2, 6.9, 7.6, 8.4, 9.2, 10.0, 10.8, 11.6]
 _RAD = [1.9, 1.6, 1.35, 1.15, 1.0, 0.9, 0.82, 0.75, 0.68, 0.62, 0.55, 0.48, 0.40, 0.31, 0.25]
@@ -84,7 +106,7 @@ STAR_KEYS = [
     "ctrl_0.8541_hit", "ctrl_0.9137_hit", "best_sector", "best_author", "depth_tess",
     "snr_best", "n_ep_best", "local_ratio_best", "snr_drop1_best", "t_found", "mod_amp",
     "sec_depth", "sec_snr", "oddeven_z", "r2_rj", "phase_offset_d", "n_cycles",
-    "implied_dP", "flags", "planet_like", "alias_hit", "alias_factor", "error"]
+    "implied_dP", "flags", "planet_like", "alias_hit", "alias_factor", "error"] + RV_KEYS
 
 
 def log(*a):
@@ -274,13 +296,72 @@ def _b(x):
     return str(x).strip().lower() in ("1", "true", "yes")
 
 
+def classify_rv(row):
+    """Gaia RVS variability class of one gaia_source row (amendment 1).
+    RV_VARIABLE: rv_chisq_pvalue <= 0.01, rv_renormalised_gof > 4, rv_nb_transits >= 10 and
+    rv_template_teff in [3900, 8000] K when given (Katz et al. 2023, conservative test);
+    RV_QUIET: the statistics exist but the criterion fails; RV_UNTESTED: no statistics (DR3
+    gives them only for grvs_mag <= 12), fewer than 10 transits, or template Teff outside."""
+    p = fval(row, "rv_chisq_pvalue")
+    gof = fval(row, "rv_renormalised_gof")
+    ntr = fval(row, "rv_nb_transits")
+    teff = fval(row, "rv_template_teff")
+    if not (math.isfinite(p) and math.isfinite(gof) and math.isfinite(ntr)):
+        return "RV_UNTESTED"
+    if ntr < RV_NTR_MIN:
+        return "RV_UNTESTED"
+    if math.isfinite(teff) and not (RV_TEFF_MIN <= teff <= RV_TEFF_MAX):
+        return "RV_UNTESTED"
+    if p <= RV_P_MAX and gof > RV_GOF_MIN:
+        return "RV_VARIABLE"
+    return "RV_QUIET"
+
+
+def rvs_adql(schema):
+    return ("SELECT v.source_id, v.transit_period, g.phot_g_mean_mag, g.grvs_mag, "
+            "g.radial_velocity, g.radial_velocity_error, g.rv_nb_transits, "
+            "g.rv_amplitude_robust, g.rv_chisq_pvalue, g.rv_renormalised_gof, "
+            "g.rv_template_teff FROM %s.vari_planetary_transit AS v "
+            "JOIN %s.gaia_source AS g ON g.source_id = v.source_id ORDER BY v.source_id"
+            % (schema, schema))
+
+
+def merge_rv(recs, rv_rows):
+    """Copy RV fields (RV_KEYS) from rvs-screen rows onto star records by source_id.
+    Records without a screen row get rv_class RV_NOT_SCREENED."""
+    by_id = {str(r.get("source_id", "")).strip(): r for r in rv_rows}
+    for rec in recs:
+        r = by_id.get(str(rec.get("source_id", "")).strip())
+        if r is None:
+            rec["rv_class"] = "RV_NOT_SCREENED"
+            continue
+        for k in RV_KEYS:
+            rec[k] = r.get(k, "")
+        if not rec.get("rv_class"):
+            rec["rv_class"] = classify_rv(r)
+    return recs
+
+
+def _label3(x, n, hi, lo, nmin, names):
+    if n < nmin or not math.isfinite(x):
+        return "UNTESTABLE"
+    if x >= hi:
+        return names[0]
+    if x >= lo:
+        return names[1]
+    return names[2]
+
+
 def grade(recs):
-    """Pre-registered grades G0-G4 from per-star records (dicts; values may be strings)."""
+    """Pre-registered grades G0-G4 (+ amendment-1 G0b_kp, G1b, G5, RVS) from per-star records
+    (dicts; values may be strings)."""
     done = [r for r in recs if str(r.get("status", "")) == "OK"]
     rate = [r for r in done if _b(r.get("in_rate_sample"))]
     n_rate = len(rate)
-    ctrl_hits = sum(int(_b(r.get("ctrl_0.8541_hit"))) + int(_b(r.get("ctrl_0.9137_hit")))
-                    for r in rate)
+
+    def nctrl(r):
+        return int(_b(r.get("ctrl_0.8541_hit"))) + int(_b(r.get("ctrl_0.9137_hit")))
+    ctrl_hits = sum(nctrl(r) for r in rate)
     ctrl_rate = ctrl_hits / (2.0 * n_rate) if n_rate else float("nan")
     status_counts = {}
     for r in recs:
@@ -298,6 +379,16 @@ def grade(recs):
             d["n_sens"] += 1
             d["n_hit_sens"] += int(_b(r.get("star_hit")))
     out["by_category"] = cats
+    # amendment 1: control hits by category (rate sample)
+    cbc = {}
+    for r in rate:
+        c = r.get("category", "")
+        d = cbc.setdefault(c, {"trials": 0, "hits": 0})
+        d["trials"] += 2
+        d["hits"] += nctrl(r)
+    for d in cbc.values():
+        d["rate"] = d["hits"] / d["trials"] if d["trials"] else float("nan")
+    out["control_by_category"] = cbc
     # G0
     kp = [r for r in rate if r.get("category") == "KNOWN_PLANET"]
     k_hit = sum(int(_b(r.get("star_hit"))) for r in kp)
@@ -310,39 +401,48 @@ def grade(recs):
            ("CONTROLS_OK" if ctrl_rate <= CTRL_MAX else "CONTROLS_NOISY"))
     out["G0"] = {"known_sensitive": len(kp), "known_hits": k_hit, "recovery": rec,
                  "recovery_ci95": wilson(k_hit, len(kp)), "label_a": g0a, "label_b": g0b}
-    # G1
+    # amendment 1: G0b_kp, control rate on known planets at the right period only
+    kp_ctrl = sum(nctrl(r) for r in kp)
+    kp_trials = 2 * len(kp)
+    kp_rate = kp_ctrl / kp_trials if kp_trials else float("nan")
+    kp_rate_hi = garwood(kp_ctrl)[1] / kp_trials if kp_trials else float("nan")
+    if len(kp) < G0_MIN_N:
+        g0b_kp = "UNTESTABLE"
+    else:
+        g0b_kp = "CONTROLS_OK" if kp_rate <= CTRL_MAX else "CONTROLS_NOISY"
+    out["G0b_kp"] = {"n_known": len(kp), "trials": kp_trials, "hits": kp_ctrl,
+                     "rate": kp_rate, "rate_upper95": kp_rate_hi, "label": g0b_kp}
+    # G1 (original) and G1b (amendment 1)
     nw = [r for r in rate if r.get("category") == "NEW"]
     n_new = len(nw)
     h_new = sum(int(_b(r.get("star_hit"))) for r in nw)
-    fa = (ctrl_rate if math.isfinite(ctrl_rate) else 0.0) * n_new
-    if n_new:
-        lo, hi = garwood(h_new)
-        f = max(0.0, (h_new - fa) / n_new)
-        ci = (max(0.0, (lo - fa) / n_new), min(1.0, max(0.0, (hi - fa) / n_new)))
-    else:
-        f, ci = float("nan"), (float("nan"), float("nan"))
-    if n_new < G1_MIN_N:
-        g1 = "UNTESTABLE"
-    elif f >= G1_HI:
-        g1 = "MOSTLY_SEEN"
-    elif f >= G1_LO:
-        g1 = "MIXED"
-    else:
-        g1 = "MOSTLY_NOT_SEEN"
-    if g0a == "PIPELINE_FAILS" or g0b == "CONTROLS_NOISY":
-        g1_valid = False
-    else:
-        g1_valid = True
-    out["G1"] = {"new_sensitive": n_new, "new_hits": h_new, "false_alarms_expected": fa,
-                 "fraction_seen": f, "fraction_seen_ci95": ci, "label": g1,
-                 "valid": g1_valid}
+
+    def g1_block(crate, valid):
+        fa = (crate if math.isfinite(crate) else 0.0) * n_new
+        if n_new:
+            lo, hi = garwood(h_new)
+            f = max(0.0, (h_new - fa) / n_new)
+            ci = (max(0.0, (lo - fa) / n_new), min(1.0, max(0.0, (hi - fa) / n_new)))
+        else:
+            f, ci = float("nan"), (float("nan"), float("nan"))
+        lab = _label3(f, n_new, G1_HI, G1_LO, G1_MIN_N,
+                      ("MOSTLY_SEEN", "MIXED", "MOSTLY_NOT_SEEN"))
+        return {"new_sensitive": n_new, "new_hits": h_new, "false_alarms_expected": fa,
+                "fraction_seen": f, "fraction_seen_ci95": ci, "label": lab, "valid": valid}
+    out["G1"] = g1_block(ctrl_rate, not (g0a == "PIPELINE_FAILS" or g0b == "CONTROLS_NOISY"))
+    g1b = g1_block(kp_rate, g0a == "PIPELINE_OK" and g0b_kp == "CONTROLS_OK")
+    g1b_cons = g1_block(kp_rate_hi, False)
+    g1b["fraction_seen_conservative"] = g1b_cons["fraction_seen"]
+    g1b["label_conservative"] = g1b_cons["label"]
+    out["G1b"] = g1b
     # G2 / G3
     new_hits = [r for r in done if r.get("category") == "NEW" and _b(r.get("star_hit"))]
     pl = [r for r in new_hits if _b(r.get("planet_like"))]
     out["G2"] = {"n_new_hits_all": len(new_hits), "n_planet_like": len(pl),
                  "planet_like": [{"source_id": r.get("source_id"), "tic": r.get("tic"),
                                   "P": r.get("P"), "depth_tess": r.get("depth_tess"),
-                                  "r2_rj": r.get("r2_rj"), "G": r.get("G")} for r in pl]}
+                                  "r2_rj": r.get("r2_rj"), "G": r.get("G"),
+                                  "rv_class": r.get("rv_class", "")} for r in pl]}
     eb = [r for r in new_hits if not _b(r.get("planet_like"))]
     out["G3"] = {"n_new_hits_all": len(new_hits), "n_eb_like": len(eb),
                  "eb_share": (len(eb) / len(new_hits)) if new_hits else float("nan")}
@@ -350,6 +450,31 @@ def grade(recs):
     miss = [r for r in done if not _b(r.get("star_hit"))]
     out["G4"] = {"n_missed_at_P": len(miss),
                  "n_alias_hits": sum(int(_b(r.get("alias_hit"))) for r in miss)}
+    # G5 (amendment 1): Gaia period vs known period for known systems
+    n_kp_all = sum(1 for r in done if r.get("category") == "KNOWN_PLANET")
+    n_kso = sum(1 for r in done if r.get("category") == "KNOWN_SYSTEM_OTHER_P")
+    n_known = n_kp_all + n_kso
+    frac = n_kp_all / n_known if n_known else float("nan")
+    out["G5"] = {"n_known_systems": n_known, "n_period_match": n_kp_all,
+                 "n_period_other": n_kso, "fraction_match": frac,
+                 "fraction_match_ci95": wilson(n_kp_all, n_known),
+                 "label": _label3(frac, n_known, G5_HI, G5_LO, G5_MIN_N,
+                                  ("PERIODS_MOSTLY_RIGHT", "PERIODS_MIXED",
+                                   "PERIODS_MOSTLY_WRONG"))}
+    # RVS (amendment 1), only if records carry rv_class
+    if any(str(r.get("rv_class", "")).strip() for r in done):
+        tab = {}
+        for r in done:
+            c = r.get("category", "")
+            k = str(r.get("rv_class", "")).strip() or "RV_NOT_SCREENED"
+            d = tab.setdefault(c, {})
+            d[k] = d.get(k, 0) + 1
+        surv = [r for r in pl if str(r.get("rv_class", "")).strip() != "RV_VARIABLE"]
+        out["RVS"] = {"by_category": tab}
+        out["G2b"] = {"n_planet_like": len(pl), "n_rv_variable": len(pl) - len(surv),
+                      "survivors": [{"source_id": r.get("source_id"), "tic": r.get("tic"),
+                                     "P": r.get("P"), "rv_class": r.get("rv_class")}
+                                    for r in surv]}
     return out
 
 
@@ -389,6 +514,46 @@ def candidate_adql(schema, with_ap=True):
     return ("SELECT %s FROM %s.vari_planetary_transit AS v "
             "JOIN %s.gaia_source AS g ON g.source_id = v.source_id ORDER BY v.source_id"
             % (cols, s, s))
+
+
+class SchemaError(Exception):
+    pass
+
+
+def tap_csv(query, urls=TAP_URLS, timeout=TAP_TIMEOUT, tries=3):
+    """Stdlib synchronous TAP query -> list of dicts. Raises SchemaError when the service
+    answers that a table or column does not exist, RuntimeError when no service answers."""
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+    body = urllib.parse.urlencode({"REQUEST": "doQuery", "LANG": "ADQL", "FORMAT": "csv",
+                                   "QUERY": query}).encode()
+    last = None
+    for base in urls:
+        for attempt in range(tries):
+            try:
+                req = urllib.request.Request(base, data=body, method="POST")
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    text = resp.read().decode("utf-8", "replace")
+                if text.lstrip().lower().startswith("source_id"):
+                    return list(csv.DictReader(io.StringIO(text)))
+                last = "unexpected answer: %s" % text[:300]
+            except urllib.error.HTTPError as exc:
+                msg = ""
+                try:
+                    msg = exc.read().decode("utf-8", "replace")[:600]
+                except Exception:
+                    pass
+                last = "HTTP %s %s" % (exc.code, msg)
+                low = msg.lower()
+                if exc.code == 400 and ("column" in low or "not found" in low
+                                        or "table" in low or "unknown" in low):
+                    raise SchemaError(last)
+            except Exception as exc:
+                last = repr(exc)
+            log("TAP retry", base, attempt + 1, str(last)[:200])
+            time.sleep(5 * (attempt + 1))
+    raise RuntimeError("TAP failed: %s" % last)
 
 
 # ================================================================ numpy / network parts
@@ -639,8 +804,45 @@ def run(args):
     meta["n_done"] = len(recs)
     g = summarise(recs, args.out_dir, meta)
     print(json.dumps(clean_json({"G0": g["G0"], "G1": g["G1"], "G2_n": g["G2"]["n_planet_like"],
-                                 "G3": g["G3"], "G4": g["G4"],
+                                 "G3": g["G3"], "G4": g["G4"], "G0b_kp": g["G0b_kp"],
+                                 "G1b": g["G1b"], "G5": g["G5"],
                                  "by_category": g["by_category"]})))
+    return 0
+
+
+def rvs_screen(args):
+    """Amendment 1: Gaia's own RVS variability statistics for every candidate."""
+    os.makedirs(args.out_dir, exist_ok=True)
+    q = rvs_adql(args.schema)
+    try:
+        rows = tap_csv(q)
+    except SchemaError as exc:
+        with open(os.path.join(args.out_dir, "vpt_rvs_error.json"), "w") as fh:
+            json.dump({"error": str(exc)[:2000], "exit": 4, "query": q}, fh, indent=1)
+        log("RVS query: schema error, exit 4")
+        return 4
+    except RuntimeError as exc:
+        with open(os.path.join(args.out_dir, "vpt_rvs_error.json"), "w") as fh:
+            json.dump({"error": str(exc)[:2000], "exit": 2, "query": q}, fh, indent=1)
+        log("RVS query failed, exit 2")
+        return 2
+    counts = {}
+    for r in rows:
+        r["rv_class"] = classify_rv(r)
+        counts[r["rv_class"]] = counts.get(r["rv_class"], 0) + 1
+    keys = list(rows[0].keys()) if rows else ["source_id", "rv_class"]
+    write_csv(os.path.join(args.out_dir, "vpt_rvs.csv"), rows, keys)
+    summ = {"version": VERSION, "schema": args.schema, "query": q, "n_rows": len(rows),
+            "criterion": {"rv_chisq_pvalue_max": RV_P_MAX, "rv_renormalised_gof_min": RV_GOF_MIN,
+                          "rv_nb_transits_min": RV_NTR_MIN,
+                          "rv_template_teff_range": [RV_TEFF_MIN, RV_TEFF_MAX],
+                          "reference": "Katz et al. 2023, A&A 674, A5"},
+            "counts": counts,
+            "rv_variable": [r["source_id"] for r in rows if r["rv_class"] == "RV_VARIABLE"],
+            "fetched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    with open(os.path.join(args.out_dir, "vpt_rvs_summary.json"), "w", encoding="utf-8") as fh:
+        json.dump(clean_json(summ), fh, indent=1)
+    print(json.dumps({"n_rows": len(rows), "counts": counts}))
     return 0
 
 
@@ -654,8 +856,14 @@ def combine(args):
                 continue
             seen.add(r["source_id"])
             recs.append(r)
-    g = summarise(recs, args.out_dir, {"combined_from": args.combine})
-    print(json.dumps(clean_json({"G0": g["G0"], "G1": g["G1"], "G3": g["G3"], "G4": g["G4"]})))
+    meta = {"combined_from": args.combine}
+    if args.rvs_file:
+        merge_rv(recs, read_csv(args.rvs_file))
+        meta["rvs_file"] = args.rvs_file
+    g = summarise(recs, args.out_dir, meta)
+    print(json.dumps(clean_json({"G0": g["G0"], "G1": g["G1"], "G3": g["G3"], "G4": g["G4"],
+                                 "G0b_kp": g["G0b_kp"], "G1b": g["G1b"], "G5": g["G5"],
+                                 "G2b": g.get("G2b")})))
     return 0
 
 
@@ -672,9 +880,13 @@ def main(argv=None):
     p.add_argument("--input-csv", default=None)
     p.add_argument("--self-test", action="store_true")
     p.add_argument("--combine", nargs="+", default=None)
+    p.add_argument("--rvs-file", default=None)
+    p.add_argument("--rvs-screen", action="store_true")
     args = p.parse_args(argv)
     if args.self_test:
         return 0 if self_test() else 3
+    if args.rvs_screen:
+        return rvs_screen(args)
     if args.combine:
         return combine(args)
     return run(args)
