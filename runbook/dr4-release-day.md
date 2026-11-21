@@ -14,6 +14,10 @@ Updated 2026-11-20 (run 56, ~23:30 UTC): step (a4) also grades Q4e and Q4f
 Updated 2026-11-21 (run 58, ~10:00 UTC): step (g), Gaia's own transit candidates x TESS, now has
 pre-registered code (`gaia_vpt_tess.py` 0.1.0, `findings/2026-11-21-vpt-tess-prereg.md`) and a
 DR3 rehearsal; its release-day jobs are in section 4.
+Updated 2026-11-21 (run 60, ~16:00 UTC): step (g) uses `gaia_vpt_tess.py` 0.1.1 under amendment 1
+(`findings/2026-11-21-vpt-amendment-1.md`): G1b (control rate from known planets) is DR4's
+primary G1, G5 (Gaia period reliability) is added, and an RVS screen step (g2) runs before the
+combine. The TESS search is unchanged.
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -47,8 +51,11 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 - [x] Q4e/Q4f amendment `findings/2026-11-20-qcut-q4ef-prereg.md` committed before DR4.
 - [x] `gaia_vpt_tess.py` 0.1.0 + pre-registration `findings/2026-11-21-vpt-tess-prereg.md`
       committed before DR4 (step g).
-- [ ] Step-g DR3 rehearsal (gaia-vpt-dr3-c0-v1, -c1-v1, queued 21 Nov) graded; any code fix as
-      0.1.1 with a dated note BEFORE 2 Dec (amendment rules in the pre-registration).
+- [x] Step-g DR3 rehearsal chunk 0 ran (21 Nov; `data/vpt-dr3-v1/c0/`, interim note
+      `findings/2026-11-21-vpt-dr3-c0-interim.md`); amendment 1 and 0.1.1 written from it.
+- [ ] Step-g DR3 rehearsal chunk 1 (gaia-vpt-dr3-c1-v1) and the RVS job (gaia-vpt-rvs-dr3-v1)
+      graded; combined grade with 0.1.1.
+- [ ] Record the commit SHA of 0.1.1 here once it is on main (release v0.41.0).
 - [ ] tyc6340-pixel-v1 (queued 20 Nov) needs Gaia TAP for its field query: if it has not run
       by 25 Nov 12:00 CET, its Gaia step waits for DR4 day (see its pre-registration).
 - [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
@@ -179,11 +186,11 @@ day too and do not change the time budget after the fact.
 URL::kK/name pairs per chunk (24 in all). fetch_release.py creates the kK/ folders.
 
 ## 4. Then (later in the order)
-**(g) Gaia's own transit candidates x TESS** (`findings/2026-11-21-vpt-tess-prereg.md`). File the
-six chunks once a-c are filed (they are independent of a-c). Workdir `vpt/` = copies of
-`gaia_vpt_tess.py`, `test_gaia_vpt_tess.py`, `runbook/vpt/fetch_deps.py` and
-`runbook/vpt/requirements.txt` from main (0.1.0, or 0.1.1 if the DR3 rehearsal forced a dated
-fix). K = 0..5:
+**(g) Gaia's own transit candidates x TESS** (`findings/2026-11-21-vpt-tess-prereg.md`, amendment
+`findings/2026-11-21-vpt-amendment-1.md`). File the six chunks once a-c are filed (they are
+independent of a-c). Workdir `vpt/` = copies of `gaia_vpt_tess.py` and `test_gaia_vpt_tess.py`
+**0.1.1** (from main at the commit of release v0.41.0), `runbook/vpt/fetch_deps.py` and
+`runbook/vpt/requirements.txt`. K = 0..5:
 ```json
 {"name": "gaia-dr4-vpt-kK-v1", "kind": "compete", "workdir": "<run>/vpt",
  "image": "python:3.12",
@@ -193,12 +200,28 @@ fix). K = 0..5:
  "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
  "cpu": 2, "memory_gb": 1.5, "timeout_minutes": 200}
 ```
-Exit 4 = a column of `gaiadr4.vari_planetary_transit` or `gaia_source` is missing
+**(g2) RVS screen** (amendment 1), filed with the chunks (stdlib, no TESS):
+```json
+{"name": "gaia-dr4-vpt-rvs-v1", "kind": "compete", "workdir": "<run>/vpt",
+ "image": "python:3.12", "setup": [],
+ "run": ["python -m unittest -v test_gaia_vpt_tess",
+         "python gaia_vpt_tess.py --rvs-screen --schema gaiadr4 --out-dir /out"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 1, "memory_gb": 0.5, "timeout_minutes": 30}
+```
+g2 exit 4 = DR4's `gaia_source` lacks or renamed an RV statistic (`vpt_rvs_error.json`): a dated
+mapping note, nothing else, then -v2; if DR4 has no such statistics at all, say so and rely on
+step (f) (`transit_rv_screen.py`, DR4 epoch RVs) for the G2 list.
+Exit 4 of a chunk = a column of `gaiadr4.vari_planetary_transit` or `gaia_source` is missing
 (`vpt_schema_error.json`): a dated amendment mapping the names, nothing else, then -v2. Exit 2:
-re-file unchanged. Then commit each chunk's `/out` to `data/dr4-vpt-v1/kK/` and grade with
-`python gaia_vpt_tess.py --combine k0 k1 k2 k3 k4 k5 --out-dir /out` (a small job, or by hand
-from the six `vpt_stars.csv`). Open the fold of every NEW hit before writing anything. A
-planet-like NEW signal is not a planet: prior art, step (f) (Gaia RVs), then a pixel test.
+re-file unchanged. Then commit each chunk's `/out` to `data/dr4-vpt-v1/kK/` and g2's `/out` to
+`data/dr4-vpt-v1/rvs/`, and grade with
+`python gaia_vpt_tess.py --combine k0 k1 k2 k3 k4 k5 --rvs-file rvs/vpt_rvs.csv --out-dir /out`
+(a small job using `fetch_repo_file.py` to pull the committed files, as gaia-vpt-rvs-dr3-v1
+does). **G1b is the primary G1 for DR4**; G1 as first registered is reported next to it; G5 is
+descriptive. Open the fold of every NEW hit before writing anything. A planet-like NEW signal
+is not a planet: G2b (not RV-variable), prior art, step (f), a period check on the full TESS
+light curve, then a pixel test.
 
 Also later: (d) inclination/timing on DR4's own orbits, (f) RV transit screen
 (`transit_rv_screen.py` exists; run it on the step-g NEW hits first), (h) self-lensing v2. These
