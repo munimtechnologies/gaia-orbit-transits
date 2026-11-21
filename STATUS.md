@@ -4,7 +4,23 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (21 Nov, ~17:30 UTC): TYC 6340-23-1's "bright 38″ neighbour" is faint; pixel test re-filed
+## Newest (21 Nov, ~20:00 UTC): why are Gaia's transit periods wrong? A test in Gaia's own epochs
+
+**Pre-registered:** `findings/2026-11-21-vpt-epochs-prereg.md`, code `vpt_epochs.py` 0.1.0 with
+tests, job gaia-vpt-epochs-v1 (queued). ESA's archive closes 25 Nov 12:00 CET; ESA's bulk CDN
+files are the fallback, and every downloaded epoch is saved and will be committed.
+- For the 161 known systems whose Gaia DR3 transit period is wrong, are Gaia's own in-transit
+  epochs real transits (**ALIAS**: real dips with a wrong period drawn through them) or not
+  (**SPURIOUS**)? Validity check first (T1): for known planets whose Gaia period is right,
+  Gaia's in-transit epochs must fall inside the real transits.
+- **T3:** can Gaia's own photometry flag a wrong period? N_comp counts box-search peaks nearly
+  as strong as the one at Gaia's period. If it separates right from wrong periods (AUC ≥ 0.70,
+  p ≤ 0.01), it becomes a period-reliability flag for all 1,007 DR4 candidates on release day.
+- Predictions: TIME_OK 75%; ALIAS_DOMINATED 55%; T3 PREDICTIVE 30%.
+- Runbook: new step (g3), the period-free TESS follow-up of every DR4 survivor, and a conditional
+  step (g4); SHAs of `gaia_vpt_tess.py` 0.1.1 and `vpt_followup.py` 0.1.0 recorded.
+
+## Earlier (21 Nov, ~17:30 UTC): TYC 6340-23-1's "bright 38″ neighbour" is faint; pixel test re-filed
 
 **Amendment:** `findings/2026-11-21-tyc6340-pixel-amendment-1.md`, code `patch_tyc_pixel_011.py`
 (turns `tyc_pixel.py` 0.1.0 into 0.1.1), tests `test_tyc_pixel_011.py`, job tyc6340-pixel-v2.
@@ -79,9 +95,9 @@ DR4 predictions: MOSTLY_SEEN 40%, MIXED 35%; 6 or more new planet-like signals 5
   likely our artefact**.
 
 **Pre-registered next:** `findings/2026-11-20-tyc6340-pixel-prereg.md`, code `tyc_pixel.py` 0.1.0
-(job tyc6340-pixel-v1; amended 21 Nov, see the newest section): which star dims, the deblended
-depth, and a 19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives
-75%; link unique 70%.
+(job tyc6340-pixel-v1; amended 21 Nov, see above): which star dims, the deblended depth, and a
+19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives 75%; link
+unique 70%.
 
 ## Results of 20 Nov
 
@@ -109,8 +125,9 @@ Also: the combined transit-test grade (`findings/2026-11-19-sb1-robust-combined-
 the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-control-results.md`).
 
 ## Leads
-1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); the blind test
-   on DR4's 1,007 candidates on release day; follow-up of TIC 4638108 and TIC 44997521.
+1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); why the
+   periods are wrong (epoch test, queued); the blind test on DR4's 1,007 candidates on release
+   day; follow-up of TIC 4638108 and TIC 44997521.
 2. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
    58 of 162 near-edge-on orbits eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
 3. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** Graded: mostly not; the DR4 test
@@ -168,6 +185,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
   assuming it.
 - **Half a sample can mislead:** chunk 0 said MOSTLY_SEEN, the full sample says MIXED.
 - **Use the survey's own other instruments as a vetting step** (Gaia RVS).
+- **Save a survey's raw data before its archive goes dark:** the epoch test stores every Gaia DR3
+  epoch it downloads, ahead of the 25 Nov - 2 Dec archive closure.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -178,10 +197,12 @@ tables.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
-  2 December 12:00 CET.** Jobs that still need DR3 fall back to the Heidelberg DR3 mirror.
+  2 December 12:00 CET.** Jobs that still need DR3 tables fall back to the Heidelberg DR3 mirror;
+  DR3 epoch photometry falls back to ESA's bulk CDN files.
 - Release-day runbook: `runbook/dr4-release-day.md`, with every module pinned to the commit that
   published it.
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
-  transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2, then the period-free follow-up of
-  every planet-like NEW signal); later (d), (f), (h). (e) EBLM inflation is cancelled.
+  transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2), (g3) the period-free follow-up of
+  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE; later (d), (f), (h). (e)
+  EBLM inflation is cancelled.

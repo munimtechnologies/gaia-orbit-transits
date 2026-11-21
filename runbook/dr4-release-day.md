@@ -18,6 +18,10 @@ Updated 2026-11-21 (run 60, ~16:00 UTC): step (g) uses `gaia_vpt_tess.py` 0.1.1 
 (`findings/2026-11-21-vpt-amendment-1.md`): G1b (control rate from known planets) is DR4's
 primary G1, G5 (Gaia period reliability) is added, and an RVS screen step (g2) runs before the
 combine. The TESS search is unchanged.
+Updated 2026-11-21 (run 63, ~20:00 UTC): SHAs of 0.1.1 and vpt_followup recorded; new step (g3),
+the period-free TESS follow-up (`vpt_followup.py` 0.1.0, `findings/2026-11-21-vpt-followup-prereg.md`)
+of every G2b survivor; step (g4) is conditional on the DR3 epoch-photometry test
+(`findings/2026-11-21-vpt-epochs-prereg.md`, `vpt_epochs.py` 0.1.0).
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -53,11 +57,19 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
       committed before DR4 (step g).
 - [x] Step-g DR3 rehearsal chunk 0 ran (21 Nov; `data/vpt-dr3-v1/c0/`, interim note
       `findings/2026-11-21-vpt-dr3-c0-interim.md`); amendment 1 and 0.1.1 written from it.
-- [ ] Step-g DR3 rehearsal chunk 1 (gaia-vpt-dr3-c1-v1) and the RVS job (gaia-vpt-rvs-dr3-v1)
-      graded; combined grade with 0.1.1.
-- [ ] Record the commit SHA of 0.1.1 here once it is on main (release v0.41.0).
-- [ ] tyc6340-pixel-v1 (queued 20 Nov) needs Gaia TAP for its field query: if it has not run
-      by 25 Nov 12:00 CET, its Gaia step waits for DR4 day (see its pre-registration).
+- [x] Step-g DR3 rehearsal chunk 1 ran (21 Nov; `data/vpt-dr3-v1/c1/`); hand-summed grade in
+      `findings/2026-11-21-vpt-dr3-results.md` (commit 08b854f1c9a8240b00eaad209a5a5f00f3b300f8).
+- [ ] The 0.1.1 recompute (gaia-vpt-dr3-comb-v1, with a fresh RVS query) graded; any difference
+      from the hand sums goes into a dated correction.
+- [x] SHA of `gaia_vpt_tess.py` 0.1.1 on main: 945ad9850ca0837a93050d77f121c788a5db58e3 (v0.41.0).
+      SHA of `vpt_followup.py` 0.1.0: d1805bf07a146795e004e384057d5f9c8e6a3c3f (v0.42.0).
+- [ ] gaia-vpt-followup-v1 (DR3 survivors + 3 controls) graded; its CONTROLS_PASS decides whether
+      step g3 uses 0.1.0 or a dated 0.1.1.
+- [ ] gaia-vpt-epochs-v1 graded (needs ESA's archive or CDN before 25 Nov 12:00 CET for DataLink;
+      the CDN bulk files are the fallback). Its T3 decides whether step g4 runs.
+- [ ] tyc6340-pixel-v2 (queued 21 Nov) reads its Gaia field from the cached csv on the data
+      volume; if it has not run by 25 Nov 12:00 CET and the cache is missing, its Gaia step waits
+      for DR4 day.
 - [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
 - [ ] On the day: check `https://gea.esac.esa.int/tap-server/tap` answers and that `gaiadr4`
       appears in TAP_SCHEMA (the sb1real/calib jobs stop with exit 4 if not).
@@ -66,7 +78,8 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 In the release-day run folder, create `rel/` holding ONLY copies of
 `runbook/release/fetch_release.py` and `runbook/release/requirements.txt` from this repo
 (unchanged). Never put `>=` or quotes in a setup command; use the requirements file. Every
-job below uses that folder as workdir (except a5, which uses `tyc/`, and g, which uses `vpt/`).
+job below uses that folder as workdir (except a5, which uses `tyc/`, g, which uses `vpt/`, and
+g3, which uses `fu/`).
 Data key `gaia-orbit-tess` throughout (no new volume). Memory: 1 GB for stdlib steps, 1.5 GB for
 the TESS search.
 
@@ -189,8 +202,8 @@ URL::kK/name pairs per chunk (24 in all). fetch_release.py creates the kK/ folde
 **(g) Gaia's own transit candidates x TESS** (`findings/2026-11-21-vpt-tess-prereg.md`, amendment
 `findings/2026-11-21-vpt-amendment-1.md`). File the six chunks once a-c are filed (they are
 independent of a-c). Workdir `vpt/` = copies of `gaia_vpt_tess.py` and `test_gaia_vpt_tess.py`
-**0.1.1** (from main at the commit of release v0.41.0), `runbook/vpt/fetch_deps.py` and
-`runbook/vpt/requirements.txt`. K = 0..5:
+**0.1.1** (from main at 945ad9850ca0837a93050d77f121c788a5db58e3, release v0.41.0),
+`runbook/vpt/fetch_deps.py` and `runbook/vpt/requirements.txt`. K = 0..5:
 ```json
 {"name": "gaia-dr4-vpt-kK-v1", "kind": "compete", "workdir": "<run>/vpt",
  "image": "python:3.12",
@@ -222,6 +235,36 @@ does). **G1b is the primary G1 for DR4**; G1 as first registered is reported nex
 descriptive. Open the fold of every NEW hit before writing anything. A planet-like NEW signal
 is not a planet: G2b (not RV-variable), prior art, step (f), a period check on the full TESS
 light curve, then a pixel test.
+
+**(g3) Period-free TESS follow-up of every G2b survivor** (`findings/2026-11-21-vpt-followup-prereg.md`;
+labels, thresholds and controls unchanged). Workdir `fu/` = copies of `vpt_followup.py` and
+`test_vpt_followup.py` (from main at d1805bf07a146795e004e384057d5f9c8e6a3c3f, or at a dated
+0.1.1 if gaia-vpt-followup-v1 failed CONTROLS_PASS), `runbook/followup/fetch_deps.py`,
+`runbook/followup/requirements.txt`, and a new `fu_targets.csv` with the same columns as
+`runbook/followup/fu_targets.csv`: the same three control rows (WASP-4, HATS-52, WASP-17, taken
+unchanged from that file), then one `candidate` row per G2b survivor with its DR4
+`vari_planetary_transit` and `gaia_source` values copied from the combine's candidate table (no
+other selection). More than 30 survivors: split into jobs of 30 candidates, each with the three
+controls.
+```json
+{"name": "gaia-dr4-vpt-fu-v1", "kind": "compete", "workdir": "<run>/fu",
+ "image": "python:3.12",
+ "setup": ["pip install --no-cache-dir -r requirements.txt", "python fetch_deps.py"],
+ "run": ["python -m unittest -v test_vpt_followup", "python vpt_followup.py --self-test",
+         "python vpt_followup.py --targets fu_targets.csv --out-dir /out --tmp-dir /tmp/vfu --max-sectors 99"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 2, "memory_gb": 2, "timeout_minutes": 150}
+```
+Only SURVIVES or SURVIVES_OTHER_P candidates go on to a pixel test and prior-art search; none is
+called a planet.
+
+**(g4) Period reliability from Gaia's own epochs: only if gaia-vpt-epochs-v1 grades T3
+PREDICTIVE** (`findings/2026-11-21-vpt-epochs-prereg.md`). Then N_comp (box = transit_duration
+clipped to 0.04-0.25 d, 0.2-40 d, 0.9 x Gaia's peak, clusters > 5 steps apart; `vpt_epochs.py`
+0.1.0 `periodogram_fields`, unchanged) is computed from DR4's G-band epoch photometry for every
+DR4 transit candidate and reported next to G5. It is a flag, not a cut: no candidate is dropped
+for it. If T3 is WEAK, NOT_PREDICTIVE or UNTESTABLE, g4 is not run. Its job needs a dated note
+on DR4's DataLink retrieval type and epoch columns before it is filed.
 
 Also later: (d) inclination/timing on DR4's own orbits, (f) RV transit screen
 (`transit_rv_screen.py` exists; run it on the step-g NEW hits first), (h) self-lensing v2. These
