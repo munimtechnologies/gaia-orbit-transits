@@ -11,6 +11,9 @@ Updated 2026-11-20 (run 52): gaia-qcut-v1 and gaia-eblm-holdout-fit-v1 graded; t
 is cancelled (holdout PIPELINE_FAILED); new step (a5), the independent DR4 test of TYC 6340-23-1's K.
 Updated 2026-11-20 (run 56, ~23:30 UTC): step (a4) also grades Q4e and Q4f
 (`findings/2026-11-20-qcut-q4ef-prereg.md`) from a4's own Q4d output; no new code, no new job.
+Updated 2026-11-21 (run 58, ~10:00 UTC): step (g), Gaia's own transit candidates x TESS, now has
+pre-registered code (`gaia_vpt_tess.py` 0.1.0, `findings/2026-11-21-vpt-tess-prereg.md`) and a
+DR3 rehearsal; its release-day jobs are in section 4.
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -42,6 +45,10 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 - [x] `tyc_k_dr4.py` 0.1.0 + pre-registration `findings/2026-11-20-tyc6340-dr4-k-prereg.md`
       committed before DR4 (step a5).
 - [x] Q4e/Q4f amendment `findings/2026-11-20-qcut-q4ef-prereg.md` committed before DR4.
+- [x] `gaia_vpt_tess.py` 0.1.0 + pre-registration `findings/2026-11-21-vpt-tess-prereg.md`
+      committed before DR4 (step g).
+- [ ] Step-g DR3 rehearsal (gaia-vpt-dr3-c0-v1, -c1-v1, queued 21 Nov) graded; any code fix as
+      0.1.1 with a dated note BEFORE 2 Dec (amendment rules in the pre-registration).
 - [ ] tyc6340-pixel-v1 (queued 20 Nov) needs Gaia TAP for its field query: if it has not run
       by 25 Nov 12:00 CET, its Gaia step waits for DR4 day (see its pre-registration).
 - [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
@@ -52,8 +59,9 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 In the release-day run folder, create `rel/` holding ONLY copies of
 `runbook/release/fetch_release.py` and `runbook/release/requirements.txt` from this repo
 (unchanged). Never put `>=` or quotes in a setup command; use the requirements file. Every
-job below uses that folder as workdir (except a5, which uses `tyc/`). Data key `gaia-orbit-tess`
-throughout (no new volume). Memory: 1 GB for stdlib steps, 1.5 GB for the TESS search.
+job below uses that folder as workdir (except a5, which uses `tyc/`, and g, which uses `vpt/`).
+Data key `gaia-orbit-tess` throughout (no new volume). Memory: 1 GB for stdlib steps, 1.5 GB for
+the TESS search.
 
 ## 2. Jobs, in pre-registered order (file all of step a-c and a5 at once; they are independent)
 
@@ -171,9 +179,30 @@ day too and do not change the time budget after the fact.
 URL::kK/name pairs per chunk (24 in all). fetch_release.py creates the kK/ folders.
 
 ## 4. Then (later in the order)
-(d) inclination/timing on DR4's own orbits, (f) RV transit screen, (g) vari_planetary_transit x
-TESS, (h) self-lensing v2. These have no release-day code yet; write it only after a-c are
-graded.
+**(g) Gaia's own transit candidates x TESS** (`findings/2026-11-21-vpt-tess-prereg.md`). File the
+six chunks once a-c are filed (they are independent of a-c). Workdir `vpt/` = copies of
+`gaia_vpt_tess.py`, `test_gaia_vpt_tess.py`, `runbook/vpt/fetch_deps.py` and
+`runbook/vpt/requirements.txt` from main (0.1.0, or 0.1.1 if the DR3 rehearsal forced a dated
+fix). K = 0..5:
+```json
+{"name": "gaia-dr4-vpt-kK-v1", "kind": "compete", "workdir": "<run>/vpt",
+ "image": "python:3.12",
+ "setup": ["pip install --no-cache-dir -r requirements.txt", "python fetch_deps.py"],
+ "run": ["python -m unittest -v test_gaia_vpt_tess", "python gaia_vpt_tess.py --self-test",
+         "python gaia_vpt_tess.py --schema gaiadr4 --out-dir /out --tmp-dir /tmp/vptlc --chunk K --n-chunks 6 --max-sectors 3 --time-budget-min 165"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 2, "memory_gb": 1.5, "timeout_minutes": 200}
+```
+Exit 4 = a column of `gaiadr4.vari_planetary_transit` or `gaia_source` is missing
+(`vpt_schema_error.json`): a dated amendment mapping the names, nothing else, then -v2. Exit 2:
+re-file unchanged. Then commit each chunk's `/out` to `data/dr4-vpt-v1/kK/` and grade with
+`python gaia_vpt_tess.py --combine k0 k1 k2 k3 k4 k5 --out-dir /out` (a small job, or by hand
+from the six `vpt_stars.csv`). Open the fold of every NEW hit before writing anything. A
+planet-like NEW signal is not a planet: prior art, step (f) (Gaia RVs), then a pixel test.
+
+Also later: (d) inclination/timing on DR4's own orbits, (f) RV transit screen
+(`transit_rv_screen.py` exists; run it on the step-g NEW hits first), (h) self-lensing v2. These
+have no release-day code yet; write it only after a-c are graded.
 **(e) EBLM inflation is cancelled**: eblm_fit 0.2.0 failed its pre-registered holdout check
 (`findings/2026-11-20-eblm-holdout-results.md`, 6 of 14 passed), and the pre-registration says no
 EBLM result from this pipeline is published from DR4.

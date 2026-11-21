@@ -1,10 +1,30 @@
-# gaia-orbit-transits: current status (2026-11-20)
+# gaia-orbit-transits: current status (2026-11-21)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (20 Nov, ~23:30 UTC): two more quality-cut tests fixed before Gaia DR4
+## Newest (21 Nov, ~10:00 UTC): Gaia's own transit candidates against TESS (step g), fixed before DR4
+
+**Pre-registered:** `findings/2026-11-21-vpt-tess-prereg.md`, code `gaia_vpt_tess.py` 0.1.0.
+Gaia DR4 publishes **1,007** photometric transit candidates (`vari_planetary_transit`; DR3 had
+214, of which Gaia-1b and Gaia-2b were confirmed). The new module folds every candidate's TESS
+light curves at the Gaia period with the unchanged `sb1_transit` search (controls at two
+non-harmonic periods, injections at 0.8 × Gaia depth), sorts candidates into KNOWN_PLANET /
+TOI_FP / TOI_PC / KNOWN_SYSTEM_OTHER_P / NEW from the NASA Exoplanet Archive and the TOI list,
+and flags eclipsing-binary signs (secondary, odd/even, modulation, companion > 2 R_Jup).
+- **G0:** known planets recovered (≥ 80%) and quiet controls (≤ 0.08) make the test valid.
+- **G1 (main):** what fraction of Gaia's NEW candidates show the transit in TESS
+  (MOSTLY_SEEN ≥ 0.5 / MIXED / MOSTLY_NOT_SEEN < 0.2).
+- **G2:** the list of NEW planet-like signals; **G3:** eclipsing-binary share; **G4:** aliases.
+- Predictions for DR4: MOSTLY_SEEN 40%, MIXED 35%; 6 or more new planet-like signals 55%.
+- A **DR3 rehearsal** on the 214 DR3 candidates is queued now (jobs gaia-vpt-dr3-c0-v1 and
+  -c1-v1). It calibrates G0 and is not blind (the 41 DR3 candidates were checked with TESS
+  images up to 2021 by Panahi et al. 2022).
+
+The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
+
+## Earlier (20 Nov, ~23:30 UTC): two more quality-cut tests fixed before Gaia DR4
 
 **Pre-registered:** `findings/2026-11-20-qcut-q4ef-prereg.md`, graded on DR4 day at step (a4)
 from the existing `qcut_dr4.py` 0.1.0 output (no new code; runbook updated).
@@ -15,8 +35,6 @@ from the existing `qcut_dr4.py` 0.1.0 output (no new code; runbook updated).
   on them? If they disagree, DR4 survival is not a stand-in for reality for these orbits, and any
   reality score must be trained on transits.
 - Predictions: GOF_REPLICATES 75%; YARDSTICKS_DISAGREE 60%.
-
-The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
 
 ## Earlier (20 Nov, ~20:00 UTC): ASAS-SN insensitive; the SuperWASP dip is not a field systematic; the period tension was ours
 
@@ -58,7 +76,7 @@ The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
   before, 2.8 after), the search window ended at 2.3298 d where the best period sat, and 53% of
   bootstrap fits hit the grid edge.
 - Reported, not graded: SuperWASP's own best period (2.32974 d) was 5.8σ from Gaia DR3.
-  **Superseded:** see the newest section; the tension came from our detrending.
+  **Superseded:** see the 20:00 UTC section; the tension came from our detrending.
 - Prior art: the AAVSO VSX API returns no variable within 3′ (control query on Algol worked).
 
 **Gaia DR4 release-day rehearsal passed** (job gaia-fetchrel-check-v3, data
@@ -161,6 +179,8 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
 3. **Are M dwarfs in short orbits inflated?** (`findings/2026-11-19-eblm-infl-full-results.md`)
    +6.3% (95% CI +1.0% to +8.8%), n = 28, **INCONCLUSIVE**, caveated; addendum 20 Nov after the
    pipeline failed its holdout. No DR4 follow-up from this pipeline.
+4. **Gaia's own transit candidates in TESS** (new, 21 Nov; pre-registered above): DR3 rehearsal
+   queued, the blind test on DR4's 1,007 candidates on release day.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
@@ -218,6 +238,8 @@ wrong (lower). Orbits at P ≥ 5 d do far better than those below 5 d (ρ_all 0.
   use, with the rule written down first (Q4e).
 - **Two yardsticks for "real" can disagree:** a repeat detection measures repeatability; an
   independent physical test (transits) measures reality (Q4f).
+- **Verify a catalogue size at its source before building on it** (the 1,007 DR4 transit
+  candidates were checked on ESA's DR4 content page, 21 Nov).
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -231,9 +253,11 @@ found as SuperWASP candidates.
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** All Gaia-TAP jobs that needed DR3 before the closure have run, except
-  the field query of the queued pixel test (tyc6340-pixel-v1).
+  the field query of the queued pixel test (tyc6340-pixel-v1) and the step-g DR3 rehearsal
+  (which falls back to the Heidelberg DR3 mirror).
 - Release-day runbook: `runbook/dr4-release-day.md`, with `runbook/release/fetch_release.py`
   pinning every module to the commit that published it. Rehearsal passed 20 Nov (above).
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
-  wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; later (d),
-  (f)-(h). (e) EBLM inflation is cancelled.
+  wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
+  transit candidates x TESS (code ready, 6 chunks); later (d), (f), (h). (e) EBLM inflation is
+  cancelled.
