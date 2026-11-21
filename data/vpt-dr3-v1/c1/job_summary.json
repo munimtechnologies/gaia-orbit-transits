@@ -1,0 +1,72 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-vpt-dr3-c1-v1",
+ "id": "19e912ccb9c9",
+ "field": "astrophysics",
+ "run": "20261121T090541Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "blade",
+ "image": "python:3.12",
+ "started_at": "2026-11-21T15:05:37.903831+00:00",
+ "finished_at": "2026-11-21T15:47:47.409768+00:00",
+ "duration_seconds": 2529,
+ "limits": {
+  "cpu": 2.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 200.0
+ },
+ "peak_memory_gb": 0.25,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir -r requirements.txt",
+   "exit": 0,
+   "seconds": 51
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_deps.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_gaia_vpt_tess",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python gaia_vpt_tess.py --self-test",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python gaia_vpt_tess.py --schema gaiadr3 --out-dir /out --tmp-dir /tmp/vptlc --chunk 1 --n-chunks 2 --max-sectors 3 --time-budget-min 165",
+   "exit": 0,
+   "seconds": 2212
+  }
+ ],
+ "out_files": [
+  "vpt_candidates.csv",
+  "vpt_stars.csv",
+  "vpt_summary.json"
+ ],
+ "out_files_total": 3,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-03-python stderr] quality_bitmask=17087).\nWarning: 27% (4816/18035) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 28% (3559/12904) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 25% (4828/19050) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 33% (5555/16999) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 21% (3854/18126) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 37% (6343/16999) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 23% (4125/18307) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 27% (4796/18035) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 37% (6224/16999) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 22% (3984/18126) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 29% (5154/18035) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-03-python stdout] t-like\n15:37:42 HIT 3603529272750802560 P=0.5577 tic 294301883 KNOWN_SYSTEM_OTHER_P WASP-55 b;TOI-774.01 ODD_EVEN\n15:37:42 done 90 stars, 28.6 min\n15:39:17 HIT 1827242816201846144 P=1.6614 tic 256364928 KNOWN_SYSTEM_OTHER_P HD 189733 b;TOI-4470.01 ODD_EVEN\n15:39:36 HIT 3450611154067089408 P=0.8848 tic 400170926 NEW  ODD_EVEN\n15:44:07 done 100 stars, 35.0 min\n15:44:17 HIT 3558354604869150208 P=2.1462 tic 308098254 KNOWN_SYSTEM_OTHER_P WASP-162 b;TOI-1906.01 SECONDARY;ODD_EVEN\n{\"G0\": {\"known_sensitive\": 4, \"known_hits\": 4, \"recovery\": 1.0, \"recovery_ci95\": [0.5100999795960008, 1.0], \"label_a\": \"UNTESTABLE\", \"label_b\": \"CONTROLS_NOISY\"}, \"G1\": {\"new_sensitive\": 8, \"new_hits\": 1, \"false_alarms_expected\": 1.1645569620253164, \"fraction_seen\": 0.0, \"fraction_seen_ci95\": [0.0, 0.5508858036141976], \"label\": \"UNTESTABLE\", \"valid\": false}, \"G2_n\": 1, \"G3\": {\"n_new_hits_all\": 4, \"n_eb_like\": 3, \"eb_share\": 0.75}, \"G4\": {\"n_missed_at_P\": 74, \"n_alias_hits\": 7}, \"by_category\": {\"KNOWN_SYSTEM_OTHER_P\": {\"n\": 82, \"n_sens\": 64, \"n_hit_sens\": 14}, \"NEW\": {\"n\": 13, \"n_sens\": 8, \"n_hit_sens\": 1}, \"TOI_PC\": {\"n\": 3, \"n_sens\": 3, \"n_hit_sens\": 3}, \"KNOWN_PLANET\": {\"n\": 4, \"n_sens\": 4, \"n_hit_sens\": 4}}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T090541Z-astrophysics\\vpt)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
