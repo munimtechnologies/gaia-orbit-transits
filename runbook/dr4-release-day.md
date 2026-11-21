@@ -22,6 +22,11 @@ Updated 2026-11-21 (run 63, ~20:00 UTC): SHAs of 0.1.1 and vpt_followup recorded
 the period-free TESS follow-up (`vpt_followup.py` 0.1.0, `findings/2026-11-21-vpt-followup-prereg.md`)
 of every G2b survivor; step (g4) is conditional on the DR3 epoch-photometry test
 (`findings/2026-11-21-vpt-epochs-prereg.md`, `vpt_epochs.py` 0.1.0).
+Updated 2026-11-21 (run 64, ~21:30 UTC): new step (i), the astrometric-orbit transit search on
+DR4 (`findings/2026-11-21-dr4-astro-tess-prereg.md`). `run_search.py` 0.4.1 cannot read DR4 as
+it is (renamed columns; DR4's correlation vectors are in Campbell elements, same length as DR3's
+Thiele-Innes order, so the error would be silent). `run_search_dr4.py` 0.1.0 + `dr4_rows.py`
+0.1.0 wrap it unchanged; gate G0 stops the run before TESS if DR4's conventions differ.
 Everything here uses code already pre-registered and committed. Nothing new may be decided on
 release day; any surprise in the data model goes into a dated amendment BEFORE a number is read.
 
@@ -70,6 +75,11 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 - [ ] tyc6340-pixel-v2 (queued 21 Nov) reads its Gaia field from the cached csv on the data
       volume; if it has not run by 25 Nov 12:00 CET and the cache is missing, its Gaia step waits
       for DR4 day.
+- [x] `run_search_dr4.py` 0.1.0 + `dr4_rows.py` 0.1.0 + pre-registration
+      `findings/2026-11-21-dr4-astro-tess-prereg.md` committed before DR4 (step i).
+- [ ] gaia-dr4-astro-adapter-v1 (unit tests, self-test S0-S5, DR3 real-data round trip R1)
+      passed; record the SHA of the commit that published `run_search_dr4.py` 0.1.0 here. R1
+      FAIL -> dated 0.1.1 before 2 Dec.
 - [ ] ESA's Gaia archive is CLOSED 25 Nov 12:00 CET -> 2 Dec 12:00 CET.
 - [ ] On the day: check `https://gea.esac.esa.int/tap-server/tap` answers and that `gaiadr4`
       appears in TAP_SCHEMA (the sb1real/calib jobs stop with exit 4 if not).
@@ -78,8 +88,8 @@ gaia-fetchrel-check-v3 rehearses these inputs with the pinned code (`check_input
 In the release-day run folder, create `rel/` holding ONLY copies of
 `runbook/release/fetch_release.py` and `runbook/release/requirements.txt` from this repo
 (unchanged). Never put `>=` or quotes in a setup command; use the requirements file. Every
-job below uses that folder as workdir (except a5, which uses `tyc/`, g, which uses `vpt/`, and
-g3, which uses `fu/`).
+job below uses that folder as workdir (except a5, which uses `tyc/`, g, which uses `vpt/`,
+g3, which uses `fu/`, and i, which uses `d4/`).
 Data key `gaia-orbit-tess` throughout (no new volume). Memory: 1 GB for stdlib steps, 1.5 GB for
 the TESS search.
 
@@ -265,6 +275,32 @@ clipped to 0.04-0.25 d, 0.2-40 d, 0.9 x Gaia's peak, clusters > 5 steps apart; `
 DR4 transit candidate and reported next to G5. It is a flag, not a cut: no candidate is dropped
 for it. If T3 is WEAK, NOT_PREDICTIVE or UNTESTABLE, g4 is not run. Its job needs a dated note
 on DR4's DataLink retrieval type and epoch columns before it is filed.
+
+**(i) Astrometric orbits x TESS on DR4: can Gaia's wobble find a transiting brown dwarf or giant
+planet?** (`findings/2026-11-21-dr4-astro-tess-prereg.md`). File it with step g (independent of
+a-c). Workdir `d4/` = copies of `dr4_rows.py`, `run_search_dr4.py`, `test_dr4_rows.py`,
+`runbook/astro/fetch_pinned.py` and `runbook/astro/requirements.txt` from main at the commit that
+published `run_search_dr4.py` 0.1.0 (or a dated 0.1.1 if gaia-dr4-astro-adapter-v1 failed R1).
+`fetch_pinned.py` pulls `run_search.py` 0.4.1, `gaia_orbits.py` and `dipsearch.py` unchanged from
+f868df8e101aee2c360d9a7b176c3d2356b462b5.
+```json
+{"name": "gaia-dr4-astro-v1", "kind": "compete", "workdir": "<run>/d4",
+ "image": "python:3.12",
+ "setup": ["pip install --no-cache-dir -r requirements.txt", "python fetch_pinned.py"],
+ "run": ["python -m unittest -v test_dr4_rows",
+         "python run_search_dr4.py --self-test --data-dir /data --out-dir /out",
+         "python run_search_dr4.py --schema gaiadr4 --data-dir /data --out-dir /out --window-plots"],
+ "network": true, "data_urls": [], "data_key": "gaia-orbit-tess",
+ "cpu": 2, "memory_gb": 2, "timeout_minutes": 240}
+```
+All other options stay at run_search 0.4.1's defaults (G < 14.5, |cos i| < 0.2, 600 draws, 400
+targets, 200 min, SNR 7, seed 20261117, predictions from BTJD 4375.5). Exit 4 = gate G0
+(`dr4_adapter_gate.json`): a dated amendment on the convention found, nothing else, then -v2.
+Exit 3 = self-test failed: fix as a dated patch first. A TAP column error = the draft data model
+changed: dated mapping amendment from TAP_SCHEMA, then -v2. If substellar-class targets were not
+reached, file follow-up jobs of 150 with `--source-ids` (rank order, same settings) before
+grading. Commit `/out` to `data/dr4-astro-v1/` (plots of every substellar match opened first),
+then grade H1-H3 and add one small TAP query for the `nss_masses` row of every TESS target.
 
 Also later: (d) inclination/timing on DR4's own orbits, (f) RV transit screen
 (`transit_rv_screen.py` exists; run it on the step-g NEW hits first), (h) self-lensing v2. These

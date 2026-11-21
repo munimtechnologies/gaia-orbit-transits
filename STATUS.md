@@ -4,7 +4,28 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (21 Nov, ~20:00 UTC): why are Gaia's transit periods wrong? A test in Gaia's own epochs
+## Newest (21 Nov, ~21:30 UTC): a transiting companion found by Gaia's wobble? Step (i), fixed before DR4
+
+**Pre-registered:** `findings/2026-11-21-dr4-astro-tess-prereg.md`, code `dr4_rows.py` 0.1.0 and
+`run_search_dr4.py` 0.1.0 with tests (`test_dr4_rows.py`), rehearsal job
+gaia-dr4-astro-adapter-v1 (queued).
+- **The question:** do any companions whose orbits Gaia DR4 measures from the star's wobble
+  transit their star in TESS at the time the orbit predicts? A brown dwarf or giant planet found
+  this way would have both a true mass and a radius. To our knowledge no companion first found by
+  Gaia astrometry has yet been seen to transit.
+- **What we found while preparing it:** our DR3 search code cannot read DR4 as it is. ESA's draft
+  DR4 data model renames four of the columns it selects, and DR4's orbit correlations are given
+  in Campbell elements (a0, omega, Omega, i) in a vector of **the same length** as DR3's
+  Thiele-Innes order, so reading them with DR3's names would fail silently. The new adapter maps
+  DR4's covariance onto the Thiele-Innes constants with the exact Jacobian and keeps the pinned
+  search unchanged; gate G0 stops the release-day run before any TESS download if DR4's
+  conventions differ from what we assume.
+- **Rehearsal (R1):** up to 400 real DR3 orbits are converted to DR4's form and back; every one
+  must return DR3's own correlations, errors and conjunction times.
+- **Predictions:** at least one substellar transit candidate 20%; calibration within a factor 3
+  45%.
+
+## Earlier (21 Nov, ~20:00 UTC): why are Gaia's transit periods wrong? A test in Gaia's own epochs
 
 **Pre-registered:** `findings/2026-11-21-vpt-epochs-prereg.md`, code `vpt_epochs.py` 0.1.0 with
 tests, job gaia-vpt-epochs-v1 (queued). ESA's archive closes 25 Nov 12:00 CET; ESA's bulk CDN
@@ -128,12 +149,14 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); why the
    periods are wrong (epoch test, queued); the blind test on DR4's 1,007 candidates on release
    day; follow-up of TIC 4638108 and TIC 44997521.
-2. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
+2. **A transiting companion first found by Gaia astrometry** (step i, DR4): pre-registered with
+   a DR4 adapter and gate; rehearsal queued.
+3. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
    58 of 162 near-edge-on orbits eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
-3. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** Graded: mostly not; the DR4 test
+4. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** Graded: mostly not; the DR4 test
    of why is pre-registered with release-day code. Eclipsing companions found: **TIC 71945261**
    (TYC 6340-23-1, B_OVERSIZED_COMPANION); BD+65 286 (label not adopted).
-4. **Are M dwarfs in short orbits inflated?** INCONCLUSIVE, caveated; no DR4 follow-up.
+5. **Are M dwarfs in short orbits inflated?** INCONCLUSIVE, caveated; no DR4 follow-up.
 
 ## Closed with a null result
 - **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
@@ -187,6 +210,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 - **Use the survey's own other instruments as a vetting step** (Gaia RVS).
 - **Save a survey's raw data before its archive goes dark:** the epoch test stores every Gaia DR3
   epoch it downloads, ahead of the 25 Nov - 2 Dec archive closure.
+- **A new release can change a table's parameterisation, not just its column names:** check the
+  order and meaning of every correlation vector, not only that the query runs.
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
@@ -204,5 +229,5 @@ tables.
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
   transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2), (g3) the period-free follow-up of
-  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE; later (d), (f), (h). (e)
-  EBLM inflation is cancelled.
+  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE, and (i) astrometric orbits
+  x TESS via `run_search_dr4.py`; later (d), (f), (h). (e) EBLM inflation is cancelled.
