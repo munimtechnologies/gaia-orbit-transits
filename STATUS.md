@@ -4,11 +4,43 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (21 Nov, ~21:30 UTC): a transiting companion found by Gaia's wobble? Step (i), fixed before DR4
+## Newest (21 Nov, ~23:45 UTC): step G6 pre-registered, a period-free TESS search of all 214 Gaia DR3 transit candidates
+
+**Pre-registered:** `findings/2026-11-21-vpt-pf-prereg.md`, code `vpt_pf.py` 0.1.0 with tests
+(`test_vpt_pf.py`), set-up `runbook/pf/fetch_deps.py`, rehearsal job gaia-vpt-pf-dr3-v1 (queued).
+- **Why:** Gaia's period is wrong for 161 of 176 known systems in DR3, so folding TESS at Gaia's
+  period (step g) misses most real signals. G6 runs the unchanged period-free follow-up
+  (`vpt_followup.py` 0.1.0, up to 6 sectors) on every candidate and compares the TESS period with
+  the known planet and TOI periods.
+- **Primary test PF1b:** among known systems whose Gaia period is wrong, does the period-free
+  search find the known period (RECOVERS ≥ 0.60)? Prediction: RECOVERS 55%.
+- **PF2:** Gaia DR3 new candidates with a planet-like TESS transit, at Gaia's period or another;
+  robust if 2 or more sectors alone agree. Prediction: at least one robust at another period 25%.
+- **DR4:** the same code runs on all 1,007 DR4 candidates after step g on 2 December.
+
+## Earlier (21 Nov, ~23:20 UTC): the two surviving Gaia transit candidates, vetted in catalogues
+
+**Exploratory (not pre-registered):** `findings/2026-11-21-vpt-survivors-vetting.md`, values and
+queries in `data/vpt-survivors-vetting/catalogue_values.md`. The registered follow-up
+(gaia-vpt-followup-v1) is still queued; its labels and predictions are unchanged.
+- **Both dips are seen in Gaia's own resolved photometry**, so the bright stars about 25-28" away
+  (a G 10.59 background star next to TIC 44997521, a G 11.97 foreground rotational variable next to
+  TIC 4638108) cannot be the source in Gaia's data. Gaia DR3 shows no star within 18.8" of TIC
+  44997521 and no sign of a close companion (RUWE 1.06).
+- **Gaia's transit duration fits a dwarf host for TIC 44997521** (2.10 h against 2.5-2.8 h for a
+  central transit), but **implies a grazing geometry for TIC 4638108** (1.91 h against 3.3 h;
+  impact parameter about 0.92), a warning sign for a stellar companion.
+- **Neither is already known:** no TOI, CTOI or follow-up on ExoFOP; VSX holds only Gaia's own EP
+  imports; no Gaia EB entry; not in the TESS EB catalogue; no literature. Neither star is bright
+  enough for Gaia's RV-variability screen.
+- What remains for TIC 44997521 is mainly a low-mass star (about 0.1 M_sun is 1.0-1.2 R_Jup)
+  instead of a hot Jupiter; only radial velocities can tell (about 0.17 km/s against 16 km/s).
+
+## Earlier (21 Nov, ~21:30 UTC): a transiting companion found by Gaia's wobble? Step (i), fixed before DR4
 
 **Pre-registered:** `findings/2026-11-21-dr4-astro-tess-prereg.md`, code `dr4_rows.py` 0.1.0 and
-`run_search_dr4.py` 0.1.0 with tests (`test_dr4_rows.py`), rehearsal job
-gaia-dr4-astro-adapter-v1 (queued).
+`run_search_dr4.py` 0.1.0 with tests (`test_dr4_rows.py`; commit b6ae340a, release v0.44.0),
+rehearsal job gaia-dr4-astro-adapter-v1 (queued).
 - **The question:** do any companions whose orbits Gaia DR4 measures from the star's wobble
   transit their star in TESS at the time the orbit predicts? A brown dwarf or giant planet found
   this way would have both a true mass and a radius. To our knowledge no companion first found by
@@ -70,8 +102,8 @@ chunk files; job gaia-vpt-dr3-comb-v1 recomputes them with 0.1.1 and a fresh RVS
 - 22 of 24 "hits" at Gaia's wrong period carry an eclipsing-binary flag; 2 look planet-like.
 - **Two planet-like NEW candidates survive with no TOI:** TIC 4638108 (P 2.21 d, 1.87 R_Jup on an F
   star) and **TIC 44997521** (Gaia DR3 5432318139709900160; P 3.55 d, 2.2% deep in TESS and Gaia,
-  1.03 R_Jup on a K dwarf; weak TESS detection, S/N 7.6). Both are Gaia's candidates (Panahi et al.
-  2022). Neither is called a planet.
+  1.03 R_Jup on a K dwarf, or 1.15 R_Jup with the TIC radius; weak TESS detection, S/N 7.6). Both
+  are Gaia's candidates (Panahi et al. 2022). Neither is called a planet.
 
 **Pre-registered next:** `findings/2026-11-21-vpt-followup-prereg.md`, code `vpt_followup.py`
 0.1.0 (job gaia-vpt-followup-v1, queued): every TESS sector, a period-free box search, odd/even,
@@ -148,7 +180,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 ## Leads
 1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); why the
    periods are wrong (epoch test, queued); the blind test on DR4's 1,007 candidates on release
-   day; follow-up of TIC 4638108 and TIC 44997521.
+   day; follow-up of TIC 4638108 and TIC 44997521 (catalogue vetting done, period-free TESS test
+   queued).
 2. **A transiting companion first found by Gaia astrometry** (step i, DR4): pre-registered with
    a DR4 adapter and gate; rehearsal queued.
 3. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
@@ -163,6 +196,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
   (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
+- **TIC 44997521's radius estimate depends on the stellar radius:** 1.03 R_Jup with R* 0.71 R_sun,
+  1.15 R_Jup with the TIC's 0.80 R_sun (21 Nov, vetting note).
 - **TYC 6340-23-1's 38″ neighbour is G = 14.39, not V ≈ 11.25** (21 Nov; SuperWASP's archive
   magnitude was blended). It cannot make the eclipse; the pixel test now targets the 94″ G = 12.55
   star (`findings/2026-11-21-tyc6340-pixel-amendment-1.md`).
@@ -212,13 +247,17 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
   epoch it downloads, ahead of the 25 Nov - 2 Dec archive closure.
 - **A new release can change a table's parameterisation, not just its column names:** check the
   order and meaning of every correlation vector, not only that the query runs.
+- **A survey that resolves what TESS blends settles "which star" for free:** when Gaia's own
+  photometry shows the dip, a bright neighbour tens of arcseconds away cannot be its source in
+  Gaia's data. **Check a catalogue transit's duration against the host's density** before any
+  pixel work.
 
 ## Prior-art sources we check for every eclipsing system
-AAVSO VSX (API), the TESS EB catalogue (Prša et al. 2022), the TESS Ten Thousand catalogue
-(Kostov et al. 2025), Gaia DR3 vari_eclipsing_binary and vari_classifier_result, the ZTF and
-ASAS-SN variable catalogues, Green et al. (2023), ExoFOP, the SPOC TCE list, SIMBAD, the
-Chopard-Vilhem Zenodo deposits, the *Eclipses by Appointment* claim tables and the EBLM target
-tables.
+AAVSO VSX (API, or its VizieR copy B/vsx when the API refuses), the TESS EB catalogue (Prša et al.
+2022), the TESS Ten Thousand catalogue (Kostov et al. 2025), Gaia DR3 vari_eclipsing_binary and
+vari_classifier_result, the ZTF and ASAS-SN variable catalogues, Green et al. (2023), ExoFOP, the
+SPOC TCE list, SIMBAD, the Chopard-Vilhem Zenodo deposits, the *Eclipses by Appointment* claim
+tables and the EBLM target tables.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
@@ -229,5 +268,7 @@ tables.
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
   transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2), (g3) the period-free follow-up of
-  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE, and (i) astrometric orbits
-  x TESS via `run_search_dr4.py`; later (d), (f), (h). (e) EBLM inflation is cancelled.
+  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE, (G6) the period-free search
+  of every DR4 candidate via `vpt_pf.py` (`findings/2026-11-21-vpt-pf-prereg.md`), and (i)
+  astrometric orbits x TESS via `run_search_dr4.py`; later (d), (f), (h). (e) EBLM inflation is
+  cancelled.
