@@ -1,0 +1,5 @@
+{
+ "version": "0.1.0",
+ "stage": "fetch_failed",
+ "error": "38 arcsec neighbour not in Gaia field"
+}

@@ -1,0 +1,70 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "tyc6340-pixel-v1",
+ "id": "ba96c20ddc9e",
+ "field": "astrophysics",
+ "run": "20261120T191647Z-astrophysics",
+ "kind": "compete",
+ "status": "failed",
+ "reason": "run step exited 4",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-21T16:31:46.920913+00:00",
+ "finished_at": "2026-11-21T16:37:31.729909+00:00",
+ "duration_seconds": 344,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 2.0,
+  "timeout_minutes": 180.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir numpy astropy",
+   "exit": 0,
+   "seconds": 13
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -c \"import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/40e96d44de4523e73c7229f269210dbbbcc7b9bf/tyc_period.py', 'tyc_period.py')\"",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python -m unittest -v test_tyc_pixel",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python tyc_pixel.py --self-test",
+   "exit": 0,
+   "seconds": 10
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python tyc_pixel.py --data-dir /data/pixel-tyc6340 --wasp-dir /data/wasp-tyc6340 --out-dir /out",
+   "exit": 4,
+   "seconds": 12
+  }
+ ],
+ "out_files": [
+  "tyc_pixel_summary.json"
+ ],
+ "out_files_total": 1,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stdout] [fetch] TESScut tess-s0092-2-1_305.561052_-22.073651_15x15_astrocut.fits (51422400 bytes)\n[fetch] Gaia field 72 stars\nFETCH_FAILED 38 arcsec neighbour not in Gaia field\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261120T191647Z-astrophysics\\pixel)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

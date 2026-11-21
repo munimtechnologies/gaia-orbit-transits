@@ -4,7 +4,20 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (21 Nov, ~17:00 UTC): the full DR3 rehearsal of step g, graded
+## Newest (21 Nov, ~17:30 UTC): TYC 6340-23-1's "bright 38″ neighbour" is faint; pixel test re-filed
+
+**Amendment:** `findings/2026-11-21-tyc6340-pixel-amendment-1.md`, code `patch_tyc_pixel_011.py`
+(turns `tyc_pixel.py` 0.1.0 into 0.1.1), tests `test_tyc_pixel_011.py`, job tyc6340-pixel-v2.
+- Job tyc6340-pixel-v1 stopped at the Gaia step, before any pixel was analysed: the neighbour we
+  had taken from SuperWASP's archive as **V ≈ 11.25** is **G = 14.39 (RP 13.75)** in Gaia DR3
+  (6853008487031438080). SuperWASP's large aperture most likely mixed in the target's light.
+- **A flux argument already settles it:** the 38″ star would have to lose 198% of its own light to
+  make the 6.09% eclipse, so it **cannot be the source**.
+- The pixel test now tests the nearest star that *could* make the eclipse, **Gaia DR3
+  6853008452671699328 (G 12.55, 94″; it would need a 43% eclipse)**, and adds a blend screen of
+  every Gaia star in the field. Labels, thresholds, controls and predictions are unchanged.
+
+## Earlier (21 Nov, ~17:00 UTC): the full DR3 rehearsal of step g, graded
 
 **Results:** `findings/2026-11-21-vpt-dr3-results.md`, data `data/vpt-dr3-v1/c0/` and
 `data/vpt-dr3-v1/c1/` (all 214 Gaia DR3 transit candidates folded in TESS). Counted from the two
@@ -24,9 +37,9 @@ chunk files; job gaia-vpt-dr3-comb-v1 recomputes them with 0.1.1 and a fresh RVS
   2022). Neither is called a planet.
 
 **Pre-registered next:** `findings/2026-11-21-vpt-followup-prereg.md`, code `vpt_followup.py`
-0.1.0 (job gaia-vpt-followup-v1): every TESS sector, a period-free box search, odd/even, secondary
-and per-sector depths, with three known hot Jupiters as controls (two with wrong Gaia periods).
-Predictions: CONTROLS_PASS 80%; TIC 4638108 SURVIVES 55%; TIC 44997521 SURVIVES 45%.
+0.1.0 (job gaia-vpt-followup-v1, queued): every TESS sector, a period-free box search, odd/even,
+secondary and per-sector depths, with three known hot Jupiters as controls (two with wrong Gaia
+periods). Predictions: CONTROLS_PASS 80%; TIC 4638108 SURVIVES 55%; TIC 44997521 SURVIVES 45%.
 
 ## Earlier (21 Nov, ~16:00 UTC): half of the step-g DR3 rehearsal, and amendment 1 before DR4
 
@@ -49,8 +62,6 @@ KNOWN_SYSTEM_OTHER_P / NEW, and flags eclipsing-binary signs. G0 (validity), G1 
 fraction of Gaia's NEW candidates TESS sees), G2 (planet-like list), G3 (EB share), G4 (aliases).
 DR4 predictions: MOSTLY_SEEN 40%, MIXED 35%; 6 or more new planet-like signals 55%.
 
-The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
-
 ## Earlier (20 Nov, ~23:30 UTC): two more quality-cut tests fixed before Gaia DR4
 
 **Pre-registered:** `findings/2026-11-20-qcut-q4ef-prereg.md`, graded on DR4 day at step (a4).
@@ -68,8 +79,9 @@ The TYC 6340-23-1 pixel test (tyc6340-pixel-v1) is still queued.
   likely our artefact**.
 
 **Pre-registered next:** `findings/2026-11-20-tyc6340-pixel-prereg.md`, code `tyc_pixel.py` 0.1.0
-(job tyc6340-pixel-v1): which star dims, the deblended depth, and a 19-year period.
-Predictions: on target 82%; depth consistent 55%; oversize survives 75%; link unique 70%.
+(job tyc6340-pixel-v1; amended 21 Nov, see the newest section): which star dims, the deblended
+depth, and a 19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives
+75%; link unique 70%.
 
 ## Results of 20 Nov
 
@@ -111,6 +123,9 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
   (`findings/2026-11-18-selflens-vet-results.md`).
 
 ## Corrected
+- **TYC 6340-23-1's 38″ neighbour is G = 14.39, not V ≈ 11.25** (21 Nov; SuperWASP's archive
+  magnitude was blended). It cannot make the eclipse; the pixel test now targets the 94″ G = 12.55
+  star (`findings/2026-11-21-tyc6340-pixel-amendment-1.md`).
 - **TYC 6340-23-1's "5.8σ period tension" (20 Nov 14:30 UTC) was very likely our detrending
   artefact** (`findings/2026-11-20-tyc6340-period-results.md`).
 - **"Most brown-dwarf-mass orbits are not real" was premature on 19 Nov morning** (amendment 2).
@@ -143,6 +158,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 - **A one-sector discovery needs an older, independent light curve.**
 - **Detrend without assuming an ephemeris first.**
 - **A blended discovery needs a pixel-level test** before a radius is quoted.
+- **Check every neighbour's brightness in Gaia before building a blend test around it:** a
+  wide-aperture survey's catalogue magnitude for a close neighbour can include the target's light.
 - **A near-miss is a hypothesis, not a result:** test it again on data the first test did not use.
 - **A control is only a noise control where the real signal has been removed.**
 - **Check a catalogue's periods against known objects before folding new ones at them:** Gaia
