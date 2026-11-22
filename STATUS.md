@@ -4,7 +4,30 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (22 Nov, ~01:45 UTC): Gaia's own spectrograph on all 214 Gaia DR3 transit candidates
+## Newest (22 Nov, ~03:00 UTC): Gaia's orbit catalogue against Gaia's transit list; amendment 2 (NSS screen) before DR4
+
+**Results (exploratory, not blind) and registered predictions:** `findings/2026-11-22-vpt-nss-crossmatch.md`,
+data `data/vpt-nss-dr3/vpt_nss_dr3.csv`, code `vpt_nss.py` 0.1.0 with tests (`test_vpt_nss.py`).
+- **7 of the 214 Gaia DR3 transit candidates have a Gaia DR3 orbit solution.** WASP-18's single-lined
+  orbit recovers WASP-18 b (K 1.94 ± 0.14 km/s, 10.5 M_Jup minimum): a positive control.
+- **TIC 400170926 (TYC 2423-351-1, G 9.3), one of Gaia's new candidates, is a double-lined binary in
+  Gaia's own orbit catalogue:** P 5.8959 d, two Sun-like stars (M sin³i 1.11 and 1.02 M_sun) seen
+  nearly edge-on, so eclipses are likely. Gaia's transit period (0.8848 d) is not a simple fraction
+  of the orbit. Our RVS screen could not test it (Gaia DR3 gives no velocity for it). No TOI, no TESS
+  EB catalogue entry, VSX lists only Gaia's own planet-transit import. With the 8 RVS-flagged stars,
+  9 of Gaia DR3's 39 unconfirmed new candidates now have Gaia's own evidence of a stellar companion.
+- **Where Gaia's transit period is wrong, its orbit can be right:** TOI-1991's single-lined orbit
+  (6.6591 ± 0.0012 d) matches the TESS period (6.6571 d; already a TFOP false positive, and the match
+  was first noted by Tarrants & Mendes 2023), while the transit table gives 3.7463 d.
+- **Registered before job gaia-vpt-pf-dr3-v1 runs:** the period-free TESS search finds 5.8959 d (or
+  half) for TIC 400170926 (75%), 7.0623 d (or half) for TIC 470993218 (30%), 6.6571 d (or half) for
+  TOI-1991 (85%), 0.4602/0.9205/0.2301 d for TIC 207399049 (25%).
+- **Amendment 2 for DR4 (step g2c):** join every DR4 transit candidate with DR4's orbit table and
+  remove double-lined or ≥ 0.08 M_sun companions before the period-free follow-up (g3). Predictions:
+  ≥ 70% of NEW candidates with a spectroscopic orbit are stellar (75%); the screen removes at least
+  one star the RVS screen could not test (60%).
+
+## Earlier (22 Nov, ~01:45 UTC): Gaia's own spectrograph on all 214 Gaia DR3 transit candidates
 
 **Results (exploratory, not blind):** `findings/2026-11-22-vpt-rvs-full.md`, data
 `data/vpt-dr3-v1/rvs/` (job gaia-vpt-rvs-dr3-v1, `gaia_vpt_tess.py` 0.1.1 `--rvs-screen`).
@@ -195,8 +218,9 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 
 ## Leads
 1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); Gaia's
-   spectrograph flags 8 of 12 testable new candidates (22 Nov); why the periods are wrong (epoch
-   test, queued); the period-free search of all 214 (G6, queued); the blind test on DR4's 1,007
+   spectrograph flags 8 of 12 testable new candidates (22 Nov); Gaia's orbit catalogue adds TIC
+   400170926, a double-lined near-twin binary (22 Nov); why the periods are wrong (epoch test,
+   queued); the period-free search of all 214 (G6, queued); the blind test on DR4's 1,007
    candidates on release day; follow-up of TIC 4638108 and TIC 44997521 (catalogue vetting done,
    period-free TESS test queued).
 2. **A transiting companion first found by Gaia astrometry** (step i, DR4): pre-registered with
@@ -229,7 +253,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 
 ## Refuted or closed
 - TIC 207399049: refuted. Archival dips for the 25-star watch list: 0 found (0.28 expected).
-  (Gaia's spectrograph also flags it as RV-variable, 22 Nov.)
+  (Gaia's spectrograph also flags it as RV-variable, 22 Nov, and Gaia DR3 has a 0.46-day
+  single-lined orbit for it.)
 - Two "stripped companion" candidates are more likely blends or triples.
 
 ## Lessons the pipeline now encodes
@@ -262,6 +287,9 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 - **Half a sample can mislead:** chunk 0 said MOSTLY_SEEN, the full sample says MIXED.
 - **Use the survey's own other instruments as a vetting step** (Gaia RVS): it flags 8 of 12
   testable new DR3 transit candidates and 4 of 110 known planet hosts.
+- **"Untested" by one screen is not "clean":** Gaia DR3 gives no velocity statistics for
+  double-lined binaries, so the RVS screen called TIC 400170926 untested; Gaia's orbit table shows
+  it is a near-twin binary. Cross-match every catalogue the survey publishes.
 - **Save a survey's raw data before its archive goes dark:** the epoch test stores every Gaia DR3
   epoch it downloads, ahead of the 25 Nov - 2 Dec archive closure.
 - **A new release can change a table's parameterisation, not just its column names:** check the
@@ -276,7 +304,8 @@ AAVSO VSX (API, or its VizieR copy B/vsx when the API refuses), the TESS EB cata
 2022), the TESS Ten Thousand catalogue (Kostov et al. 2025), Gaia DR3 vari_eclipsing_binary and
 vari_classifier_result, the ZTF and ASAS-SN variable catalogues, Green et al. (2023), ExoFOP, the
 SPOC TCE list, SIMBAD, the Chopard-Vilhem Zenodo deposits, the *Eclipses by Appointment* claim
-tables and the EBLM target tables.
+tables, the EBLM target tables, and Gaia DR3 nss_two_body_orbit (Tarrants & Mendes 2023 matched it
+to TOIs and K2 candidates).
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
@@ -284,10 +313,11 @@ tables and the EBLM target tables.
   DR3 epoch photometry falls back to ESA's bulk CDN files.
 - Release-day runbook: `runbook/dr4-release-day.md`, with every module pinned to the commit that
   published it. Step G6 uses `vpt_pf.py` at commit 9bf9704211bd129204bb4de091f38021ec76d301.
+  Step g2c (amendment 2) uses `vpt_nss.py` 0.1.0 (`findings/2026-11-22-vpt-nss-crossmatch.md`).
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
-  transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2), (g3) the period-free follow-up of
-  every G2b survivor, (g4) only if the epoch test's T3 is PREDICTIVE, (G6) the period-free search
-  of every DR4 candidate via `vpt_pf.py` (`findings/2026-11-21-vpt-pf-prereg.md`), and (i)
-  astrometric orbits x TESS via `run_search_dr4.py`; later (d), (f), (h). (e) EBLM inflation is
-  cancelled.
+  transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2 + NSS screen g2c), (g3) the
+  period-free follow-up of every G2c survivor, (g4) only if the epoch test's T3 is PREDICTIVE, (G6)
+  the period-free search of every DR4 candidate via `vpt_pf.py` (`findings/2026-11-21-vpt-pf-prereg.md`),
+  and (i) astrometric orbits x TESS via `run_search_dr4.py`; later (d), (f), (h). (e) EBLM
+  inflation is cancelled.
