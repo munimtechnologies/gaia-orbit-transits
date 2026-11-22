@@ -1,0 +1,72 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-vpt-epochs-v1",
+ "id": "300d87422dbc",
+ "field": "astrophysics",
+ "run": "20261121T190530Z-astrophysics",
+ "kind": "compete",
+ "status": "failed",
+ "reason": "run step exited 2",
+ "host": "blade",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T17:35:20.654983+00:00",
+ "finished_at": "2026-11-22T17:41:41.900619+00:00",
+ "duration_seconds": 381,
+ "limits": {
+  "cpu": 2.0,
+  "memory_gb": 2.0,
+  "timeout_minutes": 240.0
+ },
+ "peak_memory_gb": 0.03,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir numpy",
+   "exit": 0,
+   "seconds": 4
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python fetch_inputs.py inputs",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python -m unittest -v test_vpt_epochs",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python vpt_epochs.py --self-test",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python vpt_epochs.py --inputs inputs --out-dir /out --cache-dir /data/vpt-epochs-dr3 --cdn-max-gb 40",
+   "exit": 2,
+   "seconds": 212
+  }
+ ],
+ "out_files": [
+  "epochs_g_1.csv",
+  "epochs_g_2.csv",
+  "vpt_epochs_summary.json"
+ ],
+ "out_files_total": 3,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stdout] ps://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>\n17:39:24 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>\n17:39:44 DataLink DATAMODEL_STANDARD failed: RuntimeError(\"HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>\")\n17:39:45 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>\n17:39:55 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>\n17:40:15 DataLink INDIVIDUAL failed: RuntimeError(\"HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>\")\n17:40:16 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>\n17:40:27 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>\n17:40:47 DataLink DATAMODEL_GAIA failed: RuntimeError(\"HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>\")\n17:40:47 DataLink gave nothing twice in a row; going to the CDN\n17:40:47 CDN fallback for 214\n17:40:48 CDN index files 3386\n17:40:48 epochs for 0 of 214\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T190530Z-astrophysics\\ep)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

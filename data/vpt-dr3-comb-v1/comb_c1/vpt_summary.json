@@ -1,0 +1,141 @@
+{
+ "version": "0.1.1",
+ "n_candidates_processed": 107,
+ "n_ok": 102,
+ "status_counts": {
+  "OK": 102,
+  "NO_TESS": 5
+ },
+ "n_rate_sample": 79,
+ "control_hits": 23,
+ "control_rate": 0.14556962025316456,
+ "by_category": {
+  "KNOWN_SYSTEM_OTHER_P": {
+   "n": 82,
+   "n_sens": 64,
+   "n_hit_sens": 14
+  },
+  "NEW": {
+   "n": 13,
+   "n_sens": 8,
+   "n_hit_sens": 1
+  },
+  "TOI_PC": {
+   "n": 3,
+   "n_sens": 3,
+   "n_hit_sens": 3
+  },
+  "KNOWN_PLANET": {
+   "n": 4,
+   "n_sens": 4,
+   "n_hit_sens": 4
+  }
+ },
+ "control_by_category": {
+  "KNOWN_SYSTEM_OTHER_P": {
+   "trials": 128,
+   "hits": 23,
+   "rate": 0.1796875
+  },
+  "NEW": {
+   "trials": 16,
+   "hits": 0,
+   "rate": 0.0
+  },
+  "TOI_PC": {
+   "trials": 6,
+   "hits": 0,
+   "rate": 0.0
+  },
+  "KNOWN_PLANET": {
+   "trials": 8,
+   "hits": 0,
+   "rate": 0.0
+  }
+ },
+ "G0": {
+  "known_sensitive": 4,
+  "known_hits": 4,
+  "recovery": 1.0,
+  "recovery_ci95": [
+   0.5100999795960008,
+   1.0
+  ],
+  "label_a": "UNTESTABLE",
+  "label_b": "CONTROLS_NOISY"
+ },
+ "G0b_kp": {
+  "n_known": 4,
+  "trials": 8,
+  "hits": 0,
+  "rate": 0.0,
+  "rate_upper95": 0.46110993176424186,
+  "label": "UNTESTABLE"
+ },
+ "G1": {
+  "new_sensitive": 8,
+  "new_hits": 1,
+  "false_alarms_expected": 1.1645569620253164,
+  "fraction_seen": 0.0,
+  "fraction_seen_ci95": [
+   0.0,
+   0.5508858036141976
+  ],
+  "label": "UNTESTABLE",
+  "valid": false
+ },
+ "G1b": {
+  "new_sensitive": 8,
+  "new_hits": 1,
+  "false_alarms_expected": 0.0,
+  "fraction_seen": 0.125,
+  "fraction_seen_ci95": [
+   0.0031647259980362302,
+   0.6964554238673621
+  ],
+  "label": "UNTESTABLE",
+  "valid": false,
+  "fraction_seen_conservative": 0.0,
+  "label_conservative": "UNTESTABLE"
+ },
+ "G2": {
+  "n_new_hits_all": 4,
+  "n_planet_like": 1,
+  "planet_like": [
+   {
+    "source_id": "5432318139709900160",
+    "tic": "44997521",
+    "P": "3.5497497426431432",
+    "depth_tess": "0.02188586000671579",
+    "r2_rj": "1.0340853837972508",
+    "G": "13.809506",
+    "rv_class": ""
+   }
+  ]
+ },
+ "G3": {
+  "n_new_hits_all": 4,
+  "n_eb_like": 3,
+  "eb_share": 0.75
+ },
+ "G4": {
+  "n_missed_at_P": 74,
+  "n_alias_hits": 7
+ },
+ "G5": {
+  "n_known_systems": 86,
+  "n_period_match": 4,
+  "n_period_other": 82,
+  "fraction_match": 0.046511627906976744,
+  "fraction_match_ci95": [
+   0.01823367317295907,
+   0.11357163750717128
+  ],
+  "label": "PERIODS_MOSTLY_WRONG"
+ },
+ "meta": {
+  "combined_from": [
+   "c1"
+  ]
+ }
+}

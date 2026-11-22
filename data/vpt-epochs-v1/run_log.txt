@@ -1,0 +1,24 @@
+17:37:16 targets 214
+17:37:39 cached 0 missing 214
+17:37:40 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:37:51 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:38:11 DataLink DATAMODEL_STANDARD failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:38:12 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:38:22 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:38:42 DataLink INDIVIDUAL failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:38:43 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:38:53 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:39:13 DataLink DATAMODEL_GAIA failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:39:14 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:39:24 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:39:44 DataLink DATAMODEL_STANDARD failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:39:45 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:39:55 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:40:15 DataLink INDIVIDUAL failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:40:16 HTTP retry https://gea.esac.esa.int/data-server/data 1 <HTTPError 503: 'Service Unavailable'>
+17:40:27 HTTP retry https://gea.esac.esa.int/data-server/data 2 <HTTPError 503: 'Service Unavailable'>
+17:40:47 DataLink DATAMODEL_GAIA failed: RuntimeError("HTTP failed https://gea.esac.esa.int/data-server/data: <HTTPError 503: 'Service Unavailable'>")
+17:40:47 DataLink gave nothing twice in a row; going to the CDN
+17:40:47 CDN fallback for 214
+17:40:48 CDN index files 3386
+17:40:48 epochs for 0 of 214

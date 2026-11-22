@@ -1,0 +1,17 @@
+{
+ "error": "epoch photometry unavailable",
+ "have": 0,
+ "meta": {
+  "version": "0.1.0",
+  "started": "2026-11-22T17:37:16Z",
+  "archive_tics": 4566,
+  "toi_tics": 6434,
+  "datalink_structures": [],
+  "cdn_log": [],
+  "epochs_from": {
+   "cache": 0,
+   "datalink": 0,
+   "cdn": 0
+  }
+ }
+}
