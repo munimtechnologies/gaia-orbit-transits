@@ -1,0 +1,67 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-vpt-rvs-dr3-v1",
+ "id": "fe9e4d76dc74",
+ "field": "astrophysics",
+ "run": "20261121T143536Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T00:32:53.953996+00:00",
+ "finished_at": "2026-11-22T00:36:57.633330+00:00",
+ "duration_seconds": 243,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 30.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": null,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_gaia_vpt_tess",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python gaia_vpt_tess.py --rvs-screen --schema gaiadr3 --out-dir /out/rvs",
+   "exit": 0,
+   "seconds": 3
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python fetch_repo_file.py data/vpt-dr3-v1/c0/vpt_stars.csv c0/vpt_stars.csv",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python gaia_vpt_tess.py --combine c0 --rvs-file /out/rvs/vpt_rvs.csv --out-dir /out/comb_c0",
+   "exit": 0,
+   "seconds": 0
+  }
+ ],
+ "out_files": [
+  "comb_c0/vpt_stars.csv",
+  "comb_c0/vpt_summary.json",
+  "rvs/vpt_rvs.csv",
+  "rvs/vpt_rvs_summary.json"
+ ],
+ "out_files_total": 4,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stdout] 962, 0.9837682477371741], \"label_a\": \"PIPELINE_OK\", \"label_b\": \"CONTROLS_NOISY\"}, \"G1\": {\"new_sensitive\": 11, \"new_hits\": 6, \"false_alarms_expected\": 1.4709302325581395, \"fraction_seen\": 0.41173361522198737, \"fraction_seen_ci95\": [0.0664512746302464, 1.0], \"label\": \"MIXED\", \"valid\": false}, \"G3\": {\"n_new_hits_all\": 8, \"n_eb_like\": 6, \"eb_share\": 0.75}, \"G4\": {\"n_missed_at_P\": 73, \"n_alias_hits\": 11}, \"G0b_kp\": {\"n_known\": 11, \"trials\": 22, \"hits\": 0, \"rate\": 0.0, \"rate_upper95\": 0.16767633882336067, \"label\": \"CONTROLS_OK\"}, \"G1b\": {\"new_sensitive\": 11, \"new_hits\": 6, \"false_alarms_expected\": 0.0, \"fraction_seen\": 0.5454545454545454, \"fraction_seen_ci95\": [0.20017220486280454, 1.0], \"label\": \"MOSTLY_SEEN\", \"valid\": true, \"fraction_seen_conservative\": 0.37777820663118483, \"label_conservative\": \"MIXED\"}, \"G5\": {\"n_known_systems\": 90, \"n_period_match\": 11, \"n_period_other\": 79, \"fraction_match\": 0.12222222222222222, \"fraction_match_ci95\": [0.06963544351908198, 0.20573923039952124], \"label\": \"PERIODS_MOSTLY_WRONG\"}, \"G2b\": {\"n_planet_like\": 2, \"n_rv_variable\": 1, \"survivors\": [{\"source_id\": \"5431056347037926784\", \"tic\": \"4638108\", \"P\": \"2.2086268966583473\", \"rv_class\": \"RV_UNTESTED\"}]}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T143536Z-astrophysics\\vpt)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-vpt-rvs, kept for later jobs)"
+ },
+ "note": ""
+}

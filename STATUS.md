@@ -1,13 +1,27 @@
-# gaia-orbit-transits: current status (2026-11-21)
+# gaia-orbit-transits: current status (2026-11-22)
 
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (21 Nov, ~23:45 UTC): step G6 pre-registered, a period-free TESS search of all 214 Gaia DR3 transit candidates
+## Newest (22 Nov, ~01:45 UTC): Gaia's own spectrograph on all 214 Gaia DR3 transit candidates
+
+**Results (exploratory, not blind):** `findings/2026-11-22-vpt-rvs-full.md`, data
+`data/vpt-dr3-v1/rvs/` (job gaia-vpt-rvs-dr3-v1, `gaia_vpt_tess.py` 0.1.1 `--rvs-screen`).
+- **8 of the 12 RVS-testable new candidates are radial-velocity variable** (0.67, 95% 0.39-0.86;
+  Katz et al. 2023 criterion), against **4 of 110 testable known systems** (0.036), two of which
+  host 10-27 Jupiter-mass companions (correct flags). One-sided Fisher p ≈ 2 × 10⁻⁷.
+- A hot Jupiter moves its star by 0.1-0.3 km/s, far below this test, so a flag means a stellar
+  companion: at least 8 of Gaia DR3's 39 unconfirmed new candidates now have Gaia's own evidence
+  against a planet. We found no published RVS screen of them.
+- The two survivors (TIC 4638108, TIC 44997521) are too faint for the screen. Still no TOI or CTOI
+  on ExoFOP (22 Nov); no ASAS-SN variable-catalogue entry.
+
+## Earlier (21 Nov, ~23:45 UTC): step G6 pre-registered, a period-free TESS search of all 214 Gaia DR3 transit candidates
 
 **Pre-registered:** `findings/2026-11-21-vpt-pf-prereg.md`, code `vpt_pf.py` 0.1.0 with tests
-(`test_vpt_pf.py`), set-up `runbook/pf/fetch_deps.py`, rehearsal job gaia-vpt-pf-dr3-v1 (queued).
+(`test_vpt_pf.py`; commit 9bf9704211bd129204bb4de091f38021ec76d301, release v0.45.0), set-up
+`runbook/pf/fetch_deps.py`, rehearsal job gaia-vpt-pf-dr3-v1 (queued).
 - **Why:** Gaia's period is wrong for 161 of 176 known systems in DR3, so folding TESS at Gaia's
   period (step g) misses most real signals. G6 runs the unchanged period-free follow-up
   (`vpt_followup.py` 0.1.0, up to 6 sectors) on every candidate and compares the TESS period with
@@ -104,6 +118,8 @@ chunk files; job gaia-vpt-dr3-comb-v1 recomputes them with 0.1.1 and a fresh RVS
   star) and **TIC 44997521** (Gaia DR3 5432318139709900160; P 3.55 d, 2.2% deep in TESS and Gaia,
   1.03 R_Jup on a K dwarf, or 1.15 R_Jup with the TIC radius; weak TESS detection, S/N 7.6). Both
   are Gaia's candidates (Panahi et al. 2022). Neither is called a planet.
+- Chunk 0 re-graded by the code with the RVS file (22 Nov, `data/vpt-dr3-v1/rvs/comb_c0_vpt_summary.json`)
+  matches the hand-made chunk-0 numbers exactly.
 
 **Pre-registered next:** `findings/2026-11-21-vpt-followup-prereg.md`, code `vpt_followup.py`
 0.1.0 (job gaia-vpt-followup-v1, queued): every TESS sector, a period-free box search, odd/even,
@@ -178,10 +194,11 @@ Also: the combined transit-test grade (`findings/2026-11-19-sb1-robust-combined-
 the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-control-results.md`).
 
 ## Leads
-1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); why the
-   periods are wrong (epoch test, queued); the blind test on DR4's 1,007 candidates on release
-   day; follow-up of TIC 4638108 and TIC 44997521 (catalogue vetting done, period-free TESS test
-   queued).
+1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded (above); Gaia's
+   spectrograph flags 8 of 12 testable new candidates (22 Nov); why the periods are wrong (epoch
+   test, queued); the period-free search of all 214 (G6, queued); the blind test on DR4's 1,007
+   candidates on release day; follow-up of TIC 4638108 and TIC 44997521 (catalogue vetting done,
+   period-free TESS test queued).
 2. **A transiting companion first found by Gaia astrometry** (step i, DR4): pre-registered with
    a DR4 adapter and gate; rehearsal queued.
 3. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
@@ -212,6 +229,7 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 
 ## Refuted or closed
 - TIC 207399049: refuted. Archival dips for the 25-star watch list: 0 found (0.28 expected).
+  (Gaia's spectrograph also flags it as RV-variable, 22 Nov.)
 - Two "stripped companion" candidates are more likely blends or triples.
 
 ## Lessons the pipeline now encodes
@@ -242,7 +260,8 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 - **A hit at a catalogue's period does not prove the period:** search the full light curve without
   assuming it.
 - **Half a sample can mislead:** chunk 0 said MOSTLY_SEEN, the full sample says MIXED.
-- **Use the survey's own other instruments as a vetting step** (Gaia RVS).
+- **Use the survey's own other instruments as a vetting step** (Gaia RVS): it flags 8 of 12
+  testable new DR3 transit candidates and 4 of 110 known planet hosts.
 - **Save a survey's raw data before its archive goes dark:** the epoch test stores every Gaia DR3
   epoch it downloads, ahead of the 25 Nov - 2 Dec archive closure.
 - **A new release can change a table's parameterisation, not just its column names:** check the
@@ -264,7 +283,7 @@ tables and the EBLM target tables.
   2 December 12:00 CET.** Jobs that still need DR3 tables fall back to the Heidelberg DR3 mirror;
   DR3 epoch photometry falls back to ESA's bulk CDN files.
 - Release-day runbook: `runbook/dr4-release-day.md`, with every module pinned to the commit that
-  published it.
+  published it. Step G6 uses `vpt_pf.py` at commit 9bf9704211bd129204bb4de091f38021ec76d301.
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
   transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2), (g3) the period-free follow-up of

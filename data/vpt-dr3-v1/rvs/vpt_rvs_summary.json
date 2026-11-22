@@ -1,0 +1,36 @@
+{
+ "version": "0.1.1",
+ "schema": "gaiadr3",
+ "query": "SELECT v.source_id, v.transit_period, g.phot_g_mean_mag, g.grvs_mag, g.radial_velocity, g.radial_velocity_error, g.rv_nb_transits, g.rv_amplitude_robust, g.rv_chisq_pvalue, g.rv_renormalised_gof, g.rv_template_teff FROM gaiadr3.vari_planetary_transit AS v JOIN gaiadr3.gaia_source AS g ON g.source_id = v.source_id ORDER BY v.source_id",
+ "n_rows": 214,
+ "criterion": {
+  "rv_chisq_pvalue_max": 0.01,
+  "rv_renormalised_gof_min": 4.0,
+  "rv_nb_transits_min": 10,
+  "rv_template_teff_range": [
+   3900.0,
+   8000.0
+  ],
+  "reference": "Katz et al. 2023, A&A 674, A5"
+ },
+ "counts": {
+  "RV_QUIET": 113,
+  "RV_UNTESTED": 89,
+  "RV_VARIABLE": 12
+ },
+ "rv_variable": [
+  "1622997463177004928",
+  "2015499135507395328",
+  "2685725036820337408",
+  "2881784280929695360",
+  "4136481216073713280",
+  "4334991786994866304",
+  "4535127268607000320",
+  "4677436783705094912",
+  "4895643593611507584",
+  "4955371367334610048",
+  "5348534425968598400",
+  "6081267254094015616"
+ ],
+ "fetched_utc": "2026-11-22T00:32:57Z"
+}
