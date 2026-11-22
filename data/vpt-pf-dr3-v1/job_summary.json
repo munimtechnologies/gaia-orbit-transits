@@ -1,0 +1,98 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-vpt-pf-dr3-v1",
+ "id": "d303cc2040c6",
+ "field": "astrophysics",
+ "run": "20261121T230532Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T07:16:30.646129+00:00",
+ "finished_at": "2026-11-22T08:56:21.174810+00:00",
+ "duration_seconds": 5990,
+ "limits": {
+  "cpu": 2.0,
+  "memory_gb": 2.0,
+  "timeout_minutes": 225.0
+ },
+ "peak_memory_gb": 0.48,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir -r requirements.txt",
+   "exit": 0,
+   "seconds": 112
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_deps.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_vpt_pf",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python vpt_pf.py --self-test",
+   "exit": 0,
+   "seconds": 21
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python vpt_pf.py --targets vpt_candidates.csv --expect-n 214 --out-dir /out --tmp-dir /tmp/vpf --ckpt-dir /data/vpt_pf_dr3_v010 --max-sectors 6 --workers 2 --time-budget-min 200",
+   "exit": 0,
+   "seconds": 5550
+  }
+ ],
+ "out_files": [
+  "pf_fold_1622997463177004928.png",
+  "pf_fold_1797039953308437376.png",
+  "pf_fold_2015499135507395328.png",
+  "pf_fold_2134884520357421824.png",
+  "pf_fold_2196955937473897856.png",
+  "pf_fold_2685725036820337408.png",
+  "pf_fold_2930070089987088384.png",
+  "pf_fold_3215209257907330560.png",
+  "pf_fold_3450611154067089408.png",
+  "pf_fold_4136481216073713280.png",
+  "pf_fold_4224807772566402560.png",
+  "pf_fold_435993129634439936.png",
+  "pf_fold_4535127268607000320.png",
+  "pf_fold_460792064645351168.png",
+  "pf_fold_4677436783705094912.png",
+  "pf_fold_4895643593611507584.png",
+  "pf_fold_5058575995484206592.png",
+  "pf_fold_5345417757181174144.png",
+  "pf_fold_5431056347037926784.png",
+  "pf_fold_5432318139709900160.png",
+  "pf_fold_5594445630358459648.png",
+  "pf_fold_5836096154165283712.png",
+  "pf_fold_6076338109120572032.png",
+  "pf_fold_6081267254094015616.png",
+  "pf_fold_66046877505607424.png",
+  "pf_fold_915921914974730368.png",
+  "pf_sectors.csv",
+  "pf_summary.json",
+  "pf_targets_out.csv"
+ ],
+ "out_files_total": 29,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-03-python stderr] current version of autograd. See #1452 for details.\n  warnings.warn(\nWarning: 23% (4131/18307) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 21% (3913/18307) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 30% (5873/19412) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 24% (4001/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n/usr/local/lib/python3.12/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.\n  warnings.warn(\nWarning: 27% (4796/18035) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n/usr/local/lib/python3.12/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.\n  warnings.warn(\nWarning: 25% (4800/19050) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-03-python stdout] 760357286834 snr 587.0698912738144 flags  32.0s\n08:51:47 [211/214] 2726339892542980864 KNOWN_RECOVERED P_gaia 0.8034064433196755 P_tess 1.5487673592487177 snr 85.79606841407528 flags  17.3s\n08:52:11 [212/214] 5594445630358459648 NEW_EB_LIKE P_gaia 0.9992705325112669 P_tess 12.688352044489752 snr 183.57393372746637 flags ODD_EVEN;STELLAR_SIZE 46.6s\n08:52:29 [213/214] 4864759888238232320 KNOWN_RECOVERED P_gaia 0.7211833175874977 P_tess 3.84041522650338 snr 124.78283600807484 flags  41.7s\n08:52:52 [214/214] 5348534425968598400 KNOWN_RECOVERED P_gaia 3.7463005282283746 P_tess 6.657094603285741 snr 240.1934019681054 flags ODD_EVEN 41.7s\n{\"classes\": {\"KNOWN_RECOVERED\": 176, \"NEW_EB_LIKE\": 18, \"KNOWN_OTHER_P\": 5, \"NEW_SURVIVES_OTHER_P\": 5, \"NEW_SURVIVES\": 3, \"NEW_NOT_DETECTED\": 1, \"NO_TESS\": 5, \"KNOWN_HARMONIC\": 1}, \"PF1\": {\"n\": 181, \"k\": 176, \"rate\": 0.9723756906077348, \"ci95\": [0.9369721859273566, 0.9881442380810915], \"label\": \"PF_RECOVERS\"}, \"PF1b\": {\"n\": 160, \"k\": 156, \"rate\": 0.975, \"ci95\": [0.9374891497798977, 0.990236165402571], \"label\": \"PF_RECOVERS\"}, \"PF_WRONG\": {\"n_detected\": 181, \"k_other_p\": 4, \"rate\": 0.022099447513812154, \"pf2_reliable\": true}}\n{\"PF2_n\": 8, \"PF2_robust\": 4}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T230532Z-astrophysics\\pf)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
