@@ -1,0 +1,1196 @@
+{
+ "grades": {
+  "T1": {
+   "n_controls": 13,
+   "k_pure": 1,
+   "label": "TIME_BAD",
+   "share": 0.07692307692307693
+  },
+  "WHY": {
+   "n_wrong_ok": 158,
+   "n_testable": 118,
+   "alias": 4,
+   "partial": 114,
+   "unrelated": 0,
+   "alias_share": 0.03389830508474576,
+   "lo": 0.01325961911756434,
+   "hi": 0.08392886166404062,
+   "label": "INVALID",
+   "raw_label": "SPURIOUS_DOMINATED",
+   "real_transit_seen_snr3": {
+    "ALIAS": 3,
+    "PARTIAL": 107,
+    "UNRELATED": 0
+   }
+  },
+  "T3": {
+   "n_right": 15,
+   "n_wrong": 157,
+   "auc_right_lower": 0.8579617834394905,
+   "p_one_sided": 2.4107399238024093e-06,
+   "label": "PREDICTIVE"
+  },
+  "exploratory_auc": {
+   "frac_above": {
+    "auc_right_lower": 0.8084925690021232,
+    "p_one_sided": 4.072152748014915e-05,
+    "n_right": 15,
+    "n_wrong": 157
+   },
+   "snr_g_free": {
+    "auc_right_lower": 0.20253164556962025,
+    "p_one_sided": 0.9999293089003627,
+    "n_right": 15,
+    "n_wrong": 158
+   },
+   "num_in_transit": {
+    "auc_right_lower": 0.2272151898734177,
+    "p_one_sided": 0.9997658309755771,
+    "n_right": 15,
+    "n_wrong": 158
+   },
+   "snr_g_fixed": {
+    "auc_right_lower": 0.3143459915611814,
+    "p_one_sided": 0.9912546262258602,
+    "n_right": 15,
+    "n_wrong": 158
+   }
+  },
+  "true_beats_gaia": {
+   "n": 157,
+   "true_higher": 85
+  },
+  "gaia_within_frac_median": 0.46153846153846156,
+  "n_ok": 179,
+  "n_total": 214,
+  "status_counts": {
+   "NO_EPHEMERIS": 35,
+   "OK": 179
+  }
+ },
+ "meta": {
+  "version": "0.1.1",
+  "started": "2026-11-22T18:28:10Z",
+  "archive_tics": 4566,
+  "toi_tics": 6434,
+  "datalink_structures": [],
+  "cdn_log": [
+   {
+    "file": "EpochPhotometry_006602-007952.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11280384
+   },
+   {
+    "file": "EpochPhotometry_012598-014045.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 12328960
+   },
+   {
+    "file": "EpochPhotometry_014046-015369.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4726784
+   },
+   {
+    "file": "EpochPhotometry_017019-017658.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1449984
+   },
+   {
+    "file": "EpochPhotometry_020494-020747.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18751488
+   },
+   {
+    "file": "EpochPhotometry_034570-036209.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 21372928
+   },
+   {
+    "file": "EpochPhotometry_036210-037375.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 15998976
+   },
+   {
+    "file": "EpochPhotometry_040136-040554.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 16392192
+   },
+   {
+    "file": "EpochPhotometry_043486-044091.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 838868992
+   },
+   {
+    "file": "EpochPhotometry_047061-047323.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 41426944
+   },
+   {
+    "file": "EpochPhotometry_049528-049851.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3547136
+   },
+   {
+    "file": "EpochPhotometry_052209-052434.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 10887168
+   },
+   {
+    "file": "EpochPhotometry_066956-068628.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 37756928
+   },
+   {
+    "file": "EpochPhotometry_073888-075228.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 5513216
+   },
+   {
+    "file": "EpochPhotometry_076420-077686.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 7479296
+   },
+   {
+    "file": "EpochPhotometry_093881-097402.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 73539584
+   },
+   {
+    "file": "EpochPhotometry_101393-102417.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2498560
+   },
+   {
+    "file": "EpochPhotometry_102418-104416.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 28844032
+   },
+   {
+    "file": "EpochPhotometry_106071-106913.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1974272
+   },
+   {
+    "file": "EpochPhotometry_111410-112700.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 25305088
+   },
+   {
+    "file": "EpochPhotometry_118620-121499.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 21504000
+   },
+   {
+    "file": "EpochPhotometry_125200-126263.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 72622080
+   },
+   {
+    "file": "EpochPhotometry_131011-132722.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6692864
+   },
+   {
+    "file": "EpochPhotometry_138124-140299.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 12460032
+   },
+   {
+    "file": "EpochPhotometry_140300-143213.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 16261120
+   },
+   {
+    "file": "EpochPhotometry_148933-150327.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 29237248
+   },
+   {
+    "file": "EpochPhotometry_151648-152645.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2367488
+   },
+   {
+    "file": "EpochPhotometry_161703-163359.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3547136
+   },
+   {
+    "file": "EpochPhotometry_165789-169159.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 23863296
+   },
+   {
+    "file": "EpochPhotometry_169160-172467.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 79699968
+   },
+   {
+    "file": "EpochPhotometry_172468-176297.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 113909760
+   },
+   {
+    "file": "EpochPhotometry_179862-182643.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11804672
+   },
+   {
+    "file": "EpochPhotometry_182644-185173.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 46145536
+   },
+   {
+    "file": "EpochPhotometry_186939-188926.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 794624
+   },
+   {
+    "file": "EpochPhotometry_198141-198695.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11149312
+   },
+   {
+    "file": "EpochPhotometry_198696-199005.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 18751488
+   },
+   {
+    "file": "EpochPhotometry_199775-200211.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 401408
+   },
+   {
+    "file": "EpochPhotometry_200212-200517.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2629632
+   },
+   {
+    "file": "EpochPhotometry_202031-202882.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3416064
+   },
+   {
+    "file": "EpochPhotometry_203843-204437.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11280384
+   },
+   {
+    "file": "EpochPhotometry_206932-206974.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 12328960
+   },
+   {
+    "file": "EpochPhotometry_207716-207749.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9838592
+   },
+   {
+    "file": "EpochPhotometry_208656-208716.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 23207936
+   },
+   {
+    "file": "EpochPhotometry_211965-212090.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 20455424
+   },
+   {
+    "file": "EpochPhotometry_218807-219318.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 46538752
+   },
+   {
+    "file": "EpochPhotometry_222893-223087.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 30810112
+   },
+   {
+    "file": "EpochPhotometry_225375-225621.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1712128
+   },
+   {
+    "file": "EpochPhotometry_229035-229177.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 16392192
+   },
+   {
+    "file": "EpochPhotometry_232894-232960.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 270336
+   },
+   {
+    "file": "EpochPhotometry_237138-237296.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11411456
+   },
+   {
+    "file": "EpochPhotometry_238724-238940.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9707520
+   },
+   {
+    "file": "EpochPhotometry_238941-239195.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4333568
+   },
+   {
+    "file": "EpochPhotometry_239552-240020.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1318912
+   },
+   {
+    "file": "EpochPhotometry_241761-241998.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 18882560
+   },
+   {
+    "file": "EpochPhotometry_241999-242292.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6168576
+   },
+   {
+    "file": "EpochPhotometry_242293-242704.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 14688256
+   },
+   {
+    "file": "EpochPhotometry_242705-242977.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 3284992
+   },
+   {
+    "file": "EpochPhotometry_243319-243830.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6299648
+   },
+   {
+    "file": "EpochPhotometry_247497-247595.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 16392192
+   },
+   {
+    "file": "EpochPhotometry_249571-249860.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 17178624
+   },
+   {
+    "file": "EpochPhotometry_255146-255619.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 5513216
+   },
+   {
+    "file": "EpochPhotometry_256330-257285.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 48242688
+   },
+   {
+    "file": "EpochPhotometry_262134-265343.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 31072256
+   },
+   {
+    "file": "EpochPhotometry_268720-271830.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 33431552
+   },
+   {
+    "file": "EpochPhotometry_274603-277912.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2367488
+   },
+   {
+    "file": "EpochPhotometry_281530-285121.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 33824768
+   },
+   {
+    "file": "EpochPhotometry_288627-292004.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 50995200
+   },
+   {
+    "file": "EpochPhotometry_299573-302248.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 19800064
+   },
+   {
+    "file": "EpochPhotometry_304000-305414.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 15212544
+   },
+   {
+    "file": "EpochPhotometry_309468-310877.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4071424
+   },
+   {
+    "file": "EpochPhotometry_325434-326719.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 23470080
+   },
+   {
+    "file": "EpochPhotometry_326720-327760.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 33955840
+   },
+   {
+    "file": "EpochPhotometry_327761-328727.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8396800
+   },
+   {
+    "file": "EpochPhotometry_329985-331030.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 38412288
+   },
+   {
+    "file": "EpochPhotometry_332550-332784.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 39723008
+   },
+   {
+    "file": "EpochPhotometry_333055-333167.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 28319744
+   },
+   {
+    "file": "EpochPhotometry_333790-334119.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 37625856
+   },
+   {
+    "file": "EpochPhotometry_336329-337476.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4726784
+   },
+   {
+    "file": "EpochPhotometry_337477-338947.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 71311360
+   },
+   {
+    "file": "EpochPhotometry_338948-340106.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 52961280
+   },
+   {
+    "file": "EpochPhotometry_343895-344169.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 5251072
+   },
+   {
+    "file": "EpochPhotometry_348781-349438.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 24256512
+   },
+   {
+    "file": "EpochPhotometry_349439-350312.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 31465472
+   },
+   {
+    "file": "EpochPhotometry_351215-352026.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 26615808
+   },
+   {
+    "file": "EpochPhotometry_352946-353142.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4595712
+   },
+   {
+    "file": "EpochPhotometry_353143-353319.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4464640
+   },
+   {
+    "file": "EpochPhotometry_360012-360924.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1712128
+   },
+   {
+    "file": "EpochPhotometry_364665-365697.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 45228032
+   },
+   {
+    "file": "EpochPhotometry_367349-368119.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2629632
+   },
+   {
+    "file": "EpochPhotometry_390462-390794.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2236416
+   },
+   {
+    "file": "EpochPhotometry_392137-392372.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11935744
+   },
+   {
+    "file": "EpochPhotometry_393943-394782.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 794624
+   },
+   {
+    "file": "EpochPhotometry_395712-396808.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 10493952
+   },
+   {
+    "file": "EpochPhotometry_402398-403911.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18489344
+   },
+   {
+    "file": "EpochPhotometry_403912-405723.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8921088
+   },
+   {
+    "file": "EpochPhotometry_407725-409897.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 36577280
+   },
+   {
+    "file": "EpochPhotometry_413664-415451.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 13770752
+   },
+   {
+    "file": "EpochPhotometry_415452-417656.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8921088
+   },
+   {
+    "file": "EpochPhotometry_427564-429762.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 14295040
+   },
+   {
+    "file": "EpochPhotometry_437343-440355.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 26353664
+   },
+   {
+    "file": "EpochPhotometry_470198-470263.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6452071
+   },
+   {
+    "file": "EpochPhotometry_474915-475046.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1187840
+   },
+   {
+    "file": "EpochPhotometry_480077-480386.csv.gz",
+    "wanted": 3,
+    "found": 3,
+    "bytes": 10231808
+   },
+   {
+    "file": "EpochPhotometry_482496-482734.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1056768
+   },
+   {
+    "file": "EpochPhotometry_485446-485579.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3153920
+   },
+   {
+    "file": "EpochPhotometry_487442-487498.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2498560
+   },
+   {
+    "file": "EpochPhotometry_487727-487794.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4857856
+   },
+   {
+    "file": "EpochPhotometry_492775-493031.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2236416
+   },
+   {
+    "file": "EpochPhotometry_496639-496791.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1449984
+   },
+   {
+    "file": "EpochPhotometry_504181-504873.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18620416
+   },
+   {
+    "file": "EpochPhotometry_504874-505420.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4071424
+   },
+   {
+    "file": "EpochPhotometry_513176-513215.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 794624
+   },
+   {
+    "file": "EpochPhotometry_515584-515740.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 139264
+   },
+   {
+    "file": "EpochPhotometry_522064-522550.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 10756096
+   },
+   {
+    "file": "EpochPhotometry_522551-523221.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 401408
+   },
+   {
+    "file": "EpochPhotometry_523222-523751.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 19537920
+   },
+   {
+    "file": "EpochPhotometry_523752-524427.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 8658944
+   },
+   {
+    "file": "EpochPhotometry_530461-531931.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 42606592
+   },
+   {
+    "file": "EpochPhotometry_538836-540697.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 20062208
+   },
+   {
+    "file": "EpochPhotometry_551056-553777.csv.gz",
+    "wanted": 3,
+    "found": 3,
+    "bytes": 49422336
+   },
+   {
+    "file": "EpochPhotometry_553778-556045.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 76161024
+   },
+   {
+    "file": "EpochPhotometry_556046-558249.csv.gz",
+    "wanted": 3,
+    "found": 3,
+    "bytes": 70787072
+   },
+   {
+    "file": "EpochPhotometry_558250-560858.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 28319744
+   },
+   {
+    "file": "EpochPhotometry_560859-563991.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 86777856
+   },
+   {
+    "file": "EpochPhotometry_567099-570398.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8003584
+   },
+   {
+    "file": "EpochPhotometry_574044-577144.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 46538752
+   },
+   {
+    "file": "EpochPhotometry_577145-580138.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 71704576
+   },
+   {
+    "file": "EpochPhotometry_583798-587647.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4595712
+   },
+   {
+    "file": "EpochPhotometry_595945-595964.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9707520
+   },
+   {
+    "file": "EpochPhotometry_597994-598400.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 21241856
+   },
+   {
+    "file": "EpochPhotometry_607661-607748.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 10625024
+   },
+   {
+    "file": "EpochPhotometry_608024-608136.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 7348224
+   },
+   {
+    "file": "EpochPhotometry_611698-612120.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3416064
+   },
+   {
+    "file": "EpochPhotometry_612121-612492.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6430720
+   },
+   {
+    "file": "EpochPhotometry_613722-614400.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 25305088
+   },
+   {
+    "file": "EpochPhotometry_617390-617611.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 32382976
+   },
+   {
+    "file": "EpochPhotometry_618633-619122.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 37494784
+   },
+   {
+    "file": "EpochPhotometry_622839-623577.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11018240
+   },
+   {
+    "file": "EpochPhotometry_624012-624429.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 7086080
+   },
+   {
+    "file": "EpochPhotometry_631533-632079.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 11935744
+   },
+   {
+    "file": "EpochPhotometry_632080-632397.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9707520
+   },
+   {
+    "file": "EpochPhotometry_632398-632773.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18227200
+   },
+   {
+    "file": "EpochPhotometry_634143-634585.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4595712
+   },
+   {
+    "file": "EpochPhotometry_634586-634942.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 12197888
+   },
+   {
+    "file": "EpochPhotometry_635735-635854.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 663552
+   },
+   {
+    "file": "EpochPhotometry_635976-636097.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8134656
+   },
+   {
+    "file": "EpochPhotometry_636879-637024.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 44048384
+   },
+   {
+    "file": "EpochPhotometry_637507-637735.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 13246464
+   },
+   {
+    "file": "EpochPhotometry_639170-639338.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 12328960
+   },
+   {
+    "file": "EpochPhotometry_640056-640426.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 46800896
+   },
+   {
+    "file": "EpochPhotometry_642710-643213.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 28450816
+   },
+   {
+    "file": "EpochPhotometry_650578-650892.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8658944
+   },
+   {
+    "file": "EpochPhotometry_651903-652954.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9838592
+   },
+   {
+    "file": "EpochPhotometry_652955-653825.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 33955840
+   },
+   {
+    "file": "EpochPhotometry_658814-658913.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 9838592
+   },
+   {
+    "file": "EpochPhotometry_663482-663494.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6955008
+   },
+   {
+    "file": "EpochPhotometry_672008-672142.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4071424
+   },
+   {
+    "file": "EpochPhotometry_682478-682570.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 6561792
+   },
+   {
+    "file": "EpochPhotometry_685839-685859.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2105344
+   },
+   {
+    "file": "EpochPhotometry_686934-687105.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 3678208
+   },
+   {
+    "file": "EpochPhotometry_689163-689188.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 4202496
+   },
+   {
+    "file": "EpochPhotometry_690771-690846.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 12197888
+   },
+   {
+    "file": "EpochPhotometry_690847-690937.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 17702912
+   },
+   {
+    "file": "EpochPhotometry_691303-691436.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8658944
+   },
+   {
+    "file": "EpochPhotometry_701540-702228.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 270336
+   },
+   {
+    "file": "EpochPhotometry_706758-707257.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 5775360
+   },
+   {
+    "file": "EpochPhotometry_725021-726249.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 28188672
+   },
+   {
+    "file": "EpochPhotometry_732021-732459.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18620416
+   },
+   {
+    "file": "EpochPhotometry_732460-732967.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 14295040
+   },
+   {
+    "file": "EpochPhotometry_736506-737645.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 14163968
+   },
+   {
+    "file": "EpochPhotometry_737646-739536.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8921088
+   },
+   {
+    "file": "EpochPhotometry_739537-741346.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 48635904
+   },
+   {
+    "file": "EpochPhotometry_741347-743869.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 74588160
+   },
+   {
+    "file": "EpochPhotometry_750557-752583.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 19931136
+   },
+   {
+    "file": "EpochPhotometry_754493-754778.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 8921088
+   },
+   {
+    "file": "EpochPhotometry_757269-757502.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1187840
+   },
+   {
+    "file": "EpochPhotometry_759079-759805.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 15343616
+   },
+   {
+    "file": "EpochPhotometry_769074-769257.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 2760704
+   },
+   {
+    "file": "EpochPhotometry_769751-769898.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 1318912
+   },
+   {
+    "file": "EpochPhotometry_770038-770898.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 18751488
+   },
+   {
+    "file": "EpochPhotometry_772757-773504.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 19931136
+   },
+   {
+    "file": "EpochPhotometry_773505-774449.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 10493952
+   },
+   {
+    "file": "EpochPhotometry_779313-779914.csv.gz",
+    "wanted": 2,
+    "found": 2,
+    "bytes": 12984320
+   },
+   {
+    "file": "EpochPhotometry_782771-783517.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 13508608
+   },
+   {
+    "file": "EpochPhotometry_785418-786096.csv.gz",
+    "wanted": 1,
+    "found": 1,
+    "bytes": 10625024
+   }
+  ],
+  "epochs_from": {
+   "cache": 0,
+   "datalink": 0,
+   "cdn": 214
+  },
+  "finished": "2026-11-22T18:44:38Z"
+ }
+}

@@ -1,0 +1,85 @@
+{
+ "version": "0.1.0",
+ "dr4_rows": "0.1.0",
+ "checks": {
+  "S0 dr3 order equals gaia_orbits.PARAM_ORDER": {
+   "pass": true,
+   "detail": ""
+  },
+  "S1a convention check STANDARD": {
+   "pass": true,
+   "detail": "STANDARD"
+  },
+  "S1b DR4 correlation used": {
+   "pass": true,
+   "detail": ""
+  },
+  "S1c sample_orbit used the converted correlation": {
+   "pass": true,
+   "detail": ""
+  },
+  "S1d median cos i": {
+   "pass": true,
+   "detail": "0.0350 vs 0.0349"
+  },
+  "S1e linear sigma(A) vs Campbell Monte Carlo (10%)": {
+   "pass": true,
+   "detail": "0.01301 vs 0.01305"
+  },
+  "S1f sigma(cos i) vs Campbell Monte Carlo (15%)": {
+   "pass": true,
+   "detail": "0.01038 vs 0.01048"
+  },
+  "S1g central conjunctions equal those from DR4 omega": {
+   "pass": true,
+   "detail": "0.00e+00 d"
+  },
+  "S2a rv_omega equals DR4 arg_periastron": {
+   "pass": true,
+   "detail": "0.00e+00 rad, snr 24.8"
+  },
+  "S2b transit label given": {
+   "pass": true,
+   "detail": "{'transit_conj': 't1', 't_transit_rv_btjd': 989.4585199203237, 'rv_offset_d': 0.0, 'rv_omega_snr': 24.785964546509593, 'rv_omega_sd_rad': 0.029085232450984922, 'rv_consistent': True}"
+  },
+  "S2c RV transit time": {
+   "pass": true,
+   "detail": "989.458520 vs 989.458520"
+  },
+  "S2d RV transit consistent with astrometric conjunction": {
+   "pass": true,
+   "detail": "offset 0 d"
+  },
+  "S3 circular row samples e = 0 and finite times": {
+   "pass": true,
+   "detail": ""
+  },
+  "S4 gate stops on OMEGA_PLUS_PI": {
+   "pass": true,
+   "detail": "{\"OMEGA_PLUS_PI\": 20}"
+  },
+  "S5a DR4 query built by run_search.build_nss_query": {
+   "pass": true,
+   "detail": ""
+  },
+  "S5b no DR3-only column selected": {
+   "pass": true,
+   "detail": ""
+  },
+  "R1 DR3 real-data round trip not FAIL": {
+   "pass": true,
+   "detail": "PASS"
+  }
+ },
+ "R1": {
+  "source": "cache:gaiadr3_nss_ti_g14.5_c0.2_v3.csv",
+  "n_tested": 400,
+  "n_pass": 400,
+  "max_corr_diff": 1.8318679906315083e-15,
+  "max_rel_sd_diff": 1.5543122344752192e-15,
+  "max_conj_diff_d": 0.0,
+  "failures": [],
+  "status": "PASS"
+ },
+ "self_test_ok": true
+}

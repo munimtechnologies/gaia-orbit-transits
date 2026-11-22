@@ -1,0 +1,73 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "tic93622019-pixel-v1",
+ "id": "7145c2c8c40b",
+ "field": "astrophysics",
+ "run": "20261122T151416Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T20:30:20.973138+00:00",
+ "finished_at": "2026-11-22T20:55:24.391317+00:00",
+ "duration_seconds": 1503,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 300.0
+ },
+ "peak_memory_gb": 0.56,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir numpy astropy",
+   "exit": 0,
+   "seconds": 13
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -c \"import urllib.request as u; u.urlretrieve('https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/c16e7a2a6a13cce476f73153483cc59ad8443362/tyc_pixel.py', 'tyc_pixel.py')\"",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python -m unittest -v test_pixel_which_star",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python pixel_which_star.py --self-test",
+   "exit": 0,
+   "seconds": 15
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python pixel_which_star.py --config targets.json --data-dir /data/pws --out-dir /out",
+   "exit": 0,
+   "seconds": 1133
+  }
+ ],
+ "out_files": [
+  "pws_diffmap_tic-93622019_s0064.csv",
+  "pws_diffmap_tic-93622019_s0099.csv",
+  "pws_report.md",
+  "pws_summary.json"
+ ],
+ "out_files_total": 4,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stdout] 2 epochs)\n[mean] dx 0.095 dy -0.060 sx 0.706 sy 0.656 rho 0.032 h 0.214 chi2 150.9 (it 165+106)\n[C4] 1 control stars, sigma_sys 0.150 px\n[HATS-58 A b] sector 99 UNTESTABLE sensitive None L1 None L2 None offset null\n[mean] dx -0.066 dy 0.024 sx 0.765 sy 0.777 rho 0.147 h 0.361 chi2 371.7 (it 170+115)\n[HATS-58 A b] sector 100 NEGATIVE_FLUX sensitive None L1 None L2 None offset null\n[mean] dx -0.054 dy 0.099 sx 0.482 sy 0.483 rho -0.148 h 0.421 chi2 74.05 (it 195+112)\n[HATS-58 A b] sector 101 NEGATIVE_FLUX sensitive None L1 None L2 None offset null\n{\"controls\": \"CONTROLS_FAIL\", \"graded\": false, \"labels\": {\"TIC 93622019\": {\"WS\": \"WS_UNRESOLVED\", \"L1_majority\": \"PIX_ON_TARGET\", \"DEPTH\": \"DEPTH_DEEPER\", \"SEC\": \"SEC_NOT_DETECTED\", \"OE\": \"OE_CONSISTENT\", \"EB\": \"EB_NOT_INDICATED\", \"n_sensitive_sectors\": 2}, \"HATS-67 b\": {\"WS\": \"WS_ON_TARGET\", \"L1_majority\": \"PIX_ON_TARGET\", \"DEPTH\": \"DEPTH_CONSISTENT\", \"SEC\": \"SEC_NOT_DETECTED\", \"OE\": \"OE_CONSISTENT\", \"EB\": \"EB_NOT_INDICATED\", \"n_sensitive_sectors\": 3}, \"HATS-58 A b\": {\"WS\": \"WS_UNTESTABLE\", \"L1_majority\": null, \"DEPTH\": \"DEPTH_UNTESTABLE\", \"SEC\": \"SEC_UNTESTABLE\", \"OE\": \"OE_UNTESTABLE\", \"EB\": \"EB_NOT_INDICATED\", \"n_sensitive_sectors\": 0}}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261122T151416Z-astrophysics\\pws)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

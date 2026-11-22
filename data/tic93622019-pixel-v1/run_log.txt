@@ -1,0 +1,79 @@
+[gaia] 678 stars from https://gea.esac.esa.int/tap-server/tap/sync
+[fetch] tic-93622019 sector 10 (5569920 bytes)
+[fetch] tic-93622019 sector 37 (15917760 bytes)
+[fetch] tic-93622019 sector 64 (51891840 bytes)
+[fetch] tic-93622019 sector 90 (52888320 bytes)
+[fetch] tic-93622019 sector 99 (39441600 bytes)
+[fetch] tic-93622019 sector 100 (51062400 bytes)
+[TIC 93622019] ephemeris REFINED P 2.1238933 T0 3706.08685 (5 epochs)
+[mean] dx 0.039 dy -0.028 sx 0.580 sy 0.594 rho -0.123 h 0.231 chi2 3663 (it 117+111)
+[TIC 93622019] sector 10 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+[mean] dx -0.017 dy -0.030 sx 0.554 sy 0.490 rho -0.133 h 0.287 chi2 3255 (it 226+130)
+[TIC 93622019] sector 37 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+[mean] dx -0.055 dy 0.199 sx 0.435 sy 0.300 rho -0.283 h 0.464 chi2 2661 (it 379+200)
+[C4] 0 control stars, sigma_sys 0.150 px
+[posC2] 50/100
+[posC2] 100/100
+[posC3] 50/100
+[posC3] 100/100
+[posA] 50/100
+[posA] 100/100
+[TIC 93622019] sector 64 OK sensitive True L1 PIX_ON_TARGET L2 CENTROID_ON_TARGET offset {"east": 0.7825017147256778, "north": -1.1409656622760167, "sigma": 3.1491950969731186, "offset_target_px": 0.06615617057709283, "d_target_sigma_px": 0.4351229225107688, "d_neighbour_sigma_px": 13.182504647022908}
+[mean] dx 0.205 dy 0.256 sx 0.660 sy 0.757 rho -0.180 h 0.135 chi2 1.422e+04 (it 154+107)
+[TIC 93622019] sector 90 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+[mean] dx 0.049 dy -0.133 sx 0.583 sy 0.579 rho -0.113 h 0.210 chi2 2822 (it 194+116)
+[C4] 0 control stars, sigma_sys 0.150 px
+[posC2] 50/100
+[posC2] 100/100
+[posC3] 50/100
+[posC3] 100/100
+[posA] 50/100
+[posA] 100/100
+[TIC 93622019] sector 99 OK sensitive True L1 PIX_ON_TARGET L2 CENTROID_ON_TARGET offset {"east": -1.7321720565187833, "north": 1.3321089698450805, "sigma": 3.172277063895181, "offset_target_px": 0.10449695713192902, "d_target_sigma_px": 0.6904193793014362, "d_neighbour_sigma_px": 12.092001924002902}
+[mean] dx 0.170 dy -0.054 sx 0.650 sy 0.725 rho 0.029 h 0.193 chi2 8347 (it 158+102)
+[TIC 93622019] sector 100 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+[gaia] 277 stars from https://gea.esac.esa.int/tap-server/tap/sync
+[fetch] hats-67-b sector 99 (39441600 bytes)
+[fetch] hats-67-b sector 100 (51062400 bytes)
+[fetch] hats-67-b sector 101 (50336640 bytes)
+[HATS-67 b] ephemeris SHIFTED P 1.6091788 T0 796.89127 (1 epochs)
+[mean] dx 0.037 dy 0.013 sx 0.650 sy 0.558 rho -0.073 h 0.295 chi2 134 (it 167+115)
+[C4] 0 control stars, sigma_sys 0.150 px
+[posC2] 50/100
+[posC2] 100/100
+[posC3] 50/100
+[posC3] 100/100
+[posA] 50/100
+[posA] 100/100
+[HATS-67 b] sector 99 OK sensitive True L1 PIX_ON_TARGET L2 CENTROID_ON_TARGET offset {"east": -1.6440588621969832, "north": -0.8913135466428912, "sigma": 3.1289990312913756, "offset_target_px": 0.09216723044374572, "d_target_sigma_px": 0.6091348756151053, "d_neighbour_sigma_px": 18.99885239790279}
+[mean] dx -0.066 dy 0.031 sx 0.571 sy 0.627 rho -0.002 h 0.335 chi2 172.5 (it 227+114)
+[C4] 0 control stars, sigma_sys 0.150 px
+[posC2] 50/100
+[posC2] 100/100
+[posC3] 50/100
+[posC3] 100/100
+[posA] 50/100
+[posA] 100/100
+[HATS-67 b] sector 100 OK sensitive True L1 PIX_ON_TARGET L2 CENTROID_ON_TARGET offset {"east": -1.1204865735586498, "north": 0.5997942053937777, "sigma": 3.1679309169240693, "offset_target_px": 0.06183936569821025, "d_target_sigma_px": 0.4046822344438271, "d_neighbour_sigma_px": 18.156600658210746}
+[mean] dx 0.068 dy -0.022 sx 0.677 sy 0.598 rho -0.039 h 0.142 chi2 184.5 (it 236+123)
+[C4] 0 control stars, sigma_sys 0.150 px
+[posC2] 50/100
+[posC2] 100/100
+[posC3] 50/100
+[posC3] 100/100
+[posA] 50/100
+[posA] 100/100
+[HATS-67 b] sector 101 OK sensitive True L1 PIX_ON_TARGET L2 CENTROID_ON_TARGET offset {"east": -0.1974911279280876, "north": -0.9211510238998244, "sigma": 3.0193622423321202, "offset_target_px": 0.04642258325565999, "d_target_sigma_px": 0.3067358991556775, "d_neighbour_sigma_px": 19.3846850953644}
+[gaia] 392 stars from https://gea.esac.esa.int/tap-server/tap/sync
+[fetch] hats-58-a-b sector 99 (39441600 bytes)
+[fetch] hats-58-a-b sector 100 (51062400 bytes)
+[fetch] hats-58-a-b sector 101 (50336640 bytes)
+[HATS-58 A b] ephemeris REFINED P 4.2181313 T0 4065.53796 (2 epochs)
+[mean] dx 0.095 dy -0.060 sx 0.706 sy 0.656 rho 0.032 h 0.214 chi2 150.9 (it 165+106)
+[C4] 1 control stars, sigma_sys 0.150 px
+[HATS-58 A b] sector 99 UNTESTABLE sensitive None L1 None L2 None offset null
+[mean] dx -0.066 dy 0.024 sx 0.765 sy 0.777 rho 0.147 h 0.361 chi2 371.7 (it 170+115)
+[HATS-58 A b] sector 100 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+[mean] dx -0.054 dy 0.099 sx 0.482 sy 0.483 rho -0.148 h 0.421 chi2 74.05 (it 195+112)
+[HATS-58 A b] sector 101 NEGATIVE_FLUX sensitive None L1 None L2 None offset null
+{"controls": "CONTROLS_FAIL", "graded": false, "labels": {"TIC 93622019": {"WS": "WS_UNRESOLVED", "L1_majority": "PIX_ON_TARGET", "DEPTH": "DEPTH_DEEPER", "SEC": "SEC_NOT_DETECTED", "OE": "OE_CONSISTENT", "EB": "EB_NOT_INDICATED", "n_sensitive_sectors": 2}, "HATS-67 b": {"WS": "WS_ON_TARGET", "L1_majority": "PIX_ON_TARGET", "DEPTH": "DEPTH_CONSISTENT", "SEC": "SEC_NOT_DETECTED", "OE": "OE_CONSISTENT", "EB": "EB_NOT_INDICATED", "n_sensitive_sectors": 3}, "HATS-58 A b": {"WS": "WS_UNTESTABLE", "L1_majority": null, "DEPTH": "DEPTH_UNTESTABLE", "SEC": "SEC_UNTESTABLE", "OE": "OE_UNTESTABLE", "EB": "EB_NOT_INDICATED", "n_sensitive_sectors": 0}}}

@@ -1,0 +1,10 @@
+{
+ "version": "0.1.0",
+ "n_rows": 1,
+ "checks": {
+  "STANDARD": 1
+ },
+ "n_corr_used": 1,
+ "n_compared": 1,
+ "standard_fraction": 1.0
+}

@@ -1,0 +1,65 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-dr4-astro-adapter-v1",
+ "id": "4172cb36c27f",
+ "field": "astrophysics",
+ "run": "20261121T204817Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T18:59:40.690089+00:00",
+ "finished_at": "2026-11-22T19:08:29.256291+00:00",
+ "duration_seconds": 528,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 40.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir -r requirements.txt",
+   "exit": 0,
+   "seconds": 65
+  },
+  {
+   "step": "setup-02-python",
+   "cmd": "python fetch_pinned.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_dr4_rows",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python run_search_dr4.py --self-test --data-dir /data --out-dir /out",
+   "exit": 0,
+   "seconds": 6
+  }
+ ],
+ "out_files": [
+  "dr4_adapter_summary.json",
+  "dr4_selftest.json"
+ ],
+ "out_files_total": 2,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] arlo (15%) 0.01038 vs 0.01048\n19:03:22 SELF-TEST PASS S1g central conjunctions equal those from DR4 omega 0.00e+00 d\n19:03:22 SELF-TEST PASS S2a rv_omega equals DR4 arg_periastron 0.00e+00 rad, snr 24.8\n19:03:22 SELF-TEST PASS S2b transit label given {'transit_conj': 't1', 't_transit_rv_btjd': 989.4585199203237, 'rv_offset_d': 0.0, 'rv_omega_snr': 24.785964546509593, 'rv_omega_sd_rad': 0.029085232450984922, 'rv_consistent': True}\n19:03:22 SELF-TEST PASS S2c RV transit time 989.458520 vs 989.458520\n19:03:22 SELF-TEST PASS S2d RV transit consistent with astrometric conjunction offset 0 d\n19:03:22 SELF-TEST PASS S3 circular row samples e = 0 and finite times \n19:03:22 SELF-TEST PASS S4 gate stops on OMEGA_PLUS_PI {\"OMEGA_PLUS_PI\": 20}\n19:03:22 SELF-TEST PASS S5a DR4 query built by run_search.build_nss_query \n19:03:22 SELF-TEST PASS S5b no DR3-only column selected \n19:03:26 R1 DR3 round trip: {\"source\": \"cache:gaiadr3_nss_ti_g14.5_c0.2_v3.csv\", \"n_tested\": 400, \"n_pass\": 400, \"max_corr_diff\": 1.8318679906315083e-15, \"max_rel_sd_diff\": 1.5543122344752192e-15, \"max_conj_diff_d\": 0.0, \"status\": \"PASS\"}\n19:03:26 SELF-TEST PASS R1 DR3 real-data round trip not FAIL PASS\n19:03:26 self-test OK\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T204817Z-astrophysics\\d4)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

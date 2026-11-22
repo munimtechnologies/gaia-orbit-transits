@@ -1,0 +1,86 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "gaia-vpt-epochs-v2",
+ "id": "079359418729",
+ "field": "astrophysics",
+ "run": "20261122T181541Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T18:26:23.346448+00:00",
+ "finished_at": "2026-11-22T18:48:42.785103+00:00",
+ "duration_seconds": 1339,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 300.0
+ },
+ "peak_memory_gb": 0.11,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir numpy",
+   "exit": 0,
+   "seconds": 6
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python fetch_pinned.py",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python fetch_inputs.py inputs",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python -m unittest -v test_vpt_epochs",
+   "exit": 0,
+   "seconds": 2
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python -m unittest -v test_patch_vpt_epochs_011",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-05-python",
+   "cmd": "python patch_vpt_epochs_011.py --self-test",
+   "exit": 0,
+   "seconds": 2
+  },
+  {
+   "step": "run-06-python",
+   "cmd": "python patch_vpt_epochs_011.py --inputs inputs --out-dir /out --cache-dir /data/vpt-epochs-dr3 --cdn-max-gb 60 --cdn-max-minutes 220",
+   "exit": 0,
+   "seconds": 988
+  }
+ ],
+ "out_files": [
+  "epochs_g_1.csv",
+  "epochs_g_2.csv",
+  "vpt_epochs.py",
+  "vpt_epochs_stars.csv",
+  "vpt_epochs_summary.json"
+ ],
+ "out_files_total": 5,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-06-python stdout] WN_SYSTEM_OTHER_P OK PARTIAL ncomp 622\n18:44:25 [202/214] 4177560894633502720 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 3689\n18:44:25 [203/214] 1827242816201846144 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 61\n18:44:27 [204/214] 3450611154067089408 NEW NO_EPHEMERIS UNTESTABLE ncomp 1183\n18:44:28 [205/214] 385697172809355392 KNOWN_SYSTEM_OTHER_P OK UNTESTABLE ncomp 620\n18:44:28 [206/214] 5481880275596734592 NEW NO_EPHEMERIS UNTESTABLE ncomp 312\n18:44:30 [207/214] 2129256395211984000 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 323\n18:44:30 [208/214] 3558354604869150208 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 1521\n18:44:31 [209/214] 2135184068555793024 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 133\n18:44:32 [210/214] 1622997463177004928 NEW NO_EPHEMERIS UNTESTABLE ncomp 62\n18:44:34 [211/214] 1748596020745038208 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 2118\n18:44:36 [212/214] 6805886373600546176 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 1779\n18:44:36 [213/214] 2959177048983750016 KNOWN_SYSTEM_OTHER_P OK UNTESTABLE ncomp 111\n18:44:38 [214/214] 4911563216311083392 KNOWN_SYSTEM_OTHER_P OK PARTIAL ncomp 565\n{\"T1\": \"TIME_BAD\", \"WHY\": \"INVALID\", \"alias\": 4, \"testable\": 118, \"T3\": \"PREDICTIVE\", \"auc\": 0.8579617834394905}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261122T181541Z-astrophysics\\ep2)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}
