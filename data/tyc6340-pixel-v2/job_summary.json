@@ -1,0 +1,81 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "tyc6340-pixel-v2",
+ "id": "2b8dfa759ba3",
+ "field": "astrophysics",
+ "run": "20261121T170534Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "blade",
+ "image": "python:3.12",
+ "started_at": "2026-11-22T11:10:54.707977+00:00",
+ "finished_at": "2026-11-22T11:21:17.305933+00:00",
+ "duration_seconds": 622,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 2.0,
+  "timeout_minutes": 180.0
+ },
+ "peak_memory_gb": null,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir numpy astropy",
+   "exit": 0,
+   "seconds": 28
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -c \"import urllib.request as u; b='https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/'; u.urlretrieve(b+'40e96d44de4523e73c7229f269210dbbbcc7b9bf/tyc_period.py', 'tyc_period.py'); [u.urlretrieve(b+'c16e7a2a6a13cce476f73153483cc59ad8443362/'+f, f) for f in ('tyc_pixel.py', 'test_tyc_pixel.py')]\"",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python patch_tyc_pixel_011.py --src tyc_pixel.py --out-dir /out",
+   "exit": 0,
+   "seconds": 0
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python -m unittest -v test_tyc_pixel test_tyc_pixel_011",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python tyc_pixel.py --self-test",
+   "exit": 0,
+   "seconds": 9
+  },
+  {
+   "step": "run-05-python",
+   "cmd": "python tyc_pixel.py --data-dir /data/pixel-tyc6340 --wasp-dir /data/wasp-tyc6340 --out-dir /out",
+   "exit": 0,
+   "seconds": 58
+  }
+ ],
+ "out_files": [
+  "pixel_depth_map.csv",
+  "tess_eclipse_times.csv",
+  "tyc_pixel.py",
+  "tyc_pixel_report.md",
+  "tyc_pixel_summary.json",
+  "wasp_link.csv"
+ ],
+ "out_files_total": 6,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-05-python stdout] [fetch] TESScut tess-s0092-2-1_305.561052_-22.073651_15x15_astrocut.fits (51422400 bytes)\n[fetch] Gaia field 72 stars\n[mean] dx 0.038 dy 0.087 sx 0.476 sy 0.532 rho 0.027 h 0.377 chi2 111 (it 184+119)\n[C4] 0 control stars, sigma_sys 0.150 px\n[C1] null pass True\n[posC2] 50/200\n[posC2] 100/200\n[posC2] 150/200\n[posC2] 200/200\n[C2] PIX_ON_NEIGHBOUR delta_n 0.1003 centroid CENTROID_ON_NEIGHBOUR pass True\n[posC3] 50/200\n[posC3] 100/200\n[posC3] 150/200\n[posC3] 200/200\n[C3] PIX_ON_TARGET delta_t 0.0302 centroid CENTROID_ON_TARGET pass True\n[posA] 50/200\n[posA] 100/200\n[posA] 150/200\n[posA] 200/200\n[A] PIX_ON_TARGET centroid CENTROID_ON_TARGET delta_t 0.0679 +- 0.0004 delta_n 0.0007 +- 0.0003 f_t 0.999 [0.997, 1.000]\n[C] T_ref BTJD 3817.00291 +- 0.00012 P 2.328778 +- 0.000036 (n 10, chi2r 26.33)\n[fetch] 1SWASP J202214.65-220425.1 rows 9236\n[B] T_W 2454152.04984 +- 0.00090 N 2862 P 2.3287747 snr ['-4.1', '68.0', '-0.9'] label LINK_UNIQUE\n{\"L0\": \"PIX_SENSITIVE\", \"L1\": \"PIX_ON_TARGET\", \"L2\": \"CENTROID_ON_TARGET\", \"L3\": \"DEPTH_CONSISTENT\", \"L4\": \"OVERSIZE_SURVIVES\", \"C\": \"TIMING_OK\", \"B\": \"LINK_UNIQUE\", \"gaia\": \"GAIA_PERIOD_OK\"}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261121T170534Z-astrophysics\\pixel)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

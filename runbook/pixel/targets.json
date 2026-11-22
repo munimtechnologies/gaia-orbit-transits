@@ -1,0 +1,16 @@
+{
+ "about": "pixel_which_star 0.1.0 inputs, fixed before the job ran (findings/2026-11-22-tic93622019-pixel-prereg.md). Controls chosen by rule: the two confirmed transiting planets in the NASA Exoplanet Archive pscomppars table (queried 2026-11-22) with TESS mag 11.2-13.2, depth 0.5-2.0%, period 1-5 d, RA 140-210, Dec -70 to -35 that are nearest on the sky to TIC 93622019. Control ephemerides are re-read from the archive at run time; the values below are the fallback.",
+ "targets": [
+  {"name": "TIC 93622019", "role": "target", "tic": "93622019",
+   "gaia_id": "5345417757181174144", "ra": 175.62700, "dec": -52.62741,
+   "period": 2.1238848385, "t0_btjd": 1571.581234, "dur_d": 0.125,
+   "depth_ref": 0.00883, "depth_flat": 0.0105, "rstar": [1.36, 1.41],
+   "sectors": [10, 37, 64, 90, 99, 100]},
+  {"name": "HATS-67 b", "role": "control", "nasa_name": "HATS-67 b", "tic": "272212970",
+   "ra": 180.209, "dec": -46.136, "period": 1.609179, "t0_btjd": 796.8813, "dur_d": 0.08125,
+   "depth_ref": 0.0135, "depth_flat": 0.0135, "max_sectors": 3},
+  {"name": "HATS-58 A b", "role": "control", "nasa_name": "HATS-58 A b", "tic": "21113347",
+   "ra": 186.787, "dec": -48.978, "period": 4.218090, "t0_btjd": 463.2999, "dur_d": 0.1325,
+   "depth_ref": 0.0079, "depth_flat": 0.0079, "max_sectors": 3}
+ ]
+}

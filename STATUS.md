@@ -4,7 +4,37 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (22 Nov, ~11:00 UTC): step G6 rehearsal graded; a period-free TESS search fixes Gaia's periods and finds TIC 93622019
+## Newest (22 Nov, ~16:00 UTC): TYC 6340-23-1's eclipse is on the target (graded); TIC 93622019 pixel test pre-registered
+
+**Graded (pre-registered):** `findings/2026-11-22-tyc6340-pixel-results.md`, data
+`data/tyc6340-pixel-v2/` (job tyc6340-pixel-v2, `tyc_pixel.py` 0.1.1, TESS sector 92 pixels).
+- **The 6.8% eclipse is on TYC 6340-23-1.** The PSF fit gives 99.85% of the lost light to the
+  target (95%: 99.73-100.01%). The eclipse centroid is 0.5″ (0.15σ) from the target's Gaia
+  position and 29.6σ from the only nearby star bright enough to make it (G 12.55, 94″). All
+  three controls passed. No star that Gaia DR3 resolves can make the eclipse.
+- **Deblended depth 0.0679 ± 0.0004**, 11% deeper than the QLP depth behind the 0.224 R_sun
+  radius (DEPTH_CONSISTENT, OVERSIZE_SURVIVES). The label stays B_OVERSIZED_COMPANION; still
+  not called inflated.
+- **SuperWASP (2006-2008) and TESS (2025) join at a unique cycle count:** P = 2.3287747 ±
+  0.0000003 d, T0 = BJD_TDB 2460817.00291 ± 0.00012. This agrees with Gaia DR3's
+  spectroscopic period (z = −1.11). **All 8 registered predictions came true.**
+
+**Pre-registered:** `findings/2026-11-22-tic93622019-pixel-prereg.md`, code
+`pixel_which_star.py` 0.1.0 with tests (`test_pixel_which_star.py`), inputs
+`runbook/pixel/targets.json`, job tic93622019-pixel-v1 (queued).
+- A generic TESS pixel test that imports tyc_pixel's PSF core unchanged. It runs on all six
+  TESS sectors of the new candidate TIC 93622019 and combines the transit centroid on the sky.
+  It compares that centroid with every Gaia star within 120″ bright enough to make the dip.
+  It also measures the deblended depth, plus secondary-eclipse and odd/even depths with
+  event-to-event (red-noise) errors.
+- Controls by rule: HATS-67 b and HATS-58 A b, the two nearest confirmed planets of similar
+  brightness and depth. HATS-58 A has a companion 0.74″ away (Espinoza et al. 2019), so it
+  is expected UNRESOLVED.
+- Predictions: WS_ON_TARGET 80%; CONTROLS_PASS 85%; SEC_DETECTED 30%; OE_CONSISTENT 85%;
+  EB_NOT_INDICATED 70%. If ON_TARGET and not EB-like, the candidate goes to ExoFOP as a
+  community TOI.
+
+## Earlier (22 Nov, ~11:00 UTC): step G6 rehearsal graded; a period-free TESS search fixes Gaia's periods and finds TIC 93622019
 
 **Graded (pre-registered):** `findings/2026-11-22-vpt-pf-dr3-results.md`, data `data/vpt-pf-dr3-v1/`
 (job gaia-vpt-pf-dr3-v1, `vpt_pf.py` 0.1.0, all 214 Gaia DR3 transit candidates, up to 6 TESS sectors).
@@ -157,7 +187,8 @@ files are the fallback, and every downloaded epoch is saved and will be committe
 ## Earlier (21 Nov, ~17:30 UTC): TYC 6340-23-1's "bright 38″ neighbour" is faint; pixel test re-filed
 
 **Amendment:** `findings/2026-11-21-tyc6340-pixel-amendment-1.md`, code `patch_tyc_pixel_011.py`
-(turns `tyc_pixel.py` 0.1.0 into 0.1.1), tests `test_tyc_pixel_011.py`, job tyc6340-pixel-v2.
+(turns `tyc_pixel.py` 0.1.0 into 0.1.1), tests `test_tyc_pixel_011.py`, job tyc6340-pixel-v2
+(graded 22 Nov, see top).
 - Job tyc6340-pixel-v1 stopped at the Gaia step, before any pixel was analysed: the neighbour we
   had taken from SuperWASP's archive as **V ≈ 11.25** is **G = 14.39 (RP 13.75)** in Gaia DR3
   (6853008487031438080). SuperWASP's large aperture most likely mixed in the target's light.
@@ -228,12 +259,12 @@ DR4 predictions: MOSTLY_SEEN 40%, MIXED 35%; 6 or more new planet-like signals 5
 - **SuperWASP common mode: COMMON_CLEAN**: 0 of 12 comparison stars show the dip.
 - **Reported, not graded:** SuperWASP's strongest peak is **2.32878 d**, which joins 2006-2008 to
   the 2025 TESS eclipse and agrees with Gaia DR3; the earlier "5.8σ period tension" was **very
-  likely our artefact**.
+  likely our artefact**. (Confirmed by the pixel job's unique cycle link, 22 Nov.)
 
 **Pre-registered next:** `findings/2026-11-20-tyc6340-pixel-prereg.md`, code `tyc_pixel.py` 0.1.0
-(job tyc6340-pixel-v1; amended 21 Nov, see above): which star dims, the deblended depth, and a
-19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives 75%; link
-unique 70%.
+(job tyc6340-pixel-v1; amended 21 Nov; graded 22 Nov, see top): which star dims, the deblended
+depth, and a 19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives
+75%; link unique 70%. All came true.
 
 ## Results of 20 Nov
 
@@ -262,7 +293,7 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
 
 ## Leads
 1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded; the period-free search
-   (G6) graded 22 Nov (PF_RECOVERS; new candidate **TIC 93622019**, pixel test and CTOI next);
+   (G6) graded 22 Nov (PF_RECOVERS; new candidate **TIC 93622019**, pixel test queued, CTOI next);
    Gaia's spectrograph flags 8 of 12 testable new candidates; Gaia's orbit catalogue adds TIC
    400170926, an eclipsing twin; why the periods are wrong (epoch test, queued); the blind test on
    DR4's 1,007 candidates on release day; follow-up of TIC 4638108 and TIC 44997521 (both confirmed
@@ -275,7 +306,7 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
    58 of 162 near-edge-on orbits eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
 5. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** Graded: mostly not; the DR4 test
    of why is pre-registered with release-day code. Eclipsing companions found: **TIC 71945261**
-   (TYC 6340-23-1, B_OVERSIZED_COMPANION); BD+65 286 (label not adopted).
+   (TYC 6340-23-1, B_OVERSIZED_COMPANION; eclipse on target, 22 Nov); BD+65 286 (label not adopted).
 6. **Are M dwarfs in short orbits inflated?** INCONCLUSIVE, caveated; no DR4 follow-up.
 
 ## Closed with a null result
@@ -353,6 +384,9 @@ the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-cont
   Gaia's period (a 4:3 alias) and found by the period-free search. **Check the duration at the
   found period and the star's own velocity scatter before calling anything a survivor**: both
   removed TIC 248569057 at once.
+- **Read the literature on every control before fixing its pass rule:** a rule-chosen control
+  planet (HATS-58 A b) has a near-equal companion 0.74″ away that no TESS centroid can separate,
+  so "control passes" must mean "the host is not excluded", not "only the host is allowed".
 
 ## Prior-art sources we check for every eclipsing system
 AAVSO VSX (API, or its VizieR copy B/vsx when the API refuses), the TESS EB catalogue (Prša et al.
@@ -373,7 +407,8 @@ doi:10.7910/DVN/CWEUGW, candidate_table.tab, ordered by sector, camera, CCD and 
   published it. Step G6 uses `vpt_pf.py` at commit 9bf9704211bd129204bb4de091f38021ec76d301; its
   DR3 rehearsal graded PF_RECOVERS (22 Nov), so G6 on DR4 is confirmatory, not exploratory.
   Step g2c (amendment 2) uses `vpt_nss.py` 0.1.0 at commit b8f2525dde1bebdabf2b89a33065aac797771e2d
-  (`findings/2026-11-22-vpt-nss-crossmatch.md`).
+  (`findings/2026-11-22-vpt-nss-crossmatch.md`). Survivors of G6 will be vetted in the TESS pixels
+  with `pixel_which_star.py` (after its TIC 93622019 run is graded).
 - Pre-registered order: (a1) orbit survival, (a2) calibration, (a5) TYC 6340-23-1's K, (b)
   wobble, (c) D5; then (a3) D3, (a4) quality-cut Q4 + Q4e/Q4f, (c2) D5 grade; then (g) Gaia
   transit candidates x TESS (0.1.1, 6 chunks + RVS screen g2 + NSS screen g2c), (g3) the
