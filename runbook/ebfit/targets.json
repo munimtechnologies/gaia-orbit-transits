@@ -1,0 +1,23 @@
+{
+ "about": "sb2_ebfit 0.1.0 inputs (MV2, Munim, Inc.; made with AI agents). Gaia DR3 nss_two_body_orbit values (period, e, omega, K1, K2 with errors) read from ESA TAP on 2026-11-23; component 1 and 2 are Gaia's. teff1 is the hotter star (eclipsed at the deeper eclipse), used only for limb darkening. Controls, chosen before any fit: the four stars of the edge-on SB2 screen (sb2-edgeon-screen-v1) that VSX lists as eclipsing and for which we found a TESS-based DEBCat-grade analysis published 2023-2026 (DEBCat's site was unreachable on 23 Nov, so others may qualify). Literature masses (M_sun) and radii (R_sun) from the abstracts cited.",
+ "stars": [
+  {"name": "CD-28 7251", "role": "target", "source_id": "5633392634307163776", "tic": "189269584", "teff1": 8000, "teff2": 7500,
+   "gaia": {"type": "SB2", "P": 6.96108580484263, "P_err": 1.5122705e-4, "e": 0.07601178028086204, "e_err": 0.008083192, "omega": 342.9514761166694, "omega_err": 7.053468, "K1": 79.81466872566406, "K1_err": 1.2122735, "K2": 94.66300256795384, "K2_err": 0.94390094}},
+  {"name": "TYC 3616-2395-1", "role": "target", "source_id": "1980920834829359488", "tic": "384284045", "teff1": 5750, "teff2": 5650,
+   "gaia": {"type": "SB2", "P": 3.7870870815414865, "P_err": 4.9359445e-5, "e": 0.0024878874748552426, "e_err": 0.008066557, "omega": 90.57016888954954, "omega_err": 166.27664, "K1": 91.47209484042251, "K1_err": 0.9103658, "K2": 85.30780382957555, "K2_err": 0.87801516}},
+  {"name": "HD 250735", "role": "target", "source_id": "3450611154067089408", "tic": "400170926", "teff1": 5830, "teff2": 5700,
+   "gaia": {"type": "SB2C", "P": 5.895935077280673, "P_err": 1.8169096e-4, "e": "", "e_err": "", "omega": "", "omega_err": "", "K1": 72.62443658950218, "K1_err": 0.4027454, "K2": 78.94342367194483, "K2_err": 1.0145377}},
+  {"name": "ZZ Boo", "role": "control", "source_id": "1450355965609917568", "tic": "357358259", "teff1": 6720, "teff2": 6670,
+   "gaia": {"type": "SB2", "P": 4.991881814485835, "P_err": 2.2238108e-5, "e": 0.011655430854652055, "e_err": 0.001908621, "omega": 58.0244832965805, "omega_err": 4.435689, "K1": 92.73965703663534, "K1_err": 0.11467548, "K2": 90.82883391329598, "K2_err": 0.13493907},
+   "literature": {"ref": "Southworth 2023, The Observatory 143, 19 (arXiv:2212.02595)", "M1": 1.558, "M1_err": 0.008, "M2": 1.599, "M2_err": 0.012, "R1": 2.063, "R1_err": 0.006, "R2": 2.205, "R2_err": 0.006}},
+  {"name": "CW Eri", "role": "control", "source_id": "5152756553745197952", "tic": "98853987", "teff1": 6840, "teff2": 6560,
+   "gaia": {"type": "SB2", "P": 2.728328587421643, "P_err": 2.427969e-5, "e": 0.05354053935897096, "e_err": 0.0040053995, "omega": 318.90496970171665, "omega_err": 3.020703, "K1": 100.97937190879078, "K1_err": 0.47635314, "K2": 116.52437799897938, "K2_err": 0.4899673},
+   "literature": {"ref": "Overall & Southworth 2024, The Observatory 144, 71 (DEBCat entry)", "M1": 1.568, "M1_err": 0.016, "M2": 1.314, "M2_err": 0.010, "R1": 2.1048, "R1_err": 0.0074, "R2": 1.4812, "R2_err": 0.0052}},
+  {"name": "EY Cep", "role": "control", "source_id": "568183560050534016", "tic": "297899564", "teff1": 6900, "teff2": 6850,
+   "gaia": {"type": "SB2", "P": 7.971740687983322, "P_err": 2.0310546e-4, "e": 0.418622522894874, "e_err": 0.007862415, "omega": 287.8185559893279, "omega_err": 1.3759218, "K1": 85.44549545529166, "K1_err": 1.0806009, "K2": 83.74163048233731, "K2_err": 1.108066},
+   "literature": {"ref": "Southworth 2026, arXiv:2607.10701", "M1": 1.523, "M1_err": 0.008, "M2": 1.494, "M2_err": 0.014, "R1": 1.491, "R1_err": 0.004, "R2": 1.446, "R2_err": 0.004}},
+  {"name": "BK Peg", "role": "control", "source_id": "2852979962499356288", "tic": "269747005", "teff1": 6300, "teff2": 6250,
+   "gaia": {"type": "SB2C", "P": 5.490799574899559, "P_err": 1.21911886e-4, "e": "", "e_err": "", "omega": "", "omega_err": "", "K1": 90.43617372473656, "K1_err": 0.76682514, "K2": 80.37245102507555, "K2_err": 5.8744206},
+   "literature": {"ref": "Kutluay & Southworth 2026, arXiv:2603.20872", "M1": 1.411, "M1_err": 0.004, "M2": 1.254, "M2_err": 0.004, "R1": 1.990, "R1_err": 0.004, "R2": 1.460, "R2_err": 0.004}}
+ ]
+}
