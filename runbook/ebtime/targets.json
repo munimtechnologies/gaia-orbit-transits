@@ -1,0 +1,17 @@
+{
+ "about": "sb2_ebtime 0.1.0 inputs (MV2, Munim, Inc.; made with AI agents). Targets: the three Gaia DR3 edge-on SB2 systems that the screen sb2-edgeon-screen-v1 and our vetting left as new eclipsing binaries. Controls, chosen by rule before any timing: the three brightest stars of the same screen with G >= 7.5 that VSX lists as eclipsing (EA), have a SPOC TCE at half the Gaia period and have a fitted Gaia eccentricity >= 0.04. orbit_fallback values were read from ESA TAP on 2026-11-23 and are used only if TAP is unreachable when the job runs.",
+ "stars": [
+  {"name": "CD-28 7251", "role": "target", "source_id": "5633392634307163776", "tic": "189269584",
+   "orbit_fallback": {"period": "6.96108580484263", "period_error": "1.5122705E-4", "eccentricity": "0.07601178028086204", "eccentricity_error": "0.008083192", "arg_periastron": "342.9514761166694", "arg_periastron_error": "7.053468", "t_periastron": "-1.0388650769452774", "t_periastron_error": "0.13344511", "nss_solution_type": "SB2"}},
+  {"name": "TYC 3616-2395-1", "role": "target", "source_id": "1980920834829359488", "tic": "384284045",
+   "orbit_fallback": {"period": "3.7870870815414865", "period_error": "4.9359445E-5", "eccentricity": "0.0024878874748552426", "eccentricity_error": "0.008066557", "arg_periastron": "90.57016888954954", "arg_periastron_error": "166.27664", "t_periastron": "0.8257101853086631", "t_periastron_error": "1.7504466", "nss_solution_type": "SB2"}},
+  {"name": "HD 250735", "role": "target", "source_id": "3450611154067089408", "tic": "400170926",
+   "orbit_fallback": {"period": "5.895935077280673", "period_error": "1.8169096E-4", "eccentricity": "", "eccentricity_error": "", "arg_periastron": "", "arg_periastron_error": "", "t_periastron": "-1.6427050598921045", "t_periastron_error": "0.010175885", "nss_solution_type": "SB2C"}},
+  {"name": "V0575 Car", "role": "control", "source_id": "5493620139204795904", "tic": "291466214",
+   "orbit_fallback": {"period": "7.050691355555999", "period_error": "4.386787E-5", "eccentricity": "0.04166128004887439", "eccentricity_error": "0.0014108018", "arg_periastron": "6.171078802321882", "arg_periastron_error": "2.8493688", "t_periastron": "-2.0468556636876207", "t_periastron_error": "0.056056894", "nss_solution_type": "SB2"}},
+  {"name": "CW Eri", "role": "control", "source_id": "5152756553745197952", "tic": "98853987",
+   "orbit_fallback": {"period": "2.728328587421643", "period_error": "2.427969E-5", "eccentricity": "0.05354053935897096", "eccentricity_error": "0.0040053995", "arg_periastron": "318.90496970171665", "arg_periastron_error": "3.020703", "t_periastron": "-0.3873159602779733", "t_periastron_error": "0.023203012", "nss_solution_type": "SB2"}},
+  {"name": "HD 238096", "role": "control", "source_id": "1574945888761019648", "tic": "224293813",
+   "orbit_fallback": {"period": "3.9357833502446953", "period_error": "3.8770126E-5", "eccentricity": "0.04826007162605457", "eccentricity_error": "0.005860565", "arg_periastron": "350.43360926981865", "arg_periastron_error": "7.0027356", "t_periastron": "-1.1286258624385974", "t_periastron_error": "0.07711979", "nss_solution_type": "SB2"}}
+ ]
+}

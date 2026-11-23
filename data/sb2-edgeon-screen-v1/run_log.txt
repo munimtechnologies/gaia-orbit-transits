@@ -1,0 +1,333 @@
+06:27:55 orbit rows 2436
+06:27:56 selected 183 pilot present 18
+06:28:17 HTTP retry http://tessebs.villanova.edu/0323292655 1 <HTTPError 400: 'Bad Request'>
+06:28:22 HTTP retry http://tessebs.villanova.edu/0323292655 2 <HTTPError 400: 'Bad Request'>
+06:28:32 HTTP retry http://tessebs.villanova.edu/0323292655 3 <HTTPError 400: 'Bad Request'>
+06:28:51 [1/183] 5209024611054646272 323292655 OK HALF 
+06:29:00 HTTP retry http://tessebs.villanova.edu/0357358259 1 <HTTPError 400: 'Bad Request'>
+06:29:05 HTTP retry http://tessebs.villanova.edu/0357358259 2 <HTTPError 400: 'Bad Request'>
+06:29:15 HTTP retry http://tessebs.villanova.edu/0357358259 3 <HTTPError 400: 'Bad Request'>
+06:29:34 [2/183] 1450355965609917568 357358259 OK HALF 
+06:29:38 HTTP retry http://tessebs.villanova.edu/0017342647 1 <HTTPError 400: 'Bad Request'>
+06:29:43 HTTP retry http://tessebs.villanova.edu/0017342647 2 <HTTPError 400: 'Bad Request'>
+06:29:54 HTTP retry http://tessebs.villanova.edu/0017342647 3 <HTTPError 400: 'Bad Request'>
+06:30:13 [3/183] 1323858527224296448 17342647 OK FULL NEW
+06:30:17 [4/183] 5449358714512238080 48902525 OK NONE 
+06:30:33 HTTP retry http://tessebs.villanova.edu/0125754991 1 <HTTPError 400: 'Bad Request'>
+06:30:38 HTTP retry http://tessebs.villanova.edu/0125754991 2 <HTTPError 400: 'Bad Request'>
+06:30:49 HTTP retry http://tessebs.villanova.edu/0125754991 3 <HTTPError 400: 'Bad Request'>
+06:31:09 [5/183] 66729880383767168 125754991 OK HALF 
+06:31:22 HTTP retry http://tessebs.villanova.edu/0074528791 1 <HTTPError 400: 'Bad Request'>
+06:31:28 HTTP retry http://tessebs.villanova.edu/0074528791 2 <HTTPError 400: 'Bad Request'>
+06:31:38 HTTP retry http://tessebs.villanova.edu/0074528791 3 <HTTPError 400: 'Bad Request'>
+06:31:57 [7/183] 5427171390199613184 74528791 OK HALF 
+06:32:10 HTTP retry http://tessebs.villanova.edu/0239984394 1 <HTTPError 400: 'Bad Request'>
+06:32:15 HTTP retry http://tessebs.villanova.edu/0239984394 2 <HTTPError 400: 'Bad Request'>
+06:32:25 HTTP retry http://tessebs.villanova.edu/0239984394 3 <HTTPError 400: 'Bad Request'>
+06:32:44 [9/183] 3439742795158906624 239984394 OK HALF 
+06:32:52 HTTP retry http://tessebs.villanova.edu/0139699256 1 <HTTPError 400: 'Bad Request'>
+06:32:57 HTTP retry http://tessebs.villanova.edu/0139699256 2 <HTTPError 400: 'Bad Request'>
+06:33:07 HTTP retry http://tessebs.villanova.edu/0139699256 3 <HTTPError 400: 'Bad Request'>
+06:33:26 [10/183] 6466658483488677376 139699256 OK HALF 
+06:33:28 [11/183] 4410103003998422656 272989417 OK NONE 
+06:33:29 [12/183] 3851986847287294080 290653121 OK NONE 
+06:33:36 HTTP retry http://tessebs.villanova.edu/0079548760 1 <HTTPError 400: 'Bad Request'>
+06:33:41 HTTP retry http://tessebs.villanova.edu/0079548760 2 <HTTPError 400: 'Bad Request'>
+06:33:51 HTTP retry http://tessebs.villanova.edu/0079548760 3 <HTTPError 400: 'Bad Request'>
+06:34:11 [13/183] 4846434710191672320 79548760 OK FULL NEW
+06:34:27 HTTP retry http://tessebs.villanova.edu/0291466214 1 <HTTPError 400: 'Bad Request'>
+06:34:32 HTTP retry http://tessebs.villanova.edu/0291466214 2 <HTTPError 400: 'Bad Request'>
+06:34:42 HTTP retry http://tessebs.villanova.edu/0291466214 3 <HTTPError 400: 'Bad Request'>
+06:35:01 [14/183] 5493620139204795904 291466214 OK HALF 
+06:35:02 [15/183] 6370053605166404992 311430361 OK NONE 
+06:35:04 [16/183] 4558912591329144064 143009538 OK NONE 
+06:35:05 [17/183] 6025454428973694464 212031970 OK NONE 
+06:35:14 HTTP retry http://tessebs.villanova.edu/0172933154 1 <HTTPError 400: 'Bad Request'>
+06:35:20 HTTP retry http://tessebs.villanova.edu/0172933154 2 <HTTPError 400: 'Bad Request'>
+06:35:30 HTTP retry http://tessebs.villanova.edu/0172933154 3 <HTTPError 400: 'Bad Request'>
+06:35:49 [18/183] 707830470310008064 172933154 OK HALF 
+06:35:55 [19/183] 56861694804053120 114026906 OK OTHER 
+06:36:02 HTTP retry http://tessebs.villanova.edu/0101675455 1 <HTTPError 400: 'Bad Request'>
+06:36:07 HTTP retry http://tessebs.villanova.edu/0101675455 2 <HTTPError 400: 'Bad Request'>
+06:36:17 HTTP retry http://tessebs.villanova.edu/0101675455 3 <HTTPError 400: 'Bad Request'>
+06:36:36 [20/183] 1348044175263408384 101675455 OK HALF 
+06:36:38 [21/183] 1940943244882848128 431711546 OK NONE 
+06:37:02 [22/183] 552633549353523456 142100389 OK OTHER 
+06:37:14 HTTP retry http://tessebs.villanova.edu/0087251422 1 <HTTPError 400: 'Bad Request'>
+06:37:19 HTTP retry http://tessebs.villanova.edu/0087251422 2 <HTTPError 400: 'Bad Request'>
+06:37:29 HTTP retry http://tessebs.villanova.edu/0087251422 3 <HTTPError 400: 'Bad Request'>
+06:37:48 [23/183] 279860760500704000 87251422 OK FULL 
+06:37:51 [24/183] 5902248035064482432 130066313 OK OTHER 
+06:37:54 [25/183] 261894152090105088 309682332 OK NONE 
+06:37:55 [26/183] 4202141134262847232 32892143 OK NONE 
+06:37:58 HTTP retry http://tessebs.villanova.edu/0301747091 1 <HTTPError 400: 'Bad Request'>
+06:38:03 HTTP retry http://tessebs.villanova.edu/0301747091 2 <HTTPError 400: 'Bad Request'>
+06:38:13 HTTP retry http://tessebs.villanova.edu/0301747091 3 <HTTPError 400: 'Bad Request'>
+06:38:32 [27/183] 2847328300933441152 301747091 OK HALF 
+06:38:37 HTTP retry http://tessebs.villanova.edu/0343378570 1 <HTTPError 400: 'Bad Request'>
+06:38:42 HTTP retry http://tessebs.villanova.edu/0343378570 2 <HTTPError 400: 'Bad Request'>
+06:38:52 HTTP retry http://tessebs.villanova.edu/0343378570 3 <HTTPError 400: 'Bad Request'>
+06:39:12 [28/183] 5832968288430694272 343378570 OK FULL 
+06:39:19 HTTP retry http://tessebs.villanova.edu/0098853987 1 <HTTPError 400: 'Bad Request'>
+06:39:24 HTTP retry http://tessebs.villanova.edu/0098853987 2 <HTTPError 400: 'Bad Request'>
+06:39:34 HTTP retry http://tessebs.villanova.edu/0098853987 3 <HTTPError 400: 'Bad Request'>
+06:39:53 [29/183] 5152756553745197952 98853987 OK HALF 
+06:39:57 HTTP retry http://tessebs.villanova.edu/0343142458 1 <HTTPError 400: 'Bad Request'>
+06:40:02 HTTP retry http://tessebs.villanova.edu/0343142458 2 <HTTPError 400: 'Bad Request'>
+06:40:13 HTTP retry http://tessebs.villanova.edu/0343142458 3 <HTTPError 400: 'Bad Request'>
+06:40:33 [30/183] 5851519283006720000 343142458 OK HALF 
+06:40:42 HTTP retry http://tessebs.villanova.edu/0425281171 1 <HTTPError 400: 'Bad Request'>
+06:40:47 HTTP retry http://tessebs.villanova.edu/0425281171 2 <HTTPError 400: 'Bad Request'>
+06:40:57 HTTP retry http://tessebs.villanova.edu/0425281171 3 <HTTPError 400: 'Bad Request'>
+06:41:16 [31/183] 3804115657202681344 425281171 OK HALF 
+06:41:19 [32/183] 4571651872348064896 349490253 OK NONE 
+06:41:20 [33/183] 189831030432096384 426332869 OK NONE 
+06:41:21 [34/183] 2186746353538849408 276477308 OK NONE 
+06:41:23 [35/183] 5893073538262263040 188995852 OK NONE 
+06:41:24 [36/183] 1005411235079418240 55216504 OK NONE 
+06:41:27 HTTP retry http://tessebs.villanova.edu/0189269584 1 <HTTPError 400: 'Bad Request'>
+06:41:32 HTTP retry http://tessebs.villanova.edu/0189269584 2 <HTTPError 400: 'Bad Request'>
+06:41:42 HTTP retry http://tessebs.villanova.edu/0189269584 3 <HTTPError 400: 'Bad Request'>
+06:42:01 [37/183] 5633392634307163776 189269584 OK HALF NEW
+06:42:03 [38/183] 3210133083303270400 4292335 OK NONE 
+06:42:04 [39/183] 418728701136352000 452997239 OK NONE 
+06:42:14 HTTP retry http://tessebs.villanova.edu/0255802749 1 <HTTPError 400: 'Bad Request'>
+06:42:19 HTTP retry http://tessebs.villanova.edu/0255802749 2 <HTTPError 400: 'Bad Request'>
+06:42:29 HTTP retry http://tessebs.villanova.edu/0255802749 3 <HTTPError 400: 'Bad Request'>
+06:42:48 [40/183] 426458577120017280 255802749 OK HALF 
+06:42:50 [41/183] 6075172729866344320 163346842 OK NONE 
+06:42:51 [42/183] 1606282829146245248 462555217 OK NONE 
+06:42:57 HTTP retry http://tessebs.villanova.edu/0046362156 1 <HTTPError 400: 'Bad Request'>
+06:43:03 HTTP retry http://tessebs.villanova.edu/0046362156 2 <HTTPError 400: 'Bad Request'>
+06:43:13 HTTP retry http://tessebs.villanova.edu/0046362156 3 <HTTPError 400: 'Bad Request'>
+06:43:32 [43/183] 609041794391364992 46362156 OK HALF 
+06:43:33 [44/183] 5697475844169557248 153514323 OK NONE 
+06:43:37 HTTP retry http://tessebs.villanova.edu/0097158538 1 <HTTPError 400: 'Bad Request'>
+06:43:42 HTTP retry http://tessebs.villanova.edu/0097158538 2 <HTTPError 400: 'Bad Request'>
+06:43:53 HTTP retry http://tessebs.villanova.edu/0097158538 3 <HTTPError 400: 'Bad Request'>
+06:44:13 [45/183] 5607593418598052992 97158538 OK HALF 
+06:44:14 [46/183] 231465069010376320 347820651 OK NONE 
+06:44:21 HTTP retry http://tessebs.villanova.edu/0238162238 1 <HTTPError 400: 'Bad Request'>
+06:44:26 HTTP retry http://tessebs.villanova.edu/0238162238 2 <HTTPError 400: 'Bad Request'>
+06:44:37 HTTP retry http://tessebs.villanova.edu/0238162238 3 <HTTPError 400: 'Bad Request'>
+06:44:52 json failed https://exofop.ipac.caltech.edu/tess/target.php?id=238162238&json JSONDecodeError('Expecting value: line 1 column 1 (char 0)')
+06:44:53 [47/183] 5508748010453477760 238162238 OK HALF NEW
+06:44:59 HTTP retry http://tessebs.villanova.edu/0403046027 1 <HTTPError 400: 'Bad Request'>
+06:45:04 HTTP retry http://tessebs.villanova.edu/0403046027 2 <HTTPError 400: 'Bad Request'>
+06:45:14 HTTP retry http://tessebs.villanova.edu/0403046027 3 <HTTPError 400: 'Bad Request'>
+06:45:33 [48/183] 5829949510529000192 403046027 OK HALF 
+06:45:35 [49/183] 1094968140790112128 73197862 OK NONE 
+06:45:36 [50/183] 1907779946960802944 120530488 OK NONE 
+06:45:37 [51/183] 1117556164072536192 219724086 OK NONE 
+06:45:44 HTTP retry http://tessebs.villanova.edu/0157754133 1 <HTTPError 400: 'Bad Request'>
+06:45:49 HTTP retry http://tessebs.villanova.edu/0157754133 2 <HTTPError 400: 'Bad Request'>
+06:45:59 HTTP retry http://tessebs.villanova.edu/0157754133 3 <HTTPError 400: 'Bad Request'>
+06:46:18 [52/183] 3560730099741500928 157754133 OK HALF 
+06:46:19 [53/183] 1226781889693185408 310396365 OK NONE 
+06:46:24 HTTP retry http://tessebs.villanova.edu/0400170926 1 <HTTPError 400: 'Bad Request'>
+06:46:29 HTTP retry http://tessebs.villanova.edu/0400170926 2 <HTTPError 400: 'Bad Request'>
+06:46:39 HTTP retry http://tessebs.villanova.edu/0400170926 3 <HTTPError 400: 'Bad Request'>
+06:46:59 [54/183] 3450611154067089408 400170926 OK HALF NEW
+06:47:00 [55/183] 5306298301712596992 440933030 OK NONE 
+06:47:01 [56/183] 2995056243702062080 317413770 OK NONE 
+06:47:03 [57/183] 4301711773362344192 69595756 OK NONE 
+06:47:14 HTTP retry http://tessebs.villanova.edu/0137501278 1 <HTTPError 400: 'Bad Request'>
+06:47:19 HTTP retry http://tessebs.villanova.edu/0137501278 2 <HTTPError 400: 'Bad Request'>
+06:47:30 HTTP retry http://tessebs.villanova.edu/0137501278 3 <HTTPError 400: 'Bad Request'>
+06:47:48 [58/183] 1145947066129858176 137501278 OK HALF NEW
+06:47:50 [59/183] 719171456011132544 88646716 OK OTHER 
+06:47:56 HTTP retry http://tessebs.villanova.edu/0224293813 1 <HTTPError 400: 'Bad Request'>
+06:48:01 HTTP retry http://tessebs.villanova.edu/0224293813 2 <HTTPError 400: 'Bad Request'>
+06:48:11 HTTP retry http://tessebs.villanova.edu/0224293813 3 <HTTPError 400: 'Bad Request'>
+06:48:31 [60/183] 1574945888761019648 224293813 OK HALF 
+06:48:57 HTTP retry http://tessebs.villanova.edu/0259126645 1 <HTTPError 400: 'Bad Request'>
+06:49:02 HTTP retry http://tessebs.villanova.edu/0259126645 2 <HTTPError 400: 'Bad Request'>
+06:49:12 HTTP retry http://tessebs.villanova.edu/0259126645 3 <HTTPError 400: 'Bad Request'>
+06:49:31 [61/183] 2261658485914111744 259126645 OK HALF 
+06:49:38 HTTP retry http://tessebs.villanova.edu/0313907706 1 <HTTPError 400: 'Bad Request'>
+06:49:44 HTTP retry http://tessebs.villanova.edu/0313907706 2 <HTTPError 400: 'Bad Request'>
+06:49:54 HTTP retry http://tessebs.villanova.edu/0313907706 3 <HTTPError 400: 'Bad Request'>
+06:50:14 [62/183] 5899954277681289344 313907706 OK HALF 
+06:50:29 HTTP retry http://tessebs.villanova.edu/0138578906 1 <HTTPError 400: 'Bad Request'>
+06:50:34 HTTP retry http://tessebs.villanova.edu/0138578906 2 <HTTPError 400: 'Bad Request'>
+06:50:44 HTTP retry http://tessebs.villanova.edu/0138578906 3 <HTTPError 400: 'Bad Request'>
+06:51:03 [63/183] 859626404236660992 138578906 OK HALF 
+06:51:05 [64/183] 4232987417522244608 466781225 OK NONE 
+06:51:06 [65/183] 5921606792679129984 303383657 OK NONE 
+06:51:14 HTTP retry http://tessebs.villanova.edu/0022391573 1 <HTTPError 400: 'Bad Request'>
+06:51:20 HTTP retry http://tessebs.villanova.edu/0022391573 2 <HTTPError 400: 'Bad Request'>
+06:51:30 HTTP retry http://tessebs.villanova.edu/0022391573 3 <HTTPError 400: 'Bad Request'>
+06:51:49 [66/183] 6143609700823913856 22391573 OK HALF 
+06:51:59 HTTP retry http://tessebs.villanova.edu/0121083955 1 <HTTPError 400: 'Bad Request'>
+06:52:04 HTTP retry http://tessebs.villanova.edu/0121083955 2 <HTTPError 400: 'Bad Request'>
+06:52:15 HTTP retry http://tessebs.villanova.edu/0121083955 3 <HTTPError 400: 'Bad Request'>
+06:52:34 [67/183] 2099159459124234112 121083955 OK FULL NEW
+06:52:35 [68/183] 203937421018998912 155977231 OK NONE 
+06:52:39 HTTP retry http://tessebs.villanova.edu/0214330573 1 <HTTPError 400: 'Bad Request'>
+06:52:44 HTTP retry http://tessebs.villanova.edu/0214330573 2 <HTTPError 400: 'Bad Request'>
+06:52:54 HTTP retry http://tessebs.villanova.edu/0214330573 3 <HTTPError 400: 'Bad Request'>
+06:53:13 [69/183] 5924729165188790016 214330573 OK HALF 
+06:53:17 HTTP retry http://tessebs.villanova.edu/0029664907 1 <HTTPError 400: 'Bad Request'>
+06:53:22 HTTP retry http://tessebs.villanova.edu/0029664907 2 <HTTPError 400: 'Bad Request'>
+06:53:32 HTTP retry http://tessebs.villanova.edu/0029664907 3 <HTTPError 400: 'Bad Request'>
+06:53:51 [70/183] 5459635437381213568 29664907 OK FULL 
+06:53:54 HTTP retry http://tessebs.villanova.edu/0169319248 1 <HTTPError 400: 'Bad Request'>
+06:54:00 HTTP retry http://tessebs.villanova.edu/0169319248 2 <HTTPError 400: 'Bad Request'>
+06:54:10 HTTP retry http://tessebs.villanova.edu/0169319248 3 <HTTPError 400: 'Bad Request'>
+06:54:29 [71/183] 2986121131177463296 169319248 OK FULL 
+06:54:30 [72/183] 2174110559757872128 469579816 OK NONE 
+06:54:31 [73/183] 1584571769464585856 157332634 OK NONE 
+06:54:35 HTTP retry http://tessebs.villanova.edu/0142160632 1 <HTTPError 400: 'Bad Request'>
+06:54:40 HTTP retry http://tessebs.villanova.edu/0142160632 2 <HTTPError 400: 'Bad Request'>
+06:54:50 HTTP retry http://tessebs.villanova.edu/0142160632 3 <HTTPError 400: 'Bad Request'>
+06:55:09 [74/183] 3466066237398478208 142160632 OK HALF 
+06:55:10 [75/183] 558202713185705472 142091108 OK NONE 
+06:55:12 [76/183] 4643148543656253312 31796253 OK OTHER 
+06:55:14 [77/183] 1817867997780829568 330997836 OK NONE 
+06:55:40 HTTP retry http://tessebs.villanova.edu/0297899564 1 <HTTPError 400: 'Bad Request'>
+06:55:45 HTTP retry http://tessebs.villanova.edu/0297899564 2 <HTTPError 400: 'Bad Request'>
+06:55:55 HTTP retry http://tessebs.villanova.edu/0297899564 3 <HTTPError 400: 'Bad Request'>
+06:56:14 [78/183] 568183560050534016 297899564 OK HALF 
+06:56:20 HTTP retry http://tessebs.villanova.edu/0245132906 1 <HTTPError 400: 'Bad Request'>
+06:56:25 HTTP retry http://tessebs.villanova.edu/0245132906 2 <HTTPError 400: 'Bad Request'>
+06:56:36 HTTP retry http://tessebs.villanova.edu/0245132906 3 <HTTPError 400: 'Bad Request'>
+06:56:55 [79/183] 6085164060740783744 245132906 OK HALF 
+06:56:56 [80/183] 1824138516943387008 360978982 OK NONE 
+06:56:58 HTTP retry http://tessebs.villanova.edu/0269747005 1 <HTTPError 400: 'Bad Request'>
+06:57:03 HTTP retry http://tessebs.villanova.edu/0269747005 2 <HTTPError 400: 'Bad Request'>
+06:57:13 HTTP retry http://tessebs.villanova.edu/0269747005 3 <HTTPError 400: 'Bad Request'>
+06:57:32 [81/183] 2852979962499356288 269747005 OK HALF 
+06:57:34 [82/183] 4372023720872609664 46797471 OK NONE 
+06:57:35 [83/183] 1880655304339483136 20827477 OK NONE 
+06:57:36 [84/183] 253054460856826752 29402150 OK NONE 
+06:57:39 [85/183] 6486845482614663296 235000060 OK OTHER 
+06:57:49 [87/183] 6374372070227419008 371839648 OK NONE 
+06:57:58 [89/183] 5642018474833614464 185806911 OK NONE 
+06:57:59 [90/183] 3173418229686183680 117982489 OK NONE 
+06:58:08 [92/183] 3419201066092932992 356984148 OK NONE 
+06:58:10 [93/183] 1857568618187034752 367164798 OK NONE 
+06:58:11 [94/183] 3144287734258258944 271269341 OK NONE 
+06:58:12 [95/183] 5789392649729358464 394947383 OK NONE 
+06:58:14 [96/183] 476214501927713792 65684517 OK NONE 
+06:58:15 [97/183] 4265039659004076928 57074112 OK NONE 
+06:58:16 [98/183] 1993111257691035904 26804032 OK NONE 
+06:58:18 [99/183] 2054619999738351872 203001204 OK NONE 
+06:58:19 [100/183] 3281798018547207680 269075093 OK NONE 
+06:58:28 [102/183] 5597873804538618496 153734545 OK NONE 
+06:58:35 HTTP retry http://tessebs.villanova.edu/0320947341 1 <HTTPError 400: 'Bad Request'>
+06:58:40 HTTP retry http://tessebs.villanova.edu/0320947341 2 <HTTPError 400: 'Bad Request'>
+06:58:50 HTTP retry http://tessebs.villanova.edu/0320947341 3 <HTTPError 400: 'Bad Request'>
+06:59:19 [103/183] 266707921371366912 320947341 OK HALF 
+06:59:20 [104/183] 3032988776391684864 295156972 OK NONE 
+06:59:22 [105/183] 6475947913634412544 100363743 OK NONE 
+06:59:35 HTTP retry http://tessebs.villanova.edu/0404123632 1 <HTTPError 400: 'Bad Request'>
+06:59:40 HTTP retry http://tessebs.villanova.edu/0404123632 2 <HTTPError 400: 'Bad Request'>
+06:59:50 HTTP retry http://tessebs.villanova.edu/0404123632 3 <HTTPError 400: 'Bad Request'>
+07:00:10 [106/183] 6658794940690081024 404123632 OK HALF 
+07:00:19 [108/183] 2144887872845853568 47758214 OK NONE 
+07:00:21 [109/183] 3443821674062259328 309334280 OK NONE 
+07:00:22 [110/183] 6547214134176807808 214875017 OK NONE 
+07:00:24 [111/183] 351873824316554752 292975685 OK OTHER 
+07:00:25 [112/183] 2599211025245327232 12653017 OK NONE 
+07:00:43 HTTP retry http://tessebs.villanova.edu/0142742998 1 <HTTPError 400: 'Bad Request'>
+07:00:48 HTTP retry http://tessebs.villanova.edu/0142742998 2 <HTTPError 400: 'Bad Request'>
+07:00:58 HTTP retry http://tessebs.villanova.edu/0142742998 3 <HTTPError 400: 'Bad Request'>
+07:01:17 [113/183] 5759575200048743680 142742998 OK HALF 
+07:01:20 HTTP retry http://tessebs.villanova.edu/0384744828 1 <HTTPError 400: 'Bad Request'>
+07:01:25 HTTP retry http://tessebs.villanova.edu/0384744828 2 <HTTPError 400: 'Bad Request'>
+07:01:35 HTTP retry http://tessebs.villanova.edu/0384744828 3 <HTTPError 400: 'Bad Request'>
+07:01:55 [114/183] 5776235240753722368 384744828 OK HALF 
+07:02:09 HTTP retry http://tessebs.villanova.edu/0277213945 1 <HTTPError 400: 'Bad Request'>
+07:02:15 HTTP retry http://tessebs.villanova.edu/0277213945 2 <HTTPError 400: 'Bad Request'>
+07:02:25 HTTP retry http://tessebs.villanova.edu/0277213945 3 <HTTPError 400: 'Bad Request'>
+07:02:44 [116/183] 4316576758263867136 277213945 OK HALF 
+07:02:55 HTTP retry http://tessebs.villanova.edu/0035481236 1 <HTTPError 400: 'Bad Request'>
+07:03:01 HTTP retry http://tessebs.villanova.edu/0035481236 2 <HTTPError 400: 'Bad Request'>
+07:03:11 HTTP retry http://tessebs.villanova.edu/0035481236 3 <HTTPError 400: 'Bad Request'>
+07:03:30 [117/183] 2946311659129414144 35481236 OK HALF 
+07:03:39 [119/183] 2573617353783271168 346876748 OK NONE 
+07:03:49 [121/183] 5984192884322785664 295464097 OK NONE 
+07:03:51 [122/183] 4545609084747093632 353228517 OK NONE 
+07:04:01 [124/183] 6075660569440295296 398621977 OK NONE 
+07:04:02 [125/183] 3024112659531165568 176476906 OK NONE 
+07:04:38 HTTP retry http://tessebs.villanova.edu/0377190161 1 <HTTPError 400: 'Bad Request'>
+07:04:43 HTTP retry http://tessebs.villanova.edu/0377190161 2 <HTTPError 400: 'Bad Request'>
+07:04:53 HTTP retry http://tessebs.villanova.edu/0377190161 3 <HTTPError 400: 'Bad Request'>
+07:05:13 [127/183] 2155188720547315840 377190161 OK HALF 
+07:05:14 [128/183] 2825104215999846144 243126121 OK NONE 
+07:05:16 [129/183] 2034342875051663488 86446686 OK NONE 
+07:05:17 [130/183] 5866152511425511936 329527768 OK NONE 
+07:05:31 HTTP retry http://tessebs.villanova.edu/0124282575 1 <HTTPError 400: 'Bad Request'>
+07:05:36 HTTP retry http://tessebs.villanova.edu/0124282575 2 <HTTPError 400: 'Bad Request'>
+07:05:46 HTTP retry http://tessebs.villanova.edu/0124282575 3 <HTTPError 400: 'Bad Request'>
+07:06:05 [131/183] 6179179176857942016 124282575 OK HALF 
+07:06:08 HTTP retry http://tessebs.villanova.edu/0384284045 1 <HTTPError 400: 'Bad Request'>
+07:06:13 HTTP retry http://tessebs.villanova.edu/0384284045 2 <HTTPError 400: 'Bad Request'>
+07:06:23 HTTP retry http://tessebs.villanova.edu/0384284045 3 <HTTPError 400: 'Bad Request'>
+07:06:43 [132/183] 1980920834829359488 384284045 OK HALF NEW
+07:06:44 [133/183] 5512207383273412864 60024366 OK NONE 
+07:06:47 HTTP retry http://tessebs.villanova.edu/0289988797 1 <HTTPError 400: 'Bad Request'>
+07:06:53 HTTP retry http://tessebs.villanova.edu/0289988797 2 <HTTPError 400: 'Bad Request'>
+07:07:03 HTTP retry http://tessebs.villanova.edu/0289988797 3 <HTTPError 400: 'Bad Request'>
+07:07:22 [134/183] 3528720292598617344 289988797 OK HALF 
+07:07:24 [135/183] 510467347154606592 444617279 OK NONE 
+07:07:33 [136/183] 414938061776891264 305832152 OK OTHER 
+07:07:41 HTTP retry http://tessebs.villanova.edu/0357398958 1 <HTTPError 400: 'Bad Request'>
+07:07:46 HTTP retry http://tessebs.villanova.edu/0357398958 2 <HTTPError 400: 'Bad Request'>
+07:07:56 HTTP retry http://tessebs.villanova.edu/0357398958 3 <HTTPError 400: 'Bad Request'>
+07:08:16 [137/183] 1486248285748866688 357398958 OK HALF 
+07:08:25 [139/183] 5540533757752366208 183286711 OK NONE 
+07:08:26 [140/183] 2039696500216316288 30524933 OK NONE 
+07:08:36 [142/183] 5771239021259511680 418654075 OK NONE 
+07:08:37 [143/183] 1747045915506755968 305987021 OK NONE 
+07:08:47 [145/183] 5543741750418416256 147646681 OK NONE 
+07:09:04 HTTP retry http://tessebs.villanova.edu/0140736015 1 <HTTPError 400: 'Bad Request'>
+07:09:10 HTTP retry http://tessebs.villanova.edu/0140736015 2 <HTTPError 400: 'Bad Request'>
+07:09:20 HTTP retry http://tessebs.villanova.edu/0140736015 3 <HTTPError 400: 'Bad Request'>
+07:09:39 [147/183] 551745521915153408 140736015 OK FULL 
+07:09:41 [148/183] 1931664053935715072 173426591 OK OTHER 
+07:09:42 [149/183] 6242052618993745792 48908254 OK NONE 
+07:09:43 [150/183] 2808349273698706048 25762230 OK NONE 
+07:09:44 [151/183] 3043555010111094400 32399700 OK NONE 
+07:09:46 [152/183] 4749481492841185792 200728570 OK NONE 
+07:10:04 [155/183] 1400347290561017472 159968872 OK NONE 
+07:10:05 [156/183] 4562857707768073728 150553712 OK NONE 
+07:10:08 HTTP retry http://tessebs.villanova.edu/0074240740 1 <HTTPError 400: 'Bad Request'>
+07:10:13 HTTP retry http://tessebs.villanova.edu/0074240740 2 <HTTPError 400: 'Bad Request'>
+07:10:23 HTTP retry http://tessebs.villanova.edu/0074240740 3 <HTTPError 400: 'Bad Request'>
+07:10:43 [157/183] 4122313635127133952 74240740 OK HALF 
+07:10:44 [158/183] 5586365766077435008 173816506 OK NONE 
+07:10:47 HTTP retry http://tessebs.villanova.edu/0041694016 1 <HTTPError 400: 'Bad Request'>
+07:10:52 HTTP retry http://tessebs.villanova.edu/0041694016 2 <HTTPError 400: 'Bad Request'>
+07:11:02 HTTP retry http://tessebs.villanova.edu/0041694016 3 <HTTPError 400: 'Bad Request'>
+07:11:22 [159/183] 1387290280744129152 41694016 OK HALF 
+07:11:23 [160/183] 3154471720196179840 468959529 OK NONE 
+07:11:40 [163/183] 2823145848351513856 113492755 OK NONE 
+07:11:50 [165/183] 4322674031257647744 339787086 OK NONE 
+07:11:52 [166/183] 5871568499564025472 453601725 OK NONE 
+07:11:53 [167/183] 6389473110815481472 235043865 OK NONE 
+07:11:54 [168/183] 1734078000491716224 418376897 OK NONE 
+07:11:56 [169/183] 555108687465591040 137328861 OK NONE 
+07:12:01 HTTP retry http://tessebs.villanova.edu/0368208652 1 <HTTPError 400: 'Bad Request'>
+07:12:06 HTTP retry http://tessebs.villanova.edu/0368208652 2 <HTTPError 400: 'Bad Request'>
+07:12:16 HTTP retry http://tessebs.villanova.edu/0368208652 3 <HTTPError 400: 'Bad Request'>
+07:12:35 [170/183] 4550480466716665856 368208652 OK HALF 
+07:12:38 [171/183] 6417103013389591424 409882161 OK NONE 
+07:12:39 [172/183] 2964189378900408704 93416693 OK NONE 
+07:12:40 [173/183] 1506787678352110848 157987580 OK NONE 
+07:12:42 [174/183] 5641904744097640064 185804973 OK NONE 
+07:12:55 [175/183] 1512075848243535488 332334202 OK OTHER 
+07:12:56 [176/183] 1615317447472056448 311113785 OK NONE 
+07:12:58 [177/183] 6668966900715757312 129479804 OK NONE 
+07:12:59 [178/183] 690885522954174080 117416685 OK NONE 
+07:13:01 [179/183] 657205695088834560 82329624 OK NONE 
+07:13:23 HTTP retry http://tessebs.villanova.edu/0016617827 1 <HTTPError 400: 'Bad Request'>
+07:13:28 HTTP retry http://tessebs.villanova.edu/0016617827 2 <HTTPError 400: 'Bad Request'>
+07:13:38 HTTP retry http://tessebs.villanova.edu/0016617827 3 <HTTPError 400: 'Bad Request'>
+07:13:58 [181/183] 2064107926079227648 16617827 OK FULL 
+07:14:04 HTTP retry http://tessebs.villanova.edu/0219205407 1 <HTTPError 400: 'Bad Request'>
+07:14:09 HTTP retry http://tessebs.villanova.edu/0219205407 2 <HTTPError 400: 'Bad Request'>
+07:14:19 HTTP retry http://tessebs.villanova.edu/0219205407 3 <HTTPError 400: 'Bad Request'>
+07:14:38 [182/183] 5549740136101187840 219205407 OK FULL 
+07:14:39 [183/183] 5711863232999907584 141510543 OK NONE 
+{"S0": "DIFFERS", "S1": "MIXED", "S2": "YES", "S3": "CONTROLS_OK"}

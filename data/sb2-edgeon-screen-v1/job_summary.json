@@ -1,0 +1,54 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "sb2-edgeon-screen-v1",
+ "id": "f9b0ace6d69f",
+ "field": "astrophysics",
+ "run": "20261122T181541Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-23T06:27:47.915320+00:00",
+ "finished_at": "2026-11-23T07:29:23.525958+00:00",
+ "duration_seconds": 3695,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.0,
+  "timeout_minutes": 180.0
+ },
+ "peak_memory_gb": 0.03,
+ "network": {
+  "setup": null,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_sb2_screen",
+   "exit": 0,
+   "seconds": 2
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python sb2_screen.py --out-dir /out",
+   "exit": 0,
+   "seconds": 2810
+  }
+ ],
+ "out_files": [
+  "gaia_sb2_m1_p8.csv",
+  "sb2_screen.csv",
+  "sb2_screen_summary.json"
+ ],
+ "out_files_total": 3,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-02-python stdout] 7:12:40 [173/183] 1506787678352110848 157987580 OK NONE \n07:12:42 [174/183] 5641904744097640064 185804973 OK NONE \n07:12:55 [175/183] 1512075848243535488 332334202 OK OTHER \n07:12:56 [176/183] 1615317447472056448 311113785 OK NONE \n07:12:58 [177/183] 6668966900715757312 129479804 OK NONE \n07:12:59 [178/183] 690885522954174080 117416685 OK NONE \n07:13:01 [179/183] 657205695088834560 82329624 OK NONE \n07:13:23 HTTP retry http://tessebs.villanova.edu/0016617827 1 <HTTPError 400: 'Bad Request'>\n07:13:28 HTTP retry http://tessebs.villanova.edu/0016617827 2 <HTTPError 400: 'Bad Request'>\n07:13:38 HTTP retry http://tessebs.villanova.edu/0016617827 3 <HTTPError 400: 'Bad Request'>\n07:13:58 [181/183] 2064107926079227648 16617827 OK FULL \n07:14:04 HTTP retry http://tessebs.villanova.edu/0219205407 1 <HTTPError 400: 'Bad Request'>\n07:14:09 HTTP retry http://tessebs.villanova.edu/0219205407 2 <HTTPError 400: 'Bad Request'>\n07:14:19 HTTP retry http://tessebs.villanova.edu/0219205407 3 <HTTPError 400: 'Bad Request'>\n07:14:38 [182/183] 5549740136101187840 219205407 OK FULL \n07:14:39 [183/183] 5711863232999907584 141510543 OK NONE \n{\"S0\": \"DIFFERS\", \"S1\": \"MIXED\", \"S2\": \"YES\", \"S3\": \"CONTROLS_OK\"}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261122T181541Z-astrophysics\\sb2)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

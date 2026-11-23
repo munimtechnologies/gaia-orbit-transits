@@ -1,0 +1,131 @@
+{
+ "grades": {
+  "S0": {
+   "n_selected": 183,
+   "expected": 184,
+   "pilot_present": 18,
+   "pilot_n": 20,
+   "label": "DIFFERS"
+  },
+  "S1": {
+   "n_with_tce": 66,
+   "n_half": 46,
+   "n_full": 10,
+   "n_other": 10,
+   "share_half": 0.696969696969697,
+   "share_half_ci95": [
+    0.5778119295675208,
+    0.7944597900738193
+   ],
+   "label": "MIXED"
+  },
+  "S2": {
+   "n_new": 8,
+   "n_new_excl_pilot": 6,
+   "new": [
+    {
+     "source_id": "1323858527224296448",
+     "tic": "17342647",
+     "G": 6.7638574,
+     "P_gaia": 4.384669993135074,
+     "tce_class": "FULL",
+     "depth_ppm": 304.13344687281585,
+     "snr": 8.299612045288086,
+     "in_pilot": false
+    },
+    {
+     "source_id": "4846434710191672320",
+     "tic": "79548760",
+     "G": 7.7082825,
+     "P_gaia": 7.97210930625742,
+     "tce_class": "FULL",
+     "depth_ppm": 41135.82609848318,
+     "snr": 1696.710693359375,
+     "in_pilot": false
+    },
+    {
+     "source_id": "5633392634307163776",
+     "tic": "189269584",
+     "G": 8.860162,
+     "P_gaia": 6.96108580484263,
+     "tce_class": "HALF",
+     "depth_ppm": 30553.533611458162,
+     "snr": null,
+     "in_pilot": false
+    },
+    {
+     "source_id": "5508748010453477760",
+     "tic": "238162238",
+     "G": 9.1334715,
+     "P_gaia": 2.437523157854377,
+     "tce_class": "HALF",
+     "depth_ppm": 33330.04698379547,
+     "snr": 894.495849609375,
+     "in_pilot": true
+    },
+    {
+     "source_id": "3450611154067089408",
+     "tic": "400170926",
+     "G": 9.33441,
+     "P_gaia": 5.895935077280673,
+     "tce_class": "HALF",
+     "depth_ppm": 61063.295355174225,
+     "snr": 1296.615,
+     "in_pilot": true
+    },
+    {
+     "source_id": "1145947066129858176",
+     "tic": "137501278",
+     "G": 9.412125,
+     "P_gaia": 4.270857483830975,
+     "tce_class": "HALF",
+     "depth_ppm": 10257.362113265768,
+     "snr": 442.8772278,
+     "in_pilot": false
+    },
+    {
+     "source_id": "2099159459124234112",
+     "tic": "121083955",
+     "G": 9.529484,
+     "P_gaia": 6.094486343863513,
+     "tce_class": "FULL",
+     "depth_ppm": 3162.510104053652,
+     "snr": 41.4527092,
+     "in_pilot": false
+    },
+    {
+     "source_id": "1980920834829359488",
+     "tic": "384284045",
+     "G": 10.467624,
+     "P_gaia": 3.7870870815414865,
+     "tce_class": "HALF",
+     "depth_ppm": 26927.26273940672,
+     "snr": 227.84542846679688,
+     "in_pilot": false
+    }
+   ],
+   "label_ge3": "YES",
+   "label_ge1": "YES"
+  },
+  "S3": {
+   "n_controls": 44,
+   "n_ok": 44,
+   "share": 1.0,
+   "label": "CONTROLS_OK"
+  },
+  "counts": {
+   "tested": 161,
+   "no_tic": 22,
+   "errors": 0,
+   "tce_none": 95
+  }
+ },
+ "meta": {
+  "version": "0.1.0",
+  "started": "2026-11-23T06:27:49Z",
+  "schema": "gaiadr3",
+  "n_gaia_eb": 79,
+  "n_ecl_sb2_all": 53,
+  "finished": "2026-11-23T07:14:39Z"
+ }
+}

@@ -4,7 +4,34 @@ By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, 
 data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
 holds.
 
-## Newest (23 Nov, ~01:45 UTC): the pixel test's negative-flux failure fixed and re-registered; DR4 runbook addendum; T10K checked
+## Newest (23 Nov, ~10:00 UTC): the Gaia SB2 x TESS screen graded; two more new eclipsing binaries with Gaia masses
+
+**Graded (pre-registered):** `findings/2026-11-23-sb2-screen-results.md`, data
+`data/sb2-edgeon-screen-v1/` (job sb2-edgeon-screen-v1, `sb2_screen.py` 0.1.0) and
+`data/sb2-new-ebs/` (vetting after the run).
+- 183 edge-on Gaia DR3 double-lined orbits (P < 8 d): 66 have a qualifying TESS SPOC TCE, 46 at
+  half the Gaia period (S1 0.70, **MIXED**; we predicted HALF_DOMINANT, **wrong**). Controls: all 44
+  VSX eclipsing stars with a TCE are at P or P/2 (**CONTROLS_OK**). S0 **DIFFERS** (183, 18 of 20
+  pilot stars; **wrong**): the pilot had left the (1 − e²)^1.5 factor out of M1 sin³i, so two
+  eccentric pilot stars do not pass the registered rule.
+- **The screen's lookup of the Villanova TESS EB catalogue failed for every star (HTTP 400)**, so
+  its "new" list of 8 was too long. Vetted by hand (Prša et al. 2022 and T10K through VizieR's CfA
+  mirror with control rows, SIMBAD, VSX, ASAS-SN, ExoFOP): 3 are in the TESS EB catalogue, 1 is
+  Kepler's KOI-3161, 1 is a known heartbeat star.
+- **New eclipsing binaries (in no catalogue we reached): CD-28 7251 (TIC 189269584, A3m, G 8.86;
+  Gaia P 6.96109 d, e 0.076; M sin³i 2.06 and 1.74 M_sun) and TYC 3616-2395-1 (TIC 384284045,
+  G 10.47; P 3.78709 d, circular; M sin³i 1.05 and 1.12 M_sun)**, besides HD 250735 from the pilot.
+- **CD-28 7251's eclipses are in Gaia's own resolved photometry:** two dips (0.27 and 0.19 mag)
+  7.004 d apart, both 0.14-0.18 d from the same conjunction of Gaia's own orbit (hand calculation,
+  about 0.19 d uncertainty). A brighter star 46″ away dilutes TESS but cannot make these dips.
+
+**Pre-registered next:** `findings/2026-11-23-sb2-new-ebs-prereg.md`, code `sb2_ebtime.py` 0.1.0 with
+tests, inputs `runbook/ebtime/targets.json`, job sb2-new-ebs-timing-v1 (queued). Eclipse times of the three new binaries in every
+TESS sector against Gaia's period (E1), secondary-eclipse phase from e and ω (E2), conjunction
+times (E3) and Gaia's faint epochs (E4), with three known eclipsing binaries as controls chosen by
+rule. Predictions: CONTROLS_OK 70%; CD-28 7251 E1 80%, E2 55%, E3 50%, E4 85% (not blind).
+
+## Earlier (23 Nov, ~01:45 UTC): the pixel test's negative-flux failure fixed and re-registered; DR4 runbook addendum; T10K checked
 
 **Amendment 1 to pixel_which_star (pre-registered, not blind for the target):**
 `findings/2026-11-23-pixel-which-star-amendment-1.md`, code `pws_amend_011.py` with tests
@@ -96,7 +123,7 @@ known planets, 46 of 330 control hits, 7 of 19 new candidates seen, RVS 8 of 12 
 100, the same two survivors).
 
 **Pre-registered:** `findings/2026-11-22-sb2-screen-prereg.md`, code `sb2_screen.py` 0.1.0 with
-tests (`test_sb2_screen.py`), job sb2-edgeon-screen-v1 (queued).
+tests (`test_sb2_screen.py`), job sb2-edgeon-screen-v1 (graded 23 Nov, see top).
 - All 184 edge-on Gaia DR3 double-lined orbits (P < 8 d, M1 sin³i ≈ M1) against TESS's SPOC
   detections: which eclipse at half the orbital period (twins) or at the period, and which of
   those are in no catalogue (VSX, the Villanova TESS EB catalogue, ExoFOP, SIMBAD, Gaia's own
@@ -187,7 +214,8 @@ they ran in that job, where they passed, not in the commit check).
   sin³i ≈ 1 (M1 sin³i within 0.95-1.10 of Gaia's m1). Of the 20 brightest with G > 9, 7 have SPOC
   TCEs and all 7 are at half the Gaia period (six within 0.007%); 6 of the 7 are known eclipsing
   binaries (V1010 Cas, ASAS J085256+1449.0, NV TrA, VV Crt, TOI-631, HIP 34208); TIC 400170926 is
-  the new one. The full screen of all 184 is pre-registered (see above).
+  the new one. The full screen was graded on 23 Nov (see top; the pilot's ratio omitted the
+  eccentricity factor).
 - Gaia's transit period is a near-commensurability, not a harmonic: three eclipse intervals ≈ ten
   Gaia periods (0.047% apart).
 
@@ -227,330 +255,68 @@ commit b8f2525dde1bebdabf2b89a33065aac797771e2d, release v0.46.0).
 - The two survivors (TIC 4638108, TIC 44997521) are too faint for the screen. Still no TOI or CTOI
   on ExoFOP (22 Nov); no ASAS-SN variable-catalogue entry.
 
-## Earlier (21 Nov, ~23:45 UTC): step G6 pre-registered, a period-free TESS search of all 214 Gaia DR3 transit candidates
+## Earlier (21 Nov and before)
 
-**Pre-registered:** `findings/2026-11-21-vpt-pf-prereg.md`, code `vpt_pf.py` 0.1.0 with tests
-(`test_vpt_pf.py`; commit 9bf9704211bd129204bb4de091f38021ec76d301, release v0.45.0), set-up
-`runbook/pf/fetch_deps.py`, rehearsal job gaia-vpt-pf-dr3-v1 (graded 22 Nov, see above).
-- **Why:** Gaia's period is wrong for 161 of 176 known systems in DR3, so folding TESS at Gaia's
-  period (step g) misses most real signals. G6 runs the unchanged period-free follow-up
-  (`vpt_followup.py` 0.1.0, up to 6 sectors) on every candidate and compares the TESS period with
-  the known planet and TOI periods.
-- **Primary test PF1b:** among known systems whose Gaia period is wrong, does the period-free
-  search find the known period (RECOVERS ≥ 0.60)? Prediction: RECOVERS 55%.
-- **PF2:** Gaia DR3 new candidates with a planet-like TESS transit, at Gaia's period or another;
-  robust if 2 or more sectors alone agree. Prediction: at least one robust at another period 25%.
-- **DR4:** the same code runs on all 1,007 DR4 candidates after step g on 2 December.
-
-## Earlier (21 Nov, ~23:20 UTC): the two surviving Gaia transit candidates, vetted in catalogues
-
-**Exploratory (not pre-registered):** `findings/2026-11-21-vpt-survivors-vetting.md`, values and
-queries in `data/vpt-survivors-vetting/catalogue_values.md`. The registered follow-up
-(gaia-vpt-followup-v1) is still queued; its labels and predictions are unchanged.
-- **Both dips are seen in Gaia's own resolved photometry**, so the bright stars about 25-28" away
-  (a G 10.59 background star next to TIC 44997521, a G 11.97 foreground rotational variable next to
-  TIC 4638108) cannot be the source in Gaia's data. Gaia DR3 shows no star within 18.8" of TIC
-  44997521 and no sign of a close companion (RUWE 1.06).
-- **Gaia's transit duration fits a dwarf host for TIC 44997521** (2.10 h against 2.5-2.8 h for a
-  central transit), but **implies a grazing geometry for TIC 4638108** (1.91 h against 3.3 h;
-  impact parameter about 0.92), a warning sign for a stellar companion.
-- **Neither is already known:** no TOI, CTOI or follow-up on ExoFOP; VSX holds only Gaia's own EP
-  imports; no Gaia EB entry; not in the TESS EB catalogue; no literature. Neither star is bright
-  enough for Gaia's RV-variability screen.
-- What remains for TIC 44997521 is mainly a low-mass star (about 0.1 M_sun is 1.0-1.2 R_Jup)
-  instead of a hot Jupiter; only radial velocities can tell (about 0.17 km/s against 16 km/s).
-
-## Earlier (21 Nov, ~21:30 UTC): a transiting companion found by Gaia's wobble? Step (i), fixed before DR4
-
-**Pre-registered:** `findings/2026-11-21-dr4-astro-tess-prereg.md`, code `dr4_rows.py` 0.1.0 and
-`run_search_dr4.py` 0.1.0 with tests (`test_dr4_rows.py`; commit b6ae340a, release v0.44.0),
-rehearsal job gaia-dr4-astro-adapter-v1 (passed 22 Nov, see above).
-- **The question:** do any companions whose orbits Gaia DR4 measures from the star's wobble
-  transit their star in TESS at the time the orbit predicts? A brown dwarf or giant planet found
-  this way would have both a true mass and a radius. To our knowledge no companion first found by
-  Gaia astrometry has yet been seen to transit.
-- **What we found while preparing it:** our DR3 search code cannot read DR4 as it is. ESA's draft
-  DR4 data model renames four of the columns it selects, and DR4's orbit correlations are given
-  in Campbell elements (a0, omega, Omega, i) in a vector of **the same length** as DR3's
-  Thiele-Innes order, so reading them with DR3's names would fail silently. The new adapter maps
-  DR4's covariance onto the Thiele-Innes constants with the exact Jacobian and keeps the pinned
-  search unchanged; gate G0 stops the release-day run before any TESS download if DR4's
-  conventions differ from what we assume.
-- **Rehearsal (R1):** up to 400 real DR3 orbits are converted to DR4's form and back; every one
-  must return DR3's own correlations, errors and conjunction times.
-- **Predictions:** at least one substellar transit candidate 20%; calibration within a factor 3
-  45%.
-
-## Earlier (21 Nov, ~20:00 UTC): why are Gaia's transit periods wrong? A test in Gaia's own epochs
-
-**Pre-registered:** `findings/2026-11-21-vpt-epochs-prereg.md`, code `vpt_epochs.py` 0.1.0 with
-tests, job gaia-vpt-epochs-v1 (stopped without data on 22 Nov; amendment 1, job -v2 graded 22 Nov,
-amendment 2 queued; see above). ESA's archive closes 25 Nov 12:00 CET; the epochs are now saved in
-`data/vpt-epochs-v2/`.
-- For the 161 known systems whose Gaia DR3 transit period is wrong, are Gaia's own in-transit
-  epochs real transits (**ALIAS**: real dips with a wrong period drawn through them) or not
-  (**SPURIOUS**)? Validity check first (T1): for known planets whose Gaia period is right,
-  Gaia's in-transit epochs must fall inside the real transits.
-- **T3:** can Gaia's own photometry flag a wrong period? N_comp counts box-search peaks nearly
-  as strong as the one at Gaia's period. If it separates right from wrong periods (AUC ≥ 0.70,
-  p ≤ 0.01), it becomes a period-reliability flag for all 1,007 DR4 candidates on release day.
-- Predictions: TIME_OK 75%; ALIAS_DOMINATED 55%; T3 PREDICTIVE 30%.
-- Runbook: new step (g3), the period-free TESS follow-up of every DR4 survivor, and a conditional
-  step (g4); SHAs of `gaia_vpt_tess.py` 0.1.1 and `vpt_followup.py` 0.1.0 recorded.
-
-## Earlier (21 Nov, ~17:30 UTC): TYC 6340-23-1's "bright 38″ neighbour" is faint; pixel test re-filed
-
-**Amendment:** `findings/2026-11-21-tyc6340-pixel-amendment-1.md`, code `patch_tyc_pixel_011.py`
-(turns `tyc_pixel.py` 0.1.0 into 0.1.1), tests `test_tyc_pixel_011.py`, job tyc6340-pixel-v2
-(graded 22 Nov, see above).
-- Job tyc6340-pixel-v1 stopped at the Gaia step, before any pixel was analysed: the neighbour we
-  had taken from SuperWASP's archive as **V ≈ 11.25** is **G = 14.39 (RP 13.75)** in Gaia DR3
-  (6853008487031438080). SuperWASP's large aperture most likely mixed in the target's light.
-- **A flux argument already settles it:** the 38″ star would have to lose 198% of its own light to
-  make the 6.09% eclipse, so it **cannot be the source**.
-- The pixel test now tests the nearest star that *could* make the eclipse, **Gaia DR3
-  6853008452671699328 (G 12.55, 94″; it would need a 43% eclipse)**, and adds a blend screen of
-  every Gaia star in the field. Labels, thresholds, controls and predictions are unchanged.
-
-## Earlier (21 Nov, ~17:00 UTC): the full DR3 rehearsal of step g, graded
-
-**Results:** `findings/2026-11-21-vpt-dr3-results.md`, data `data/vpt-dr3-v1/c0/` and
-`data/vpt-dr3-v1/c1/` (all 214 Gaia DR3 transit candidates folded in TESS). Counted from the two
-chunk files; job gaia-vpt-dr3-comb-v1 recomputed them with 0.1.1 and a fresh RVS query on 22 Nov
-and every count holds.
-- **Gaia DR3's transit period is the known period for only 15 of 176 known systems** (0.085, 95%
-  0.052-0.136). On the held-out chunk 1 it was 4 of 86 (PERIODS_MOSTLY_WRONG, as predicted at 85%).
-  Examples: HD 189733 b 1.661 d in Gaia vs 2.219 d; HD 209458 b 0.899 vs 3.525; WASP-39 b 0.513 vs
-  4.055. We found no published count.
-- Known planets at the right period are recovered (14 of 15: PIPELINE_OK). Controls are noisy only
-  on stars whose real transit sits at another period (43 of 252 trials) and silent on known planets
-  (0 of 30), as amendment 1 predicted. G1 as registered: MIXED, not valid. Our predictions for
-  G0b, G1 and G2 were **wrong**.
-- 22 of 24 "hits" at Gaia's wrong period carry an eclipsing-binary flag; 2 look planet-like.
-- **Two planet-like NEW candidates survive with no TOI:** TIC 4638108 (P 2.21 d, 1.87 R_Jup on an F
-  star) and **TIC 44997521** (Gaia DR3 5432318139709900160; P 3.55 d, 2.2% deep in TESS and Gaia,
-  1.03 R_Jup on a K dwarf, or 1.15 R_Jup with the TIC radius; weak TESS detection, S/N 7.6). Both
-  are Gaia's candidates (Panahi et al. 2022). Neither is called a planet.
-- Chunk 0 re-graded by the code with the RVS file (22 Nov, `data/vpt-dr3-v1/rvs/comb_c0_vpt_summary.json`)
-  matches the hand-made chunk-0 numbers exactly.
-
-**Pre-registered next:** `findings/2026-11-21-vpt-followup-prereg.md`, code `vpt_followup.py`
-0.1.0 (job gaia-vpt-followup-v1, queued): every TESS sector, a period-free box search, odd/even,
-secondary and per-sector depths, with three known hot Jupiters as controls (two with wrong Gaia
-periods). Predictions: CONTROLS_PASS 80%; TIC 4638108 SURVIVES 55%; TIC 44997521 SURVIVES 45%.
-
-## Earlier (21 Nov, ~16:00 UTC): half of the step-g DR3 rehearsal, and amendment 1 before DR4
-
-**Interim (chunk 0 of 2):** `findings/2026-11-21-vpt-dr3-c0-interim.md`, data
-`data/vpt-dr3-v1/c0/`. Superseded by the full results above.
-
-**Amendment 1, fixed before DR4:** `findings/2026-11-21-vpt-amendment-1.md`, code
-`gaia_vpt_tess.py` 0.1.1 (no search step changed; release v0.41.0). DR4's primary G1 now uses a
-control rate measured on known planets only (G1b); G5 measures how often Gaia's period matches the
-known one; an RVS screen (Katz et al. 2023 criterion) feeds G2b.
-
-## Earlier (21 Nov, ~10:00 UTC): Gaia's own transit candidates against TESS (step g), fixed before DR4
-
-**Pre-registered:** `findings/2026-11-21-vpt-tess-prereg.md`, code `gaia_vpt_tess.py` 0.1.0.
-Gaia DR4 publishes **1,007** photometric transit candidates (`vari_planetary_transit`; DR3 had
-214, of which Gaia-1b and Gaia-2b were confirmed). The module folds every candidate's TESS light
-curves at the Gaia period with the unchanged `sb1_transit` search (controls at two non-harmonic
-periods, injections at 0.8 × Gaia depth), sorts candidates into KNOWN_PLANET / TOI_FP / TOI_PC /
-KNOWN_SYSTEM_OTHER_P / NEW, and flags eclipsing-binary signs. G0 (validity), G1 (main: what
-fraction of Gaia's NEW candidates TESS sees), G2 (planet-like list), G3 (EB share), G4 (aliases).
-DR4 predictions: MOSTLY_SEEN 40%, MIXED 35%; 6 or more new planet-like signals 55%.
-
-## Earlier (20 Nov, ~23:30 UTC): two more quality-cut tests fixed before Gaia DR4
-
-**Pre-registered:** `findings/2026-11-20-qcut-q4ef-prereg.md`, graded on DR4 day at step (a4).
-- **Q4e:** does `goodness_of_fit` (p = 0.0104 against α = 0.01 in the transit test) predict which
-  DR3 orbits DR4 confirms? **Q4f:** do DR4 survival and the transit test agree on the gold-cut
-  ingredients? Predictions: GOF_REPLICATES 75%; YARDSTICKS_DISAGREE 60%.
-
-## Earlier (20 Nov, ~20:00 UTC): ASAS-SN insensitive; the SuperWASP dip is not a field systematic; the period tension was ours
-
-**Graded:** `findings/2026-11-20-tyc6340-period-results.md` (data `data/tyc6340-period-v1/`).
-- **ASAS-SN: ASASSN_INSENSITIVE** (we had predicted DETECTED, 65%: **wrong**).
-- **SuperWASP common mode: COMMON_CLEAN**: 0 of 12 comparison stars show the dip.
-- **Reported, not graded:** SuperWASP's strongest peak is **2.32878 d**, which joins 2006-2008 to
-  the 2025 TESS eclipse and agrees with Gaia DR3; the earlier "5.8σ period tension" was **very
-  likely our artefact**. (Confirmed by the pixel job's unique cycle link, 22 Nov.)
-
-**Pre-registered next:** `findings/2026-11-20-tyc6340-pixel-prereg.md`, code `tyc_pixel.py` 0.1.0
-(job tyc6340-pixel-v1; amended 21 Nov; graded 22 Nov, see above): which star dims, the deblended
-depth, and a 19-year period. Predictions: on target 82%; depth consistent 55%; oversize survives
-75%; link unique 70%. All came true.
+Full entries for 21 Nov and earlier (step G6 pre-registration, the survivors' vetting, step (i), the
+epoch-test pre-registration, TYC 6340-23-1's neighbour and pixel test, the step-g DR3 rehearsal and
+its amendment, the quality-cut tests, ASAS-SN and SuperWASP checks, and the 19-20 Nov results) are
+in the git history of this file (commit a34b7885 and earlier) and in their `findings/` files.
 
 ## Results of 20 Nov
-
 1. **Gaia's own quality columns cannot single out the real low-mass SB1 orbits**
-   (`findings/2026-11-20-quality-cut-results.md`): the gold cut keeps 9 of 2,981; the top
-   significance tier transits about six times as often (p = 0.016) but is still mostly not right.
-   Write-up: https://www.munimtech.com/research/gaia-quality-cut-low-mass-orbits
+   (`findings/2026-11-20-quality-cut-results.md`). Write-up:
+   https://www.munimtech.com/research/gaia-quality-cut-low-mass-orbits
 2. **Our EBLM fitting pipeline failed its pre-registered holdout check**
-   (`findings/2026-11-20-eblm-holdout-results.md`): 6 of 14 → **PIPELINE_FAILED**; no EBLM result
-   from this pipeline will come from Gaia DR4.
-3. **Pre-registered before DR4: an independent test of TYC 6340-23-1's mass**
-   (`findings/2026-11-20-tyc6340-dr4-k-prereg.md`, `tyc_k_dr4.py` 0.1.0), release-day step (a5).
-4. **TIC 71945261 (TYC 6340-23-1) does not move like a member of any known young group**
-   (`findings/2026-11-20-tic71945261-followup-results.md`): FIELD_KINEMATIC; label stays
-   **B_OVERSIZED_COMPANION**; **we do not call it inflated**.
-   Write-up: https://www.munimtech.com/research/tyc-6340-23-1-oversized-companion
+   (`findings/2026-11-20-eblm-holdout-results.md`): PIPELINE_FAILED.
+3. **TYC 6340-23-1**: label B_OVERSIZED_COMPANION; not called inflated. Write-up:
+   https://www.munimtech.com/research/tyc-6340-23-1-oversized-companion
 
 ## Graded 19 Nov
 **Most of Gaia DR3's brown-dwarf-mass SB1 orbits at 1–13 days must be wrong**
-(`findings/2026-11-19-sb1-robust-amendment-2-results.md`, data `data/incfloor-v1/`): 407.7 transits
-expected, 3 seen; φ = 0.010 (95%: 0.0005–0.034) for the central population; caveat on the
-trusted-radius subset (0.62). Write-up:
+(`findings/2026-11-19-sb1-robust-amendment-2-results.md`, data `data/incfloor-v1/`). Write-up:
 https://www.munimtech.com/research/gaia-brown-dwarf-orbits-missing-transits
-Also: the combined transit-test grade (`findings/2026-11-19-sb1-robust-combined-results.md`) and
-the failed first outside check of eblm_fit 0.1.0 (`findings/2026-11-19-eblm-control-results.md`).
 
 ## Leads
-1. **Gaia's own transit candidates in TESS** (step g): DR3 rehearsal graded and recomputed; the
-   period-free search (G6) graded 22 Nov (PF_RECOVERS; new candidate **TIC 93622019**: pixel test
-   re-run with the negative-flux fix queued, Gaia-epoch test at the TESS ephemeris queued); Gaia's
-   spectrograph flags 8 of 12 testable new candidates; Gaia's orbit catalogue adds TIC 400170926
-   (HD 250735), an eclipsing twin; why the periods are wrong (epoch test graded: T3 PREDICTIVE, a
-   release-day period flag registered as step g4b; WHY re-graded by amendment 2); the blind test on
-   DR4's 1,007 candidates on release day; follow-up of TIC 4638108 and TIC 44997521 (all-sector
-   test and pixel test queued).
-2. **A transiting companion first found by Gaia astrometry** (step i, DR4): pre-registered with
-   a DR4 adapter and gate; rehearsal passed (400 of 400 round trips).
-3. **Eclipsing twins with Gaia masses:** TIC 400170926 (eclipse fit next); the full screen of all
-   184 edge-on Gaia DR3 SB2 orbits against TESS (pre-registered 22 Nov, queued), then Gaia DR4's
-   SB2 list (step g5).
-4. **Do Gaia DR3 inclinations hold up against real eclipses?** (`findings/2026-11-18-calib-window-results.md`)
-   58 of 162 near-edge-on orbits eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
-5. **Are Gaia DR3's brown-dwarf-mass spectroscopic orbits real?** Graded: mostly not; the DR4 test
-   of why is pre-registered with release-day code. Eclipsing companions found: **TIC 71945261**
-   (TYC 6340-23-1, B_OVERSIZED_COMPANION; eclipse on target, 22 Nov); BD+65 286 (label not adopted).
-6. **Are M dwarfs in short orbits inflated?** INCONCLUSIVE, caveated; no DR4 follow-up.
+1. **Gaia's own transit candidates in TESS** (step g): period-free search graded (PF_RECOVERS; new
+   candidate **TIC 93622019**: pixel re-run and Gaia-epoch test queued); the N_comp period flag
+   registered as an out-of-sample test on DR4 (g4b); follow-up of TIC 4638108 and TIC 44997521 queued.
+   Write-up: https://www.munimtech.com/research/gaia-transit-periods-known-planets
+2. **Eclipsing binaries with Gaia masses:** screen graded 23 Nov; three new (HD 250735, CD-28 7251,
+   TYC 3616-2395-1); eclipse timing against Gaia's orbits queued (sb2-new-ebs-timing-v1); then
+   eclipse-model fits for masses and radii; then Gaia DR4's SB2 list (step g5).
+3. **A transiting companion first found by Gaia astrometry** (step i, DR4): rehearsal passed.
+4. **Do Gaia DR3 inclinations hold up against real eclipses?** 58 of 162 near-edge-on orbits
+   eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
+5. **TYC 6340-23-1** (B_OVERSIZED_COMPANION): mass test on DR4 day (step a5).
 
-## Closed with a null result
-- **White-dwarf self-lensing at Gaia-predicted conjunctions (DR3)**
-  (`findings/2026-11-18-selflens-vet-results.md`).
-
-## Corrected
-- **The pixel test's mean-image fit allowed negative star fluxes** (23 Nov): a near-coincident
-  companion shared a column with the target (HATS-58 A), and a neighbour's free flux swung through
-  zero (TIC 93622019). Fixed in amendment 1 (non-negative fluxes, merged close stars); not blind
-  for the target.
-- **The epoch test's T1 used the wrong in-transit count** (22 Nov, after the run): Gaia DR3's
-  `num_in_transit` is about 2.6 times the number of epochs inside Gaia's own transit box, so T1
-  failed and WHY is INVALID. Amendment 2 re-grades it, not blind.
-- **The epoch test's bulk-file fallback used the wrong HEALPix level** (22 Nov; amendment 1). No
-  data had been seen; fixed before any result.
-- **TIC 44997521's radius estimate depends on the stellar radius:** 1.03 R_Jup with R* 0.71 R_sun,
-  1.15 R_Jup with the TIC's 0.80 R_sun (21 Nov, vetting note).
-- **TYC 6340-23-1's 38″ neighbour is G = 14.39, not V ≈ 11.25** (21 Nov; SuperWASP's archive
-  magnitude was blended). It cannot make the eclipse; the pixel test now targets the 94″ G = 12.55
-  star (`findings/2026-11-21-tyc6340-pixel-amendment-1.md`).
-- **TYC 6340-23-1's "5.8σ period tension" (20 Nov 14:30 UTC) was very likely our detrending
-  artefact** (`findings/2026-11-20-tyc6340-period-results.md`).
-- **"Most brown-dwarf-mass orbits are not real" was premature on 19 Nov morning** (amendment 2).
-- **Chunk 0 of the step-g rehearsal suggested most of Gaia's NEW candidates are seen in TESS
-  (0.55); the full sample says MIXED (0.37 with the known-planet control rate).**
-- **BD+65 286's variability and period were already published** (Green et al. 2023).
-- **CD-48 897 (TIC 200743349) is not a new discovery of ours** (*Eclipses by Appointment*, Q031).
-- TOI-710.01 was already a TFOP false positive.
-
-## Refuted or closed
-- TIC 207399049: refuted. Archival dips for the 25-star watch list: 0 found (0.28 expected).
-  (Gaia's spectrograph also flags it as RV-variable, 22 Nov, and Gaia DR3 has a 0.46-day
-  single-lined orbit for it.)
-- TIC 248569057 (22 Nov): its period-free TESS signal is twice too long for its star, and Gaia flags
-  it as an RV-variable binary.
-- Two "stripped companion" candidates are more likely blends or triples.
-
-## Lessons the pipeline now encodes
-- **A box depth is a mean, so a few outliers can fake a transit.**
-- **A minimum mass is not a mass.** Model face-on companions before calling an orbit wrong.
-- **Never skip a window that is too wide; cap it.** **Never truncate a query at the row cap.**
-- **Rehearse release-day code on the previous release.** **Read TAP_SCHEMA.** **Pair every empty
-  answer with a control query**, and run the controls first.
-- **Know a survey's footprint before reading its silence.**
-- **A white-noise error bar on a small phase-curve term is not an error bar.**
-- **An odd/even depth test across sectors years apart sees systematics, not twins.**
-- **Gaia's eccentricity can be badly wrong.**
-- **Before testing a published quality cut, check where the known real objects fall on it.**
-- **Controls that shaped a fix cannot validate it**; a fresh holdout did its job here.
-- **A rule fixed for one release must be applied by importing it, not by copying it.**
-- **Rehearse the inputs as well as the code.**
+## Lessons the pipeline now encodes (newest first; full list in commit a34b7885)
+- **A failed lookup is not a negative answer, even when the rule says so:** the screen's Villanova
+  lookups all returned HTTP 400, so 3 of its 8 "new" binaries were in the TESS EB catalogue. Use a
+  catalogue's VizieR copy with a control row, and treat a 100% failure rate as a broken check.
+- **Recompute a pilot with the registered formula before predicting replication:** the pilot had
+  left (1 − e²)^1.5 out of M1 sin³i.
+- **A survey that resolves what TESS blends settles "which star" for free** (Gaia's epochs for
+  CD-28 7251, 23 Nov; TIC 44997521 and TIC 4638108, 21 Nov).
+- **Stars a PSF cannot separate must share one column, and fluxes must be non-negative.**
+- **Check what a catalogue count column really counts before building a test on it.**
+- **Pair every empty answer with a control query**, and run the controls first.
 - **Put a self-test in every job and make it run first.**
-- **Every network call needs a timeout, and every long job should save partial results.**
-- **A one-sector discovery needs an older, independent light curve.**
-- **Detrend without assuming an ephemeris first.**
-- **A blended discovery needs a pixel-level test** before a radius is quoted.
-- **Check every neighbour's brightness in Gaia before building a blend test around it:** a
-  wide-aperture survey's catalogue magnitude for a close neighbour can include the target's light.
-- **A near-miss is a hypothesis, not a result:** test it again on data the first test did not use.
-- **A control is only a noise control where the real signal has been removed.**
-- **Check a catalogue's periods against known objects before folding new ones at them:** Gaia
-  DR3's transit periods match the known period for 15 of 176 known systems.
-- **A hit at a catalogue's period does not prove the period:** search the full light curve without
-  assuming it.
-- **Half a sample can mislead:** chunk 0 said MOSTLY_SEEN, the full sample says MIXED.
-- **Use the survey's own other instruments as a vetting step** (Gaia RVS): it flags 8 of 12
-  testable new DR3 transit candidates and 4 of 110 known planet hosts.
-- **"Untested" by one screen is not "clean":** Gaia DR3 gives no velocity statistics for
-  double-lined binaries, so the RVS screen called TIC 400170926 untested; Gaia's orbit table shows
-  it is a near-twin binary. Cross-match every catalogue the survey publishes.
-- **Read the other mission's own pipeline output before waiting on your own job:** TESS SPOC's
-  public TCE list (exo.MAST) already showed TIC 400170926's eclipses at half the Gaia period while
-  our period-free job sat in the queue.
-- **Save a survey's raw data before its archive goes dark:** the epoch test stored every Gaia DR3
-  epoch it downloaded, and they are now in `data/vpt-epochs-v2/`.
-- **A new release can change a table's parameterisation, not just its column names:** check the
-  order and meaning of every correlation vector, not only that the query runs.
-- **A survey that resolves what TESS blends settles "which star" for free:** when Gaia's own
-  photometry shows the dip, a bright neighbour tens of arcseconds away cannot be its source in
-  Gaia's data. **Check a catalogue transit's duration against the host's density** before any
-  pixel work.
-- **A wrong catalogue period can hide a real signal:** TIC 93622019 was missed by our fold at
-  Gaia's period (a 4:3 alias) and found by the period-free search. **Check the duration at the
-  found period and the star's own velocity scatter before calling anything a survivor**: both
-  removed TIC 248569057 at once.
-- **Read the literature on every control before fixing its pass rule:** a rule-chosen control
-  planet (HATS-58 A b) has a near-equal companion 0.74″ away that no TESS centroid can separate,
-  so "control passes" must mean "the host is not excluded", not "only the host is allowed".
-  **And allow for the fit failing on it:** the free-flux PSF fit gave a negative flux there, so
-  the control came out UNTESTABLE and the whole test ungraded.
-- **Stars a PSF cannot separate must share one column, and fluxes must be non-negative:** a
-  shared "faint group" column that happens to sit on the target is a second free copy of the
-  target (23 Nov).
-- **A test written from the same misunderstanding as the code cannot catch it:** check every
-  lookup against the real index it reads (the epoch test's HEALPix level, 22 Nov).
-- **Check what a catalogue count column really counts before building a test on it:** Gaia DR3's
-  `num_in_transit` is not the number of epochs inside `transit_duration`.
-- **Check a neighbour's BP/RP excess before trusting its RP:** next to a bright star, Gaia's
-  BP/RP windows take in the bright star's light (TIC 93622019's 2.4″ neighbour, excess 10.0).
-- **When a catalogue service is down, look for its official mirror:** SIMBAD's Harvard mirror
-  answered while CDS refused connections; so did VizieR's CfA mirror (23 Nov).
 
 ## Prior-art sources we check for every eclipsing system
-AAVSO VSX (API, or its VizieR copy B/vsx when the API refuses), the TESS EB catalogue (Prša et al.
-2022; the live site now covers sectors up to 88), the TESS Ten Thousand catalogue (Kostov et al.
-2025; VizieR J/ApJS/279/50, via vizier.cfa.harvard.edu when CDS is down), Gaia DR3
-vari_eclipsing_binary, vari_classifier_result and binary_masses (method Eclipsing+SB2), the ZTF
-and ASAS-SN variable catalogues, Rowan et al. (2023; ASAS-SN EBs with Gaia SB2 orbits), Green et
-al. (2023), ExoFOP, the SPOC TCE list, SIMBAD (or its Harvard mirror simbad.cfa.harvard.edu), the
-Chopard-Vilhem Zenodo deposits, the *Eclipses by Appointment* claim tables, the EBLM target
-tables, and Gaia DR3 nss_two_body_orbit (Tarrants & Mendes 2023 matched it to TOIs and K2
-candidates). For transit candidates also: the T16 Cycle 1 FFI catalogue (Roth, Hartman & Bakos
-2026; Harvard Dataverse doi:10.7910/DVN/CWEUGW, candidate_table.tab, ordered by sector, camera,
-CCD and Gaia ID).
+AAVSO VSX (API at vsx.aavso.org, or its VizieR copy B/vsx), the TESS EB catalogue (Prša et al.
+2022; VizieR J/ApJS/258/16 via vizier.cfa.harvard.edu, since the live site's per-TIC pages answered
+HTTP 400 on 23 Nov), the TESS Ten Thousand catalogue (Kostov et al. 2025; J/ApJS/279/50), IJspeert
+et al. 2021 OBA EBs (J/A+A/652/A120), Gaia DR3 vari_eclipsing_binary, vari_classifier_result and
+binary_masses (method Eclipsing+SB2), the ZTF and ASAS-SN variable catalogues (II/366/catv2021),
+Rowan et al. (2023), ExoFOP, the SPOC TCE list, SIMBAD (Harvard mirror), Kepler KOIs, and Gaia DR3
+nss_two_body_orbit.
 
 ## Gaia DR4 (2 December 2026)
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** Jobs that still need DR3 tables fall back to the Heidelberg DR3 mirror;
   DR3 epoch photometry falls back to ESA's bulk CDN files, and the 214 transit candidates' epochs
   are in the repo.
-- Release-day runbook: `runbook/dr4-release-day.md`, with every module pinned to the commit that
-  published it, plus `runbook/dr4-addendum.md` (23 Nov: steps g4b and g5, the pixel step, step i
-  pinned). Step G6 uses `vpt_pf.py` at commit 9bf9704211bd129204bb4de091f38021ec76d301; its
-  DR3 rehearsal graded PF_RECOVERS (22 Nov), so G6 on DR4 is confirmatory, not exploratory.
-  Step g2c (amendment 2) uses `vpt_nss.py` 0.1.0 at commit b8f2525dde1bebdabf2b89a33065aac797771e2d
-  (`findings/2026-11-22-vpt-nss-crossmatch.md`). Survivors of G6 will be vetted in the TESS pixels
-  with `pixel_which_star` 0.1.1 (`pws_amend_011.py`) if its re-run passes its controls. Step g4b
-  (the N_comp period flag) is registered as an out-of-sample test on DR4.
+- Release-day runbook: `runbook/dr4-release-day.md` plus `runbook/dr4-addendum.md` (steps g4b and
+  g5, the pixel step, step i pinned). Step G6 uses `vpt_pf.py` at commit
+  9bf9704211bd129204bb4de091f38021ec76d301; step g2c uses `vpt_nss.py` at commit
+  b8f2525dde1bebdabf2b89a33065aac797771e2d.
