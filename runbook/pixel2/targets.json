@@ -1,0 +1,26 @@
+{
+ "about": "pixel_which_star 0.1.1 (pws_amend_011) inputs, fixed before the job ran (findings/2026-11-23-pixel-which-star-amendment-1.md). The first three entries are copied unchanged from the 0.1.0 job (tic93622019-pixel-v1; controls chosen there by rule). The two 'candidate' entries are exploratory: Gaia DR3 transit candidates TIC 4638108 and TIC 44997521, ephemerides from the period-free TESS search gaia-vpt-pf-dr3-v1 (pf_targets_out.csv), positions and radii from ExoFOP (TIC v8.2), sectors = those used by that search.",
+ "targets": [
+  {"name": "TIC 93622019", "role": "target", "tic": "93622019",
+   "gaia_id": "5345417757181174144", "ra": 175.62700, "dec": -52.62741,
+   "period": 2.1238848385, "t0_btjd": 1571.581234, "dur_d": 0.125,
+   "depth_ref": 0.00883, "depth_flat": 0.0105, "rstar": [1.36, 1.41],
+   "sectors": [10, 37, 64, 90, 99, 100]},
+  {"name": "HATS-67 b", "role": "control", "nasa_name": "HATS-67 b", "tic": "272212970",
+   "ra": 180.209, "dec": -46.136, "period": 1.609179, "t0_btjd": 796.8813, "dur_d": 0.08125,
+   "depth_ref": 0.0135, "depth_flat": 0.0135, "max_sectors": 3},
+  {"name": "HATS-58 A b", "role": "control", "nasa_name": "HATS-58 A b", "tic": "21113347",
+   "ra": 186.787, "dec": -48.978, "period": 4.218090, "t0_btjd": 463.2999, "dur_d": 0.1325,
+   "depth_ref": 0.0079, "depth_flat": 0.0079, "max_sectors": 3},
+  {"name": "TIC 4638108", "role": "candidate", "tic": "4638108",
+   "gaia_id": "5431056347037926784", "ra": 141.278576, "dec": -36.579523,
+   "period": 2.2082803218, "t0_btjd": 1517.8810189, "dur_d": 0.08333,
+   "depth_ref": 0.014066, "depth_flat": 0.014066, "rstar": [1.36, 1.49],
+   "sectors": [8, 9, 35, 62, 89, 99]},
+  {"name": "TIC 44997521", "role": "candidate", "tic": "44997521",
+   "gaia_id": "5432318139709900160", "ra": 146.988350, "dec": -38.229153,
+   "period": 3.5494141891, "t0_btjd": 2256.3627158, "dur_d": 0.08333,
+   "depth_ref": 0.020728, "depth_flat": 0.020728, "rstar": [0.76, 0.84],
+   "sectors": [35, 36, 62, 63, 89, 99]}
+ ]
+}
