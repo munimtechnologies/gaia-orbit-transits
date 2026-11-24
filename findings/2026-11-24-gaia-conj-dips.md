@@ -1,5 +1,12 @@
 # Two edge-on Gaia double-lined binaries dim in Gaia's own photometry at the conjunction their Gaia orbit predicts (exploratory)
 
+> **Update, 24 Nov 2026 ~21:00 UTC: these candidates are not new.** Both stars (TIC 349572805 and
+> TIC 371839648) are in the TESS OBAF eclipsing-binary catalogue of IJspeert et al. (2024, A&A 691,
+> A242; VizieR J/A+A/691/A242/obaf-eb1, summed score 4.0 each), which the checks below had not
+> reached. We withdraw them as candidates for new eclipsing binaries. The Gaia-epoch dips at Gaia's
+> conjunctions stay as an independent confirmation from Gaia's own photometry. See
+> `findings/2026-11-24-acv-batch2-and-ijspeert-vet.md`.
+
 2026-11-24, gaia-orbit-transits. By MV2 of Munim, Inc.; made with AI agents working in his name.
 No human expert has checked this yet. Text and data CC BY 4.0, code Apache-2.0.
 
@@ -103,24 +110,24 @@ phase before a conjunction. We make no claim from this yet. A 1.06-day orbit wit
 unusual for stars this close, so Gaia's orbit, its mass, or both may be off. It is in the
 registered TESS fold as a 'flat' star.
 
-## What is new, prior work checked (24 Nov 2026)
+## Prior work checked (24 Nov 2026), and what it missed
 
-- Neither star is listed as eclipsing anywhere we could reach. VSX lists each only as Gaia DR3's
-  automatic 'ACV|roAm|roAp|SXARI' variable. SIMBAD has each only as SB* (from the Gaia orbit).
-  Neither is in the Villanova TESS EB catalogue (Prša et al. 2022 and its live site). There are no
-  TCEs, TOIs or CTOIs (exo.MAST, ExoFOP). Neither is in Gaia DR3's eclipsing-binary table. In the
-  open Eclipses by Appointment catalogue at commit 3a46591 (the latest on 24 Nov), neither TIC
-  number nor Gaia ID appears in accepted-systems.csv, claim-adjudication.csv,
-  period-free-review.csv, reviewed-extension.csv, batch-candidates.csv or bright-followup-review.csv.
-  Web searches for the star names and TIC numbers found nothing.
-- What this adds: using Gaia's own sparse photometry with Gaia's own spectroscopic conjunctions to
-  find eclipses in double-lined binaries that TESS's pipeline never searched, and that Gaia's
+- As first written: neither star is listed as eclipsing in VSX (only Gaia DR3's automatic
+  'ACV|roAm|roAp|SXARI' class), SIMBAD (SB* only), the Villanova TESS EB catalogue (Prša et al. 2022
+  and its live site), exo.MAST/ExoFOP (no TCE, TOI or CTOI), Gaia DR3's eclipsing-binary table, or
+  the open Eclipses by Appointment catalogue (commit 3a46591; accepted-systems.csv,
+  claim-adjudication.csv, period-free-review.csv, reviewed-extension.csv, batch-candidates.csv,
+  bright-followup-review.csv). Web searches found nothing.
+- **Missed:** the TESS OBAF eclipsing-binary catalogue of IJspeert et al. (2024), which lists both
+  (see the update at the top). They are TESS eclipsing-binary candidates, not new discoveries.
+- What remains of this note: Gaia's own sparse photometry, read against Gaia's own spectroscopic
+  conjunctions, independently confirms eclipses in these double-lined binaries that Gaia's
   variability classifier labelled as rotating chemically peculiar stars.
 
 ## Limits
 
 - Three faint epochs in two stars. Gaia DR3 epoch photometry has occasional outliers, and a single
-  point (CD-72 1603) is weak evidence on its own. These are candidates until TESS confirms them.
+  point (CD-72 1603) is weak evidence on its own.
 - The 0.025-mag and 4-sigma thresholds and the ±0.035 window were chosen after looking. The
   sample (stars with Gaia epoch photometry) is biased toward stars Gaia found variable.
 - Conjunction phases assume Gaia's circular fits. A small eccentricity would move both conjunctions.
