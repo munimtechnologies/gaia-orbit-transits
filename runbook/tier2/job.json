@@ -1,0 +1,18 @@
+{
+ "name": "sb2-tier2-dr3-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261124T102114Z-astrophysics/t2",
+ "image": "python:3.12",
+ "setup": [],
+ "run": [
+  "python fetch_pinned.py",
+  "python -m unittest -v test_sb2_screen test_sb2_screen_dr4 test_sb2_tier2",
+  "python sb2_tier2.py --orbits-csv https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/80be282773812acc69c0e5d190abc25687de1f5a/data/sb2-edgeon-screen-v1/gaia_sb2_m1_p8.csv --schema gaiadr3 --out-dir /out"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-orbit-tess",
+ "cpu": 1,
+ "memory_gb": 1,
+ "timeout_minutes": 300
+}
