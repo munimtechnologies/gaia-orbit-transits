@@ -1,0 +1,85 @@
+{
+ "grades": {
+  "T1": {
+   "n_controls": 13,
+   "k_pure": 13,
+   "label": "TIME_OK",
+   "share": 1.0
+  },
+  "WHY": {
+   "n_wrong_ok": 158,
+   "n_testable": 111,
+   "alias": 86,
+   "partial": 25,
+   "unrelated": 0,
+   "alias_share": 0.7747747747747747,
+   "lo": 0.688630644979295,
+   "hi": 0.8425357616190107,
+   "label": "ALIAS_DOMINATED",
+   "raw_label": "ALIAS_DOMINATED",
+   "real_transit_seen_snr3": {
+    "ALIAS": 83,
+    "PARTIAL": 20,
+    "UNRELATED": 0
+   }
+  },
+  "T3": {
+   "n_right": 15,
+   "n_wrong": 157,
+   "auc_right_lower": 0.8579617834394905,
+   "p_one_sided": 2.4107399238024093e-06,
+   "label": "PREDICTIVE"
+  },
+  "exploratory_auc": {
+   "frac_above": {
+    "auc_right_lower": 0.8084925690021232,
+    "p_one_sided": 4.072152748014915e-05,
+    "n_right": 15,
+    "n_wrong": 157
+   },
+   "snr_g_free": {
+    "auc_right_lower": 0.20253164556962025,
+    "p_one_sided": 0.9999293089003627,
+    "n_right": 15,
+    "n_wrong": 158
+   },
+   "num_in_transit": {
+    "auc_right_lower": 0.2272151898734177,
+    "p_one_sided": 0.9997658309755771,
+    "n_right": 15,
+    "n_wrong": 158
+   },
+   "snr_g_fixed": {
+    "auc_right_lower": 0.27932489451476794,
+    "p_one_sided": 0.99762828339054,
+    "n_right": 15,
+    "n_wrong": 158
+   }
+  },
+  "true_beats_gaia": {
+   "n": 157,
+   "true_higher": 85
+  },
+  "gaia_within_frac_median": 1.0,
+  "n_ok": 179,
+  "n_total": 214,
+  "status_counts": {
+   "NO_EPHEMERIS": 35,
+   "OK": 179
+  }
+ },
+ "meta": {
+  "version": "0.1.2",
+  "started": "2026-11-24T20:09:38Z",
+  "archive_tics": 4566,
+  "toi_tics": 6434,
+  "datalink_structures": [],
+  "cdn_log": [],
+  "epochs_from": {
+   "cache": 214,
+   "datalink": 0,
+   "cdn": 0
+  },
+  "finished": "2026-11-24T20:13:56Z"
+ }
+}

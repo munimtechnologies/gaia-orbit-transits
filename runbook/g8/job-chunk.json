@@ -1,0 +1,19 @@
+{
+ "name": "g8-dr4-c0-v1",
+ "kind": "compete",
+ "workdir": "<a run folder holding a copy of runbook/g8/fetch_pinned.py>",
+ "image": "python:3.12",
+ "setup": [],
+ "run": [
+  "python fetch_pinned.py --ref <commit sha of the release-day repo> --dest repo --files sb2_ecl_dr4.py test_sb2_ecl_dr4.py sb2_screen_dr4.py sb2_screen.py",
+  "python -m unittest discover -v -s repo -p test_sb2_ecl_dr4.py",
+  "python repo/sb2_ecl_dr4.py --self-test",
+  "python repo/sb2_ecl_dr4.py --chunk 0 --n-chunks 8 --schema gaiadr4 --out-dir /out --cache-dir /data/g8-epochs --results-dir /data/g8-results --deadline-minutes 300"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-dr4-g8",
+ "cpu": 1,
+ "memory_gb": 1,
+ "timeout_minutes": 360
+}

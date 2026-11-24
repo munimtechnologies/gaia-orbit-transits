@@ -1,0 +1,47 @@
+{
+ "version": "0.1.0",
+ "v2_nearest_k": {
+  "wrong_period": {
+   "n_stars": 118,
+   "overlap_observed": 309.0,
+   "overlap_expected": 101.43079862545876,
+   "ratio": 3.046411979274726,
+   "z": 25.742128296804974,
+   "p_one_sided": 1.974407022632855e-146,
+   "stars_with_overlap": 118,
+   "stars_with_overlap_expected": 66.0814080156138
+  },
+  "controls": {
+   "n_stars": 15,
+   "overlap_observed": 101.0,
+   "overlap_expected": 30.87831142013706,
+   "ratio": 3.2709042481556683,
+   "z": 15.965653895979141,
+   "p_one_sided": 1.1085296504987761e-57,
+   "stars_with_overlap": 15,
+   "stars_with_overlap_expected": 11.618322623611457
+  }
+ },
+ "v3_gaia_box": {
+  "wrong_period": {
+   "n_stars": 111,
+   "overlap_observed": 277.0,
+   "overlap_expected": 34.287002929697984,
+   "ratio": 8.078863018968452,
+   "z": 44.37563530446504,
+   "p_one_sided": 0.0,
+   "stars_with_overlap": 111,
+   "stars_with_overlap_expected": 29.191846074827225
+  },
+  "controls": {
+   "n_stars": 15,
+   "overlap_observed": 88.0,
+   "overlap_expected": 10.793240286788755,
+   "ratio": 8.153251262988613,
+   "z": 25.225454947759133,
+   "p_one_sided": 1.0531301481439803e-140,
+   "stars_with_overlap": 15,
+   "stars_with_overlap_expected": 6.799764483694711
+  }
+ }
+}

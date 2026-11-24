@@ -1,0 +1,102 @@
+{
+ "version": "0.1.0",
+ "candidates": [
+  {
+   "name": "TIC 93622019",
+   "source_id": "5345417757181174144",
+   "P_tess": 2.123893332667055,
+   "graded": true,
+   "P_gaia": 2.8316579357213647,
+   "dur_gaia": 0.18627085,
+   "n_epochs": 60,
+   "n_rejected": 7,
+   "sd_flux": 0.003761143722373423,
+   "T0_gaia_time": 5508.586849645211,
+   "fixed": {
+    "n_epochs": 60,
+    "timing_sigma_d": 0.0047998015617496,
+    "n_in": 7,
+    "depth": 0.008428090736489091,
+    "snr": 5.572121825338128,
+    "n_null": 947,
+    "n_null_ge": 0,
+    "p_emp": 0.0010548523206751054,
+    "in_window_times": [
+     2029.652695,
+     2097.5919583,
+     2097.6659635,
+     2106.0960637,
+     2106.170083,
+     2258.989001,
+     2333.3100488
+    ],
+    "label": "GAIA_SEES_TESS_EPHEMERIS"
+   },
+   "label": "GAIA_SEES_TESS_EPHEMERIS",
+   "box": {
+    "box_d": 0.125,
+    "snr_box_tess_P": 6.648778884573309,
+    "snr_box_gaia_P": 7.04229353859633,
+    "local_best_P": 2.1243155404862786,
+    "local_best_snr": 7.106868107804132
+   }
+  },
+  {
+   "name": "TIC 4638108",
+   "source_id": "5431056347037926784",
+   "P_tess": 2.20828,
+   "graded": false,
+   "P_gaia": 2.2086268966583473,
+   "dur_gaia": 0.07942385,
+   "n_epochs": 67,
+   "n_rejected": 0,
+   "sd_flux": 0.003539961819389236,
+   "label": "EXPLORATORY_ONLY",
+   "box": {
+    "box_d": 0.07942385,
+    "snr_box_tess_P": 9.759590433380886,
+    "snr_box_gaia_P": 10.450927077472274,
+    "local_best_P": 2.208669278057577,
+    "local_best_snr": 10.450927077472274
+   }
+  },
+  {
+   "name": "TIC 44997521",
+   "source_id": "5432318139709900160",
+   "P_tess": 3.54941,
+   "graded": false,
+   "P_gaia": 3.5497497426431432,
+   "dur_gaia": 0.08769723,
+   "n_epochs": 64,
+   "n_rejected": 10,
+   "sd_flux": 0.0013939428666108111,
+   "label": "EXPLORATORY_ONLY",
+   "box": {
+    "box_d": 0.08769723,
+    "snr_box_tess_P": 34.01257722538375,
+    "snr_box_gaia_P": 34.01257722538375,
+    "local_best_P": 3.549897223515733,
+    "local_best_snr": 34.01257722538375
+   }
+  },
+  {
+   "name": "TIC 400170926 (HD 250735)",
+   "source_id": "3450611154067089408",
+   "P_tess": 5.895742,
+   "graded": false,
+   "P_gaia": 0.8847834934791456,
+   "dur_gaia": 0.042738006,
+   "n_epochs": 42,
+   "n_rejected": 1,
+   "sd_flux": 0.003977234218637602,
+   "label": "EXPLORATORY_ONLY",
+   "box": {
+    "box_d": 0.042738006,
+    "snr_box_tess_P": null,
+    "snr_box_gaia_P": 8.495252920655425,
+    "local_best_P": 5.898689871,
+    "local_best_snr": null
+   }
+  }
+ ]
+}
