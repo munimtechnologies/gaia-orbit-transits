@@ -1,0 +1,21 @@
+{
+ "name": "gaia-dip-ffi-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261124T154621Z-astrophysics/gdf",
+ "image": "python:3.12",
+ "setup": [
+  "pip install --no-cache-dir -r requirements.txt",
+  "python -c \"import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/b53e2b3c0e0e1adfbd4ec2c41c9f2405e7e512a9/sb2_ffiscan.py', 'sb2_ffiscan.py')\""
+ ],
+ "run": [
+  "python -m unittest -v test_gaia_dip_ffi",
+  "python sb2_ffiscan.py --self-test",
+  "python gaia_dip_ffi.py --out-dir /out --max-lc 8"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-orbit-tess",
+ "cpu": 1,
+ "memory_gb": 1.5,
+ "timeout_minutes": 120
+}
