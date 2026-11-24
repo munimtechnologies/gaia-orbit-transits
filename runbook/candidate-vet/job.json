@@ -1,0 +1,17 @@
+{
+ "name": "candidate-vet-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261124T172318Z-astrophysics/vet",
+ "image": "python:3.12",
+ "setup": [],
+ "run": [
+  "python -m unittest -v test_cand_vet",
+  "python cand_vet.py --out-dir /out"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "cand-vet",
+ "cpu": 1,
+ "memory_gb": 0.5,
+ "timeout_minutes": 120
+}
