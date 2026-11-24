@@ -1,0 +1,2 @@
+source_id,phot_g_mean_mag,bp_rp,ruwe,ipd_frac_multi_peak,ipd_gof_harmonic_amplitude,non_single_star,radial_velocity,radial_velocity_error,rv_nb_transits,rv_amplitude_robust,rv_chisq_pvalue,rv_renormalised_gof,rv_method_used,rv_template_teff,grvs_mag,phot_variable_flag,parallax,parallax_error,teff_gspphot
+5345417757181174144,12.568584,0.71517277,0.90267724,0,0.017164223,0,-4.9032903,1.6843823,27,16.166862,0.5143973,4.0999575,1,6000.0,11.9599085,VARIABLE,1.6767971413530434,0.0118255615,6075.2593
