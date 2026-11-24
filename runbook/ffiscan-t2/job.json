@@ -1,0 +1,19 @@
+{
+ "name": "sb2-ffiscan-t2-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261124T130643Z-astrophysics/ft2",
+ "image": "python:3.12",
+ "setup": ["pip install --no-cache-dir -r requirements.txt"],
+ "run": [
+  "python fetch_pinned.py",
+  "python -m unittest -v test_sb2_tier2 test_sb2_ffiscan test_sb2_ffiscan_t2",
+  "python sb2_ffiscan_t2.py --self-test",
+  "python sb2_ffiscan_t2.py --out-dir /out --max-minutes 400"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-orbit-tess",
+ "cpu": 1,
+ "memory_gb": 1.5,
+ "timeout_minutes": 440
+}

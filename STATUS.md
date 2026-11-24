@@ -3,25 +3,35 @@
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and data
 CC BY 4.0. This page is newer than the long README. Where the two differ, this page holds.
 
-## Newest (24 Nov, ~11:00 UTC): what the edge-on rule misses, and a registered second tier
+## Newest (24 Nov, ~13:45 UTC): the full-frame gap in tier 2, and a registered fold to close it
 
-**Checked:** `findings/2026-11-24-rowan2023-prior-check.md`. The closest published work,
-Rowan et al. (2023, MNRAS 523, 2641; https://arxiv.org/abs/2212.02509), matched all Gaia DR3
-double-lined orbits with ASAS-SN eclipsing binaries. Neither HD 250735 nor CD-28 7251 is in it: both
-are brighter than ASAS-SN's V = 11 limit. They remain new.
+**Found by hand (exploratory):** the tier-2 job (sb2-tier2-dr3-v1) only sees stars that TESS's
+pipeline searched, i.e. 2-minute targets. A spot check of one bright tier-2 star shows what can
+fall through: **HD 35131** (Gaia DR3 262216446435606016, TIC 309683389, G 9.11, double-lined,
+P 4.06235 d, m1 sin³i / m1 = 0.869). It has no TESS pipeline detection, no TOI, no VSX entry, no Gaia
+variability class and no Gaia epoch photometry. Whether it eclipses can only be seen in TESS
+full-frame images. We make no claim about it yet.
 
-**Measured (exploratory, by hand; the job re-checks it in code):**
-`data/rowan2023-check/rowan_tier_check.csv`. Rowan's light-curve inclinations make an independent
-set of eclipsing Gaia SB2s. Of the 27 with P < 8 d and a Gaia `binary_masses` m1, our edge-on window
-(0.95 ≤ m1 sin³i / m1 ≤ 1.10) caught 11 (41%). 15 of the 16 misses fall below 0.95, because Gaia's
-photometric m1 runs high: the median dynamical/photometric mass is 0.976 and the mean 0.955. A window
-of 0.85-1.15 would have caught 21 of 27 (78%).
+**Registered:** `findings/2026-11-24-sb2-ffiscan-t2-prereg.md`, `sb2_ffiscan_t2.py` 0.1.0 (tests
+`test_sb2_ffiscan_t2.py`), job sb2-ffiscan-t2-v1 (`runbook/ffiscan-t2/job.json`). It runs the
+pre-registered full-frame fold `sb2_ffiscan` 0.1.0, with every threshold unchanged, on all tier-2
+stars. Roles (controls from VSX, Gaia's EB tables and Rowan et al. 2023) are fixed from catalogues
+before any light curve is read. Gaia orbits come from the AIP mirror first, so it does not need
+ESA's archive, which closes on 25 November. There are eight predictions, including one for HD 35131
+(30%).
 
-**Registered:** `findings/2026-11-24-g5-amendment-2-tier2.md`, `sb2_tier2.py` 0.1.0 (tests
-`test_sb2_tier2.py`), job sb2-tier2-dr3-v1 (`runbook/tier2/job.json`). It screens tier 2
-(0.85-0.95 and 1.10-1.15) of Gaia DR3 against TESS now, from the saved public orbit file. ESA's
-archive is not needed, and Gaia's own tables fall back to the AIP mirror. On DR4 day it runs as step
-5b. Predictions are in the file.
+**Gaia DR4 check:** the DR4 table list (https://www.cosmos.esa.int/web/gaia/dr4) has
+`nss_masses` (4,323,300 rows), described exactly as DR3's `binary_masses` was ("Masses derived from
+the non-single stars (NSS) solutions with orbital parameters"). So the tier rule very likely carries
+over on release day. The column list is only in the draft data-model zip, and the schema gate
+(`sb2_screen_dr4` arm A/B) still decides on the day.
+
+## Earlier (24 Nov, ~11:00 UTC): what the edge-on rule misses, and a registered second tier
+
+- `findings/2026-11-24-rowan2023-prior-check.md`: Rowan et al. (2023) contains neither HD 250735 nor
+  CD-28 7251. Of 27 Rowan eclipsing SB2s with P < 8 d, the edge-on window caught 11; 15 of the 16
+  misses fall below 0.95 (Gaia's photometric m1 runs high). `data/rowan2023-check/rowan_tier_check.csv`.
+- Registered: `findings/2026-11-24-g5-amendment-2-tier2.md`, `sb2_tier2.py` 0.1.0, job sb2-tier2-dr3-v1.
 
 ## Earlier (24 Nov, ~09:30 UTC): a correction, and a conjunction-gated search of the 95 unsearched binaries
 
@@ -29,8 +39,6 @@ archive is not needed, and Gaia's own tables fall back to the AIP mirror. On DR4
   listed it on 31 October 2026 (row A179), before our claim. Claim withdrawn:
   `findings/2026-11-24-tyc3616-prior-listing.md`. HD 250735 and CD-28 7251 remain new.
 - Registered: `findings/2026-11-24-sb2-ffiscan-prereg.md`, `sb2_ffiscan.py` 0.1.0, job sb2-ffiscan-v1.
-  It folds TESS light curves of the 95 edge-on binaries with no pipeline detection at Gaia's period
-  and tests Gaia's predicted conjunction times.
 
 ## Earlier (24 Nov, ~03:30-07:30 UTC)
 
@@ -42,7 +50,7 @@ archive is not needed, and Gaia's own tables fall back to the AIP mirror. On DR4
 
 **Still queued (pre-registered earlier):** sb2-debcat-v2, sb2-ebfit-v1, sb2-new-ebs-timing-v1,
 g5-lookup-rehearsal-v1, gaia-vpt-epochs-box-v1, tic93622019-pixel-011-v1, gaia-vpt-followup-v1,
-sb2-ffiscan-v1, and now sb2-tier2-dr3-v1.
+sb2-ffiscan-v1, sb2-tier2-dr3-v1, and now sb2-ffiscan-t2-v1.
 
 ## Earlier (23 Nov): masses and radii pre-registered; the Gaia SB2 x TESS screen graded
 
@@ -63,14 +71,16 @@ Published write-ups:
 
 ## Leads
 1. **Eclipsing binaries with Gaia masses:** two new (HD 250735, CD-28 7251); timing and mass-radius
-   jobs queued; ffiscan (95 unsearched stars) and tier 2 (stars the window missed) queued; DR4 g5,
-   g5b and g7 on release day.
+   jobs queued; ffiscan (95 unsearched tier-1 stars), tier 2 (pipeline) and tier-2 full-frame fold
+   queued; DR4 g5, g5b and g7 on release day.
 2. **How accurate are Gaia's dynamical and photometric masses?** DEBCat (sb2-debcat-v2), Rowan
    inclinations (tier-2 calibration), TESS conjunction times (ffiscan F1), then DR4 (g6).
 3. **Gaia's own transit candidates in TESS:** TIC 93622019; N_comp period flag on DR4 (g4b).
 4. **A transiting companion first found by Gaia astrometry** (step i, DR4).
 
 ## Lessons the pipeline now encodes (newest first)
+- **A screen that reads only pipeline detections inherits the pipeline's target list.** Bright
+  full-frame-only stars need their own fold.
 - **Measure what a selection rule misses, on an independent sample, before release day.**
 - **"In no catalogue" must include open project catalogues and the closest paper's own tables**,
   not only the big variable-star indexes.
