@@ -1,37 +1,43 @@
 # gaia-orbit-transits: current status (2026-11-24)
 
-By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and
-data CC BY 4.0. This page is newer than the long README. Where the two differ, this page
-holds.
+By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and data
+CC BY 4.0. This page is newer than the long README. Where the two differ, this page holds.
 
-## Newest (24 Nov, ~05:00 UTC): the DEBCat test made layout-proof, and its Gaia DR4 run fixed in advance
+## Newest (24 Nov, ~06:30 UTC): Gaia caught HD 250735 in eclipse; per-transit velocity fits registered for DR4
+
+**Exploratory:** `findings/2026-11-24-hd250735-gaia-epochs.md`, data
+`data/sb2-new-ebs/hd-250735_gaia_dr3_epoch_g.csv` (saved before ESA's archive closes on 25 Nov).
+- HD 250735's 43 Gaia DR3 G-band epochs contain exactly two faint points (by the registered E4 rule),
+  and **both fall inside TESS-predicted eclipses**, one in each of the two alternating eclipses.
+  Their neighbours, out of eclipse, are at normal brightness. Chance alignment is about 0.2%. Gaia
+  resolves 0.4″, so the eclipses belong to HD 250735 itself.
+- A lead, not a result: both points, and Gaia's own orbital conjunction (0.020 ± 0.010 d), sit
+  *earlier* than the TESS ephemeris extrapolated back to 2014-2017.
+- Not the registered E4 grade: that comes from the queued job sb2-new-ebs-timing-v1.
+
+**Registered:** `findings/2026-11-24-g7-prereg.md`, code `sb2_rvfit.py` 0.1.0 (tests
+`test_sb2_rvfit.py`), runner and inputs in `runbook/g7/`.
+- On DR4 day, fit Gaia's per-transit double-lined velocities (`rvs_epoch_parameters_double`) of
+  the three new eclipsing binaries with the eclipse timing fixed. The fit gives a conjunction-timing
+  check, K1 and K2 against DR4's own orbit, and absolute masses with the eclipse-fit inclinations.
+  Four literature eclipsing binaries serve as controls. The same fit then runs on every new
+  eclipsing binary that the DR4 screen (g5) finds.
+
+## Earlier (24 Nov, ~05:00 UTC): the DEBCat test made layout-proof, and its Gaia DR4 run fixed in advance
 
 **Amendment:** `findings/2026-11-24-sb2-debcat-amendment-1.md`, code `sb2_debcat.py` 0.2.0, job
-sb2-debcat-v2 (replaces v1, which never ran). DR4-day step: `runbook/g6/README.md`.
-- A description of DEBCat's web table says each column lists both stars' values. Parser 0.1.0 took
-  the first value per cell, so it could have read one star's radius as the other's mass without any
-  gate noticing. Version 0.2.0 reads every value and keeps a system only if its web-table masses
-  equal those in DEBCat's ascii file `debs.dat`. Gate: at least 100 such anchored systems.
-- New control: the matched DR3 orbits are re-read from a Gaia TAP service and must agree with
-  VizieR, which rehearses the DR4 code path on known data.
-- **Registered eight days before Gaia DR4:** the same test on DR4's double-lined orbits (schema gate,
-  DR3→DR4 crossmatch through `dr3_neighbourhood`, RZ Cha controls, identical grades), with
-  predictions. It asks from outside whether 66 months of Gaia spectroscopy beat 34.
+sb2-debcat-v2. DR4-day step: `runbook/g6/README.md`. Every DEBCat mass is now anchored to DEBCat's
+ascii file before use. The same test on DR4's double-lined orbits is registered with predictions.
 
 ## Earlier (24 Nov, ~03:30 UTC): how accurate are Gaia's double-lined orbits? A test against DEBCat
 
 - `findings/2026-11-24-sb2-debcat-prereg.md`: Gaia DR3's 5,376 double-lined orbits against DEBCat's
   eclipsing binaries with masses known to about 2%. Grades: mass ratio (Q1), mass scale (Q2), quoted
-  errors (Q3), line blending (Q4). Gaia's own validation paper for this channel is deferred to DR4.
+  errors (Q3), line blending (Q4).
 
-**Still queued (pre-registered earlier):** sb2-ebfit-v1 (masses and radii of the three new
-eclipsing binaries), sb2-new-ebs-timing-v1, g5-lookup-rehearsal-v1 (`findings/2026-11-24-g5-amendment-1.md`),
-gaia-vpt-epochs-box-v1, tic93622019-pixel-011-v1, gaia-vpt-followup-v1.
-
-## Earlier (24 Nov, ~02:30 UTC): the DR4 double-lined screen gets lookups that cannot fail silently
-
-- `findings/2026-11-24-g5-amendment-1.md`, `sb2_screen_dr4.py` 0.2.0: control TICs, VizieR TESS EB
-  and T10K lookups with controls, "unvetted" instead of "new" on any failed lookup, a DR4 schema gate.
+**Still queued (pre-registered earlier):** sb2-debcat-v2, sb2-ebfit-v1 (masses and radii of the
+three new eclipsing binaries), sb2-new-ebs-timing-v1, g5-lookup-rehearsal-v1, gaia-vpt-epochs-box-v1,
+tic93622019-pixel-011-v1, gaia-vpt-followup-v1.
 
 ## Earlier (23 Nov): masses and radii pre-registered; the Gaia SB2 x TESS screen graded
 
@@ -56,7 +62,8 @@ Published write-ups:
 
 ## Leads
 1. **Eclipsing binaries with Gaia masses:** three new (HD 250735, CD-28 7251, TYC 3616-2395-1);
-   timing and mass-radius jobs queued; Gaia DR4's SB2 list on release day (step g5).
+   timing and mass-radius jobs queued; DR4's double-lined list (g5) and per-transit velocities
+   (g7) on release day.
 2. **How accurate are Gaia's dynamical masses?** DR3 against DEBCat (sb2-debcat-v2), then DR4 on
    release day (step g6).
 3. **Gaia's own transit candidates in TESS** (step g): new candidate **TIC 93622019**; the N_comp
@@ -66,9 +73,10 @@ Published write-ups:
    eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
 
 ## Lessons the pipeline now encodes (newest first; full list in commit a34b7885)
+- **Fix the sample before scanning a parameter:** a χ² scan is only comparable if every step uses
+  the same data points (g7 drops blended epochs by observed, not model, separation).
 - **A row-count gate does not prove a parser right. Anchor parsed numbers to a second source.**
 - **Before using a catalogue's numbers as truth for new stars, test them against a benchmark set.**
-- **When a lookup fails on every star, try the obvious first: the scheme (http vs https).**
 - **A failed lookup is not a negative answer, even when the rule says so.** Control rows first.
 - **Put a self-test in every job and make it run first.**
 
@@ -77,4 +85,4 @@ Published write-ups:
   2 December 12:00 CET.** Jobs that still need DR3 tables fall back to VizieR (I/357), AIP Potsdam
   or the Heidelberg mirror; DR3 epoch photometry falls back to ESA's bulk CDN files.
 - Release-day runbook: `runbook/dr4-release-day.md`, `runbook/dr4-addendum.md`,
-  `findings/2026-11-24-g5-amendment-1.md`, `runbook/g6/README.md`.
+  `findings/2026-11-24-g5-amendment-1.md`, `runbook/g6/README.md`, `runbook/g7/README.md`.
