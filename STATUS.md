@@ -3,7 +3,26 @@
 By MV2 of Munim, Inc. Made with AI agents working in his name. Code Apache-2.0, text and data
 CC BY 4.0. This page is newer than the long README. Where the two differ, this page holds.
 
-## Newest (24 Nov, ~06:30 UTC): Gaia caught HD 250735 in eclipse; per-transit velocity fits registered for DR4
+## Newest (24 Nov, ~07:30 UTC): g7's timing fallback was broken for 4 of 7 stars; fixed before DR4
+
+**Amendment:** `findings/2026-11-24-g7-amendment-1.md`, data `data/g7-ephemerides/ephemeris_check.csv`,
+filled inputs `runbook/g7/targets.json`, one ordered DR4-day list `runbook/dr4-checklist.md`.
+- Step g7 used SPOC's TESS pipeline fits (TCEs) as its fallback eclipse ephemeris. We read all seven:
+  ZZ Boo's TCE has the wrong period (6.51 d against 4.99 d), and the TCEs of CW Eri, BK Peg and CD-28 7251
+  never converged. As registered, three of the four controls would have failed for a reason unrelated
+  to Gaia.
+- Controls now use their published eclipse ephemerides (Southworth and co-authors). The targets have
+  rule-based fallbacks with honest errors. CD-28 7251's conjunction grade is not made on the fallback.
+- Cost, said plainly: on the fallback, HD 250735's ephemeris error rises from 0.005 to 0.023 d. That is
+  because two consecutive TESS sectors' pipeline fits disagree by 32 minutes. So the 0.020-d early
+  hint can only be tested with the queued eclipse-timing job's ephemeris. Added prediction: that job
+  will show the 32-minute offset is a fitting artefact (75%).
+- Exploratory: CD-28 7251's Gaia eclipse dips of 2015 and its TESS eclipse of 2023 are linked by
+  396 cycles at P ≈ 6.9609 ± 0.0008 d. That agrees with Gaia's spectroscopic period and not with the
+  pipeline's biased P/2 fit. The queued sb2-ebfit and timing jobs do not use pipeline TCEs, so they need
+  no change.
+
+## Earlier (24 Nov, ~06:30 UTC): Gaia caught HD 250735 in eclipse; per-transit velocity fits registered for DR4
 
 **Exploratory:** `findings/2026-11-24-hd250735-gaia-epochs.md`, data
 `data/sb2-new-ebs/hd-250735_gaia_dr3_epoch_g.csv` (saved before ESA's archive closes on 25 Nov).
@@ -16,7 +35,7 @@ CC BY 4.0. This page is newer than the long README. Where the two differ, this p
 - Not the registered E4 grade: that comes from the queued job sb2-new-ebs-timing-v1.
 
 **Registered:** `findings/2026-11-24-g7-prereg.md`, code `sb2_rvfit.py` 0.1.0 (tests
-`test_sb2_rvfit.py`), runner and inputs in `runbook/g7/`.
+`test_sb2_rvfit.py`, passed on commit, v0.56.0), runner and inputs in `runbook/g7/`.
 - On DR4 day, fit Gaia's per-transit double-lined velocities (`rvs_epoch_parameters_double`) of
   the three new eclipsing binaries with the eclipse timing fixed. The fit gives a conjunction-timing
   check, K1 and K2 against DR4's own orbit, and absolute masses with the eclipse-fit inclinations.
@@ -73,6 +92,8 @@ Published write-ups:
    eclipse against 80.7 expected (p = 2 × 10⁻⁵). Gaia DR4 decides.
 
 ## Lessons the pipeline now encodes (newest first; full list in commit a34b7885)
+- **A fallback is a test input too: check it on the controls before the day it is needed.** (g7's
+  pipeline-TCE fallback failed 3 of 4 controls.)
 - **Fix the sample before scanning a parameter:** a χ² scan is only comparable if every step uses
   the same data points (g7 drops blended epochs by observed, not model, separation).
 - **A row-count gate does not prove a parser right. Anchor parsed numbers to a second source.**
@@ -84,5 +105,6 @@ Published write-ups:
 - **ESA's Gaia archive is closed from 25 November 2026 12:00 CET until DR4 opens on
   2 December 12:00 CET.** Jobs that still need DR3 tables fall back to VizieR (I/357), AIP Potsdam
   or the Heidelberg mirror; DR3 epoch photometry falls back to ESA's bulk CDN files.
-- Release-day runbook: `runbook/dr4-release-day.md`, `runbook/dr4-addendum.md`,
-  `findings/2026-11-24-g5-amendment-1.md`, `runbook/g6/README.md`, `runbook/g7/README.md`.
+- Release-day checklist: `runbook/dr4-checklist.md` (order), with the rules in
+  `runbook/dr4-release-day.md`, `runbook/dr4-addendum.md`, `findings/2026-11-24-g5-amendment-1.md`,
+  `runbook/g6/README.md`, `runbook/g7/README.md` and `findings/2026-11-24-g7-amendment-1.md`.
