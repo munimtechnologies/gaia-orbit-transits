@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for gaia_chroma 0.1.0. The expected numbers were computed by hand from the saved Gaia
+"""Tests for gaia_chroma 0.2.0. The expected numbers were computed by hand from the saved Gaia
 DR3 epoch tables before the code was run; the tolerances are those of the hand calculation.
+The TIC 44997521 and TIC 4638108 values are those of 0.1.0, unchanged; TIC 93622019 is new in
+0.2.0 (hand calculation of 25 Nov 2026, ~07:30 UTC).
 MV2, Munim, Inc.; made with AI agents."""
 import math
 import os
@@ -11,6 +13,7 @@ import gaia_chroma as gc
 HERE = os.path.dirname(os.path.abspath(__file__))
 A = "5432318139709900160"   # TIC 44997521
 B = "5431056347037926784"   # TIC 4638108
+C = "5345417757181174144"   # TIC 93622019
 
 
 class Units(unittest.TestCase):
@@ -18,6 +21,16 @@ class Units(unittest.TestCase):
         T0g = 1546.48145 + 1802.5
         self.assertAlmostEqual(gc.residual(1790.8064535482451, 3.54941, T0g), 0.01599, places=4)
         self.assertAlmostEqual(gc.residual(T0g + 10 * 3.54941 + 0.01, 3.54941, T0g), 0.01, places=9)
+
+    def test_residual_tic93622019(self):
+        T0g = 3706.08685 + 1802.5
+        P = 2.1238933
+        self.assertAlmostEqual(gc.residual(2029.6526950339496, P, T0g), 0.00307, delta=0.00002)
+        self.assertAlmostEqual(gc.residual(2097.5919582997385, P, T0g), -0.02225, delta=0.00002)
+        self.assertAlmostEqual(gc.residual(2106.0960637226376, P, T0g), -0.01372, delta=0.00002)
+        self.assertAlmostEqual(gc.residual(2258.989001023589, P, T0g), -0.04110, delta=0.00002)
+        self.assertAlmostEqual(gc.residual(2097.6659635472574, P, T0g), 0.05175, delta=0.00002)
+        self.assertAlmostEqual(gc.residual(1934.1787324937688, P, T0g), 0.10431, delta=0.00002)
 
     def test_fnum_truthy(self):
         self.assertTrue(math.isnan(gc.fnum("nan")))
@@ -89,6 +102,33 @@ class RealData(unittest.TestCase):
         self.assertAlmostEqual(r["jackknife_max"], 1.488, delta=0.01)
         self.assertAlmostEqual(r["median_epoch_bp_minus_rp"], -0.00056, delta=0.0003)
         self.assertEqual(r["flags"], {"in_n": 12, "in_flagged": 3, "out_n": 116, "out_flagged": 6})
+
+    def test_tic93622019(self):
+        r = self.res[C]
+        self.assertEqual(r["n_rows_timed"], 65)
+        self.assertEqual(r["n_in"], 4)
+        self.assertEqual(r["n_out"], 57)
+        self.assertEqual(r["n_common"], 4)
+        self.assertAlmostEqual(r["baseline"]["G"]["median"], 177193.3, delta=0.05)
+        self.assertAlmostEqual(r["baseline"]["BP"]["median"], 99279.35, delta=0.05)
+        self.assertAlmostEqual(r["baseline"]["RP"]["median"], 111266.0, delta=0.05)
+        self.assertEqual(r["baseline"]["G"]["n"], 57)
+        self.assertEqual(r["baseline"]["G"]["n_gross_dropped"], 0)
+        self.assertEqual(r["baseline"]["BP"]["n_gross_dropped"], 1)
+        self.assertEqual(r["baseline"]["RP"]["n_gross_dropped"], 2)
+        self.assertAlmostEqual(r["baseline"]["G"]["sigma_rel"], 0.0027645, delta=0.00002)
+        self.assertAlmostEqual(r["baseline"]["BP"]["sigma_rel"], 0.0031107, delta=0.00002)
+        self.assertAlmostEqual(r["baseline"]["RP"]["sigma_rel"], 0.0023145, delta=0.00002)
+        self.assertAlmostEqual(r["mean_depth"]["G"], 0.0137174, delta=0.00002)
+        self.assertAlmostEqual(r["mean_depth"]["BP"], 0.0154312, delta=0.00002)
+        self.assertAlmostEqual(r["mean_depth"]["RP"], 0.0117480, delta=0.00002)
+        self.assertAlmostEqual(r["bp_rp_ratio"], 1.3135, delta=0.003)
+        self.assertAlmostEqual(r["bp_rp_ratio_err"], 0.1851, delta=0.003)
+        self.assertAlmostEqual(r["bp_minus_rp_z"], 1.90, delta=0.02)
+        self.assertAlmostEqual(r["jackknife_min"], 1.0976, delta=0.003)
+        self.assertAlmostEqual(r["jackknife_max"], 1.4692, delta=0.003)
+        self.assertAlmostEqual(r["median_epoch_bp_minus_rp"], 0.0024674, delta=0.00002)
+        self.assertEqual(r["flags"], {"in_n": 8, "in_flagged": 2, "out_n": 110, "out_flagged": 6})
 
 
 if __name__ == "__main__":

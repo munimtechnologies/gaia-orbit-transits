@@ -1,13 +1,20 @@
 # SPDX-License-Identifier: Apache-2.0
-"""gaia_chroma 0.1.0 - is a transit the same depth in Gaia's blue (BP) and red (RP) light?
+"""gaia_chroma 0.2.0 - is a transit the same depth in Gaia's blue (BP) and red (RP) light?
 
 MV2, Munim, Inc. Made with AI agents working in his name. Code Apache-2.0.
 Repository: https://github.com/munimtechnologies/gaia-orbit-transits
 
-Exploratory vetting step (not pre-registered; the windows below were chosen after the data had
-been looked at). For each candidate it reads Gaia DR3 per-transit epoch photometry (one row per
-Gaia field-of-view transit, G, BP and RP fluxes measured within about a minute of each other),
-phases every row on the TESS ephemeris and compares the dip depth in the three bands.
+0.2.0 (25 Nov 2026): adds the third Gaia transit candidate, TIC 93622019 (Gaia DR3
+5345417757181174144, TESS ephemeris from findings/2026-11-24-tic93622019-gaia-rv-limit.md).
+Rules and the two 0.1.0 targets are unchanged. Its epoch table was transcribed from the AIP Gaia
+TAP mirror with fluxes rounded to 0.1 e/s (times in full) and has no flux-error columns; the code
+does not use them.
+
+Exploratory vetting step (not pre-registered; the windows below were chosen after the data of the
+first two stars had been looked at, and applied unchanged to the third). For each candidate it
+reads Gaia DR3 per-transit epoch photometry (one row per Gaia field-of-view transit, G, BP and RP
+fluxes measured within about a minute of each other), phases every row on the TESS ephemeris and
+compares the dip depth in the three bands.
 
 A transit of a planet or of any body across the target itself is nearly colour-neutral (only limb
 darkening makes it a few per cent deeper in the blue). An eclipse on an unresolved source of a
@@ -37,7 +44,7 @@ import math
 import os
 import statistics
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 BTJD_TO_GAIA = 1802.5          # Gaia epoch time = BTJD + 1802.5
 IN_HALF = 0.05                 # d
 OUT_MIN = 0.10                 # d
@@ -47,6 +54,7 @@ MAD_TO_SIGMA = 1.4826
 TARGETS = {
     "5432318139709900160": {"tic": "TIC 44997521", "P": 3.54941, "T0_btjd": 1546.48145},
     "5431056347037926784": {"tic": "TIC 4638108", "P": 2.20828, "T0_btjd": 1517.88102},
+    "5345417757181174144": {"tic": "TIC 93622019", "P": 2.1238933, "T0_btjd": 3706.08685},
 }
 BANDS = (("G", "g_transit_flux", "variability_flag_g_reject"),
          ("BP", "bp_flux", "photometry_flag_bp_reject"),
