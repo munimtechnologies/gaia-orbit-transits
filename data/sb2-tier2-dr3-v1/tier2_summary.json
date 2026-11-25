@@ -1,0 +1,66 @@
+{
+ "version": "0.1.0",
+ "schema": "gaiadr3",
+ "T2_0": {
+  "n_selected": 240,
+  "n_orbit_rows": 2436,
+  "predicted": "120-300 (70%)"
+ },
+ "T2_R": {
+  "expected": 10,
+  "selected": 10,
+  "missing": [],
+  "label": "SELECTION_OK"
+ },
+ "T2_1": {
+  "controls": {
+   "n_controls": 41,
+   "n_ok": 41,
+   "share": 1.0,
+   "label": "CONTROLS_OK"
+  },
+  "label": "CONTROLS_OK"
+ },
+ "T2_2": {
+  "n_tested": 214,
+  "n_half_full": 54,
+  "share": 0.2523364485981308,
+  "share_ci95": [
+   0.19885926465027365,
+   0.31454832753005385
+  ],
+  "tier1_share": 0.34782608695652173,
+  "label": "LOWER"
+ },
+ "T2_3": {
+  "n_candidates": 0,
+  "candidates": [],
+  "rowan_relabelled": [],
+  "n_unvetted": 7,
+  "unvetted": [
+   "282502866",
+   "464315748",
+   "188378024",
+   "119613818",
+   "157469799",
+   "155268582",
+   "428977802"
+  ],
+  "label": "NO"
+ },
+ "gaia_tables_error": "",
+ "calibration": {
+  "n": 27,
+  "n_found": 27,
+  "n_hand_agrees": 26,
+  "label": "CAL_DIFFERS",
+  "n_tier1": 11,
+  "n_tier2": 10,
+  "n_outside": 6,
+  "n_below_t1": 15,
+  "median_mdyn_over_m1_excl_badK": 0.9758746071501054,
+  "mean_mdyn_over_m1_excl_badK": 0.9547011373639567,
+  "note": "1762094209603752192 excluded from the median/mean: Gaia K2 = 28 vs K1 = 144 km/s (q = 5.1), an implausible double-lined solution"
+ },
+ "finished": "2026-11-25T06:14:02Z"
+}

@@ -1,0 +1,8 @@
+source_id,tic,name,G,P_gaia_d,tce_class,tce_period_d,tce_depth_ppm,tce_snr,simbad_otype,simbad_eclipse_ref,exofop_toi,exofop_ctoi,vsx,eba_c108e67,tess_ten_thousand,ijspeert2024,status,note
+1345750246115251840,157469799,BD+45 2574A,9.3313,3.50631,HALF,1.75302,234746,22.1,SB*,no,none,none,none,A98 confirmed,unreachable,unreachable,KNOWN,listed by Eclipses by Appointment
+3315129988421802624,282502866,HD 40656,7.8098,7.39656,FULL,7.39648,14565,490.1,SB*,no,none,282502866.01 (Montalto 2020; PC; P 7.40066),none,absent,unreachable,unreachable,SIGNAL_KNOWN,ExoFOP spectroscopy notes Dec 2020 reveal SB2
+1185962761030147072,119613818,BD+15 2743,9.1421,2.06722,HALF,1.03365,20391,200.2,SB*,no,none,none,ASAS J144046+1438.6 MISC,absent,unreachable,unreachable,VARIABLE_KNOWN_NOT_EB,
+6436666383265499136,464315748,HD 171459,8.2777,6.39561,HALF,3.19777,14938,349.0,SB*,no,none,none,Gaia DR3 6436666383265499136 DSCT|GDOR|SXPHE (not eclipsing),absent,unreachable,unreachable,OPEN,Am star
+911500121588495744,188378024,HD 72862,8.3983,2.66684,HALF,1.33343,13201,397.6,SB*,no,none,none,Gaia DR3 911500121588495744 ACV|roAm|roAp|SXARI (not eclipsing),absent,unreachable,unreachable,OPEN,
+5692967605976651008,155268582,TYC 6563-1974-1,10.1759,7.06585,HALF,3.53294,106351,1009.1,SB*,no,none,none,neighbour Gaia DR3 5692967610287213312 ROT,absent,unreachable,unreachable,OPEN,TIC contamination 0.089
+249989572195889664,428977802,TYC 3330-286-1,11.1224,2.76337,HALF,1.38173,3351,27.5,SB*,no,none,none,none,absent,unreachable,unreachable,OPEN,TIC contamination 0.452

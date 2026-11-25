@@ -1,0 +1,183 @@
+{
+ "grades": {
+  "S0": {
+   "n_selected": 240,
+   "expected": 184,
+   "pilot_present": 0,
+   "pilot_n": 20,
+   "label": "NOT_APPLICABLE_DR4"
+  },
+  "S1": {
+   "n_with_tce": 60,
+   "n_half": 48,
+   "n_full": 6,
+   "n_other": 6,
+   "share_half": 0.8,
+   "share_half_ci95": [
+    0.6821819409122731,
+    0.8817149472671906
+   ],
+   "label": "HALF_DOMINANT"
+  },
+  "S2": {
+   "n_new": 7,
+   "n_new_excl_pilot": 7,
+   "new": [
+    {
+     "source_id": "3315129988421802624",
+     "tic": "282502866",
+     "G": 7.80976,
+     "P_gaia": 7.3965631059955985,
+     "tce_class": "FULL",
+     "depth_ppm": 14564.91702093864,
+     "snr": 490.0534668,
+     "in_pilot": false
+    },
+    {
+     "source_id": "6436666383265499136",
+     "tic": "464315748",
+     "G": 8.277677,
+     "P_gaia": 6.395612408681747,
+     "tce_class": "HALF",
+     "depth_ppm": 14938.13294415228,
+     "snr": 349.0229797363281,
+     "in_pilot": false
+    },
+    {
+     "source_id": "911500121588495744",
+     "tic": "188378024",
+     "G": 8.398348,
+     "P_gaia": 2.666836608075459,
+     "tce_class": "HALF",
+     "depth_ppm": 13201.108616778953,
+     "snr": 397.6027526855469,
+     "in_pilot": false
+    },
+    {
+     "source_id": "1185962761030147072",
+     "tic": "119613818",
+     "G": 9.142115,
+     "P_gaia": 2.0672153116960352,
+     "tce_class": "HALF",
+     "depth_ppm": 20390.613320222335,
+     "snr": 200.16615295410156,
+     "in_pilot": false
+    },
+    {
+     "source_id": "1345750246115251840",
+     "tic": "157469799",
+     "G": 9.3313055,
+     "P_gaia": 3.5063077339015933,
+     "tce_class": "HALF",
+     "depth_ppm": 234746.0709987069,
+     "snr": 22.14215087890625,
+     "in_pilot": false
+    },
+    {
+     "source_id": "5692967605976651008",
+     "tic": "155268582",
+     "G": 10.175918,
+     "P_gaia": 7.065845423593623,
+     "tce_class": "HALF",
+     "depth_ppm": 106350.72645813736,
+     "snr": 1009.0892944335938,
+     "in_pilot": false
+    },
+    {
+     "source_id": "249989572195889664",
+     "tic": "428977802",
+     "G": 11.122366,
+     "P_gaia": 2.7633739475259147,
+     "tce_class": "HALF",
+     "depth_ppm": 3351.2295768050644,
+     "snr": 27.53830909729004,
+     "in_pilot": false
+    }
+   ],
+   "label_ge3": "YES",
+   "label_ge1": "YES"
+  },
+  "S3": {
+   "n_controls": 41,
+   "n_ok": 41,
+   "share": 1.0,
+   "label": "CONTROLS_OK"
+  },
+  "counts": {
+   "tested": 214,
+   "no_tic": 26,
+   "errors": 0,
+   "tce_none": 154
+  },
+  "S2_v2": {
+   "n_new_v2": 0,
+   "n_unvetted": 7,
+   "label": "NO",
+   "new_v2": [],
+   "unvetted": [
+    "282502866",
+    "464315748",
+    "188378024",
+    "119613818",
+    "157469799",
+    "155268582",
+    "428977802"
+   ]
+  }
+ },
+ "meta": {
+  "version": "0.2.0",
+  "base_sha": "0a8883c902143934f2ca9933affb57cc01a851b1",
+  "schema": "gaiadr3",
+  "started": "2026-11-25T05:52:40Z",
+  "arm": "A",
+  "columns": {
+   "nss_two_body_orbit": [
+    "eccentricity",
+    "nss_solution_type",
+    "period",
+    "period_error",
+    "semi_amplitude_primary",
+    "semi_amplitude_primary_error",
+    "semi_amplitude_secondary",
+    "semi_amplitude_secondary_error",
+    "source_id"
+   ],
+   "gaia_source": [
+    "dec",
+    "phot_g_mean_mag",
+    "ra",
+    "source_id"
+   ],
+   "binary_masses": [
+    "combination_method",
+    "m1",
+    "source_id"
+   ]
+  },
+  "n_orbit_rows": 2436,
+  "n_selected": 240,
+  "lookup_controls": {
+   "villanova": {
+    "positive": true,
+    "negative": false,
+    "ok": true
+   },
+   "tessebs_viz": {
+    "cat": "J/ApJS/258/16",
+    "mode": null,
+    "tic_col": null,
+    "control": null,
+    "error": "RuntimeError('all VizieR mirrors failed: RuntimeError(\"HTTP failed https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F258%2F16&-out.max=1&-out.add=_RAJ%2: <HTTPError 404: \\'Not Found\\'>\""
+   },
+   "t10k_viz": {
+    "cat": "J/ApJS/279/50",
+    "mode": null,
+    "tic_col": null,
+    "control": null,
+    "error": "RuntimeError('all VizieR mirrors failed: RuntimeError(\"HTTP failed https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-source=J%2FApJS%2F279%2F50&-out.max=1&-out.add=_RAJ%2: <HTTPError 404: \\'Not Found\\'>\""
+   }
+  },
+  "finished": "2026-11-25T06:14:02Z"
+ }
+}
