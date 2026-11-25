@@ -1,0 +1,3 @@
+source_id,tic,phot_g_mean_mag,radial_velocity,radial_velocity_error,rv_nb_transits,rv_amplitude_robust,rv_chisq_pvalue,rv_renormalised_gof,rv_method_used,rv_template_teff,grvs_mag,ruwe,ipd_frac_multi_peak,non_single_star,teff_gspphot,bp_rp
+5431056347037926784,4638108,12.788467,15.758625,2.6394773,30,,,,2,6750.0,12.285032,0.8817984,0,0,6910.5156,0.57093334
+5432318139709900160,44997521,13.809506,23.251856,1.4661324,32,,,,2,4500.0,12.715166,1.0553852,0,0,,1.3896008
