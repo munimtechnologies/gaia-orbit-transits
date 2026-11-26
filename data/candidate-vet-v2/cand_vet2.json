@@ -1,0 +1,1393 @@
+{
+ "version": "0.2.0",
+ "started": "2026-11-26T15:54:10Z",
+ "targets": [
+  [
+   "HD 250735",
+   400170926,
+   "3450611154067089408",
+   "claimed new SB2 EB (23 Nov)"
+  ],
+  [
+   "BD+15 2743",
+   119613818,
+   "1185962761030147072",
+   "claimed new SB2 EB (25 Nov)"
+  ],
+  [
+   "HD 11239",
+   115321276,
+   "4961129715887496320",
+   "claimed new SB2 EB (26 Nov)"
+  ],
+  [
+   "HD 125386A",
+   1021067547,
+   "5854558019550047872",
+   "claimed new SB1 EB (26 Nov)"
+  ],
+  [
+   "HD 125386 blend",
+   337318750,
+   null,
+   "TIC of the blended pair HD 125386"
+  ],
+  [
+   "TYC 6340-23-1",
+   71945261,
+   "6853008555751131648",
+   "claimed EB (19-20 Nov)"
+  ],
+  [
+   "TYC 3330-286-1",
+   428977802,
+   null,
+   "weak SB2 EB candidate"
+  ],
+  [
+   "TIC 93622019",
+   93622019,
+   "5345417757181174144",
+   "Gaia transit candidate"
+  ],
+  [
+   "TIC 44997521",
+   44997521,
+   "5432318139709900160",
+   "Gaia transit candidate"
+  ],
+  [
+   "TIC 4638108",
+   4638108,
+   "5431056347037926784",
+   "Gaia transit candidate"
+  ],
+  [
+   "TYC 1316-1554-1",
+   null,
+   "3350075697770930304",
+   "SB1 eclipse candidate"
+  ],
+  [
+   "TYC 3384-347-1",
+   null,
+   "968093290740779008",
+   "SB1 eclipse candidate"
+  ],
+  [
+   "UCAC4 544-021692",
+   null,
+   "3350386649103238016",
+   "SB1 eclipse candidate"
+  ],
+  [
+   "UCAC4 468-115332",
+   null,
+   "4289848214689460736",
+   "SB1 eclipse candidate"
+  ],
+  [
+   "UCAC4 194-101841",
+   null,
+   "5900468269330031744",
+   "SB1 eclipse candidate"
+  ],
+  [
+   "TYC 3616-2395-1",
+   384284045,
+   null,
+   "control E1 (EbA accepted-systems row A179)"
+  ],
+  [
+   "CD-28 7251",
+   189269584,
+   "5633392634307163776",
+   "control E2 (EbA CHECKCARD row B7)"
+  ],
+  [
+   "HD 171459",
+   464315748,
+   "6436666383265499136",
+   "control E3 (EbA CHECKCARD row B6)"
+  ],
+  [
+   "RS Cha",
+   323292655,
+   "5209024611054646272",
+   "control O1 (IJspeert 2024 EB)"
+  ],
+  [
+   "ZZ Boo",
+   357358259,
+   "1450355965609917568",
+   "control O1 (IJspeert 2024 EB)"
+  ]
+ ],
+ "obaf_eb": {
+  "n_rows": 61372,
+  "hits": {
+   "323292655": [
+    {
+     "TIC": "323292655",
+     "dmode": "98.66648134545572",
+     "dsigma_lower": "1.0777188120085697",
+     "dsigma_upper": "1.0978195019737882",
+     "Jmag": "5.994",
+     "Hmag": "5.8769999",
+     "Kmag": "5.8520002",
+     "e_Jmag": "0.029999999",
+     "e_Hmag": "0.037999999",
+     "e_Kmag": "0.034000002",
+     "r_sum_phys": "0.6930013948659137",
+     "period": "0.8349677287819856",
+     "p_err": "1.3038653957917498e-05",
+     "depth_1": "0.4936238274500486",
+     "depth_2": "0.0188583294101362",
+     "Tmag": "5.8257999000000025",
+     "e_phys": "0.3355990154162576",
+     "result_flag": "1",
+     "Mass_1_median": "1.5594176864454603",
+     "Mass_1_lower": "1.5593041441047395",
+     "Mass_1_upper": "1.6991147587530653",
+     "R1_median": "2.0203201064822016",
+     "R1_lower": "1.9918667291569",
+     "R1_upper": "2.64941120517862",
+     "age1_median": "1532240167.172753",
+     "age1_lower": "1470997495.2746406",
+     "age1_upper": "1532749609.5543537",
+     "Xc1_median": "0.2990897209931105",
+     "Xc1_lower": "0.1508194564937067",
+     "Xc1_upper": "0.2991293313876186",
+     "Mass_2_median": "1.4395691022353274",
+     "Mass_2_lower": "0.8899688347934042",
+     "Mass_2_upper": "1.4396314444517786",
+     "R2_median": "1.6759266033092282",
+     "R2_lower": "0.7878672511806915",
+     "R2_upper": "1.678357336076841",
+     "age2_median": "1531372953.5366752",
+     "age2_lower": "1471084145.0704389",
+     "age2_upper": "1531850237.5432866",
+     "Xc2_median": "0.399434724547153",
+     "Xc2_lower": "0.3994024638803006",
+     "Xc2_upper": "0.6506806220490579",
+     "a_median": "5.343170944520773",
+     "a_lower": "4.852794667647565",
+     "a_upper": "5.350807814676455",
+     "SpT_by_mass": "F",
+     "SpT_by_Simbad": "A7V",
+     "Simbad_mainSpT": "A7",
+     "eclipse_prob_mean_ZAMS": "",
+     "eclipse_prob_lower_ZAMS": "",
+     "eclipse_prob_upper_ZAMS": "",
+     "eclipse_prob_success_ZAMS": "",
+     "eclipse_prob_mean_TAMS": "",
+     "eclipse_prob_lower_TAMS": "",
+     "eclipse_prob_upper_TAMS": "",
+     "eclipse_prob_success_TAMS": "",
+     "eclipse_prob_Simbad_ZAMS": "0.36759025787965616",
+     "eclipse_prob_Simbad_TAMS": ""
+    }
+   ]
+  }
+ },
+ "eba": {
+  "n_blobs": 50117,
+  "n_text": 34176,
+  "skipped_large": [],
+  "hits": {
+   "189269584": [
+    {
+     "file": "CHECKCARD.csv",
+     "lines": [
+      93
+     ],
+     "snippet": [
+      "B7,189269584,CD-28 7251,141.434872,-29.326988,8.684,T,6.9610,,2989.8815,20.7,,correction (VSX VAR 0.0146 d); twin eclipses; contratio 1.77,2026-10-19T23:38:40Z,2026-10-26T19:36:31,0.0,194,\"lk.search_lightcurve(\"\"TIC 189269584\"\", author=\"\"QLP\"\").download_all()\","
+     ]
+    },
+    {
+     "file": "paper.html",
+     "lines": [
+      306
+     ],
+     "snippet": [
+      "<tr><td>B7</td><td>189269584</td><td>CD&minus;28 7251</td><td>VSX VAR 0.0146 d</td><td>twin EB, <i>P</i> 6.9610 d, 20.7/23.9%</td><td>proposed: contamination ratio 1.77 leaves a blend possible</td></tr>"
+     ]
+    },
+    {
+     "file": "reviews/2026-10-30-next70/queue-provenance.json",
+     "lines": [
+      56
+     ],
+     "snippet": [
+      "    \"189269584\","
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/catalogue-matches.csv",
+     "lines": [
+      18
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,,,B/vsx/vsx:Gaia DR3 5633392634307163776:VAR:P=0.014623700000:0.2as,,,CD-28  7251,SB*,0.1,,,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/gaia-visits.csv",
+     "lines": [
+      1107,
+      1108,
+      1109,
+      1110,
+      1111,
+      1112,
+      1113,
+      1114,
+      1115,
+      1116,
+      1117,
+      1118,
+      1119,
+      1120,
+      1121,
+      1122,
+      1123,
+      1124,
+      1125,
+      1126
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,20457458893107237,1766.8045529966712,8.855384336887692,false,false",
+      ",189269584,5633392634307163776,21793962992997880,1790.9764351349522,8.861285784311143,false,false",
+      ",189269584,5633392634307163776,23410681228178702,1820.2160926464237,8.900401480331364,false,false"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/pixel-localizations.csv",
+     "lines": [
+      60,
+      61,
+      62
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,0,on_target,4,340.4852857548231,2.7233121834816463,1,386228.9399760356,[],,https://stpubdata.s3.us-east-1.amazonaws.com/tess/public/tid/s0062/0000/0001/8926/9584/tess2023043185947-s0062-0000000189269584-0254-s_tp.fits,6bd30f78ed81b308f935e279f6d03e0cc437216d86947bbe",
+      ",189269584,5633392634307163776,89,0,on_target,4,218.28311763657695,2.476840388650224,1,81740.55395106247,[],,https://mast.stsci.edu/tesscut/api/v0.1/astrocut?ra=141.43482404874516&dec=-29.32698292140422&x=9&y=9&sector=89,e803a3c0b2c9054ffc470ff1419ce77a9e758911476fbf26340ac8a65c0a8b63",
+      ",189269584,5633392634307163776,99,0,on_target,3,104.26064445801254,6.615759333713479,1,36086.315436801146,[],,https://mast.stsci.edu/tesscut/api/v0.1/astrocut?ra=141.43482404874516&dec=-29.32698292140422&x=9&y=9&sector=99,b84cc4939204a2e08981e5aa44d5811db8ea9f7cc031955836f19add1ee0765a"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/reviewed-stars.csv",
+     "lines": [
+      20
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,,wider Gaia window,recovery,published published B7 and earlier TCE,6.9609951,3003.80271,\"CD-28 7251, previously published published B7 with 6.9610-day twins. Three on-target images support the earlier identification.\",https://gaia.aip.de/tap/sync?REQUEST=doQuery&LANG=A"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/tess-photometry.csv",
+     "lines": [
+      118,
+      119,
+      120
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,tess2023043185947-s0062-0000000189269584-0254-s_lc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2023043185947-s0062-0000000189269584-0254-s_lc.fits,225ec2be323530d2a75bbad7b176f54809d37a03d49ce0ba793bbb08e0cb220e",
+      ",189269584,5633392634307163776,89,hlsp_qlp_tess_ffi_s0089-0000000189269584_tess_v01_llc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3AHLSP%2Fqlp%2Fs0089%2F0000%2F0001%2F8926%2F9584%2Fhlsp_qlp_tess_ffi_s0089-0000000189269584_tess_v01_llc.fits,6c7f1a3799cbe2b3956123ccca2de20df29010d1e6",
+      ",189269584,5633392634307163776,99,hlsp_qlp_tess_ffi_s0099-0000000189269584_tess_v01_llc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3AHLSP%2Fqlp%2Fs0099%2F0000%2F0001%2F8926%2F9584%2Fhlsp_qlp_tess_ffi_s0099-0000000189269584_tess_v01_llc.fits,28b40786cba5a7e17e68bed8a29621380d0b2483da"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-box-fits.csv",
+     "lines": [
+      5
+     ],
+     "snippet": [
+      "5633392634307163776,189269584,6.96108580484263,1.5122705E-4,6.9609951,2989.88333,0.5121,0.30907,165.104,11,62 89 99"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-events.csv",
+     "lines": [
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,2989.88333,23,46,169.422,1.627",
+      ",189269584,5633392634307163776,62,2996.84433,22,90,187.154,2.22",
+      ",189269584,5633392634307163776,62,3003.80532,22,90,188.657,5.464"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-vsx.csv",
+     "lines": [
+      9,
+      10
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,45.85,Gaia DR3 5633392252052067968,ACV|roAm|roAp|SXARI,,141.42284,-29.33426",
+      ",189269584,5633392634307163776,0.16,Gaia DR3 5633392634307163776,VAR,0.014623700000,141.43488,-29.32699"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/chopard-coverage.csv",
+     "lines": [
+      118
+     ],
+     "snippet": [
+      "A,B7,189269584,5633392634307163776,141.434872,-29.326988,False,False,False,,"
+     ]
+    }
+   ],
+   "464315748": [
+    {
+     "file": "CHECKCARD.csv",
+     "lines": [
+      4
+     ],
+     "snippet": [
+      "B6,464315748,HD 171459,279.948863,-65.889326,8.009,T,6.3955,,1660.2395,1.27,,correction (VSX DSCT|GDOR 3.19721 d is the eclipse spacing); near-twin 12.7/13.4 ppt,2026-10-19T23:38:40Z,2026-10-20T01:25:13,0.0,418,\"lk.search_lightcurve(\"\"TIC 464315748\"\", author=\"\"QLP\"\").download_all()\","
+     ]
+    },
+    {
+     "file": "paper.html",
+     "lines": [
+      305
+     ],
+     "snippet": [
+      "<tr><td>B6</td><td>464315748</td><td>HD 171459</td><td>VSX DSCT|GDOR 3.19721 d</td><td>EB, <i>P</i> 6.3955 d, 12.7/13.4 ppt</td><td>3.19721 d is the eclipse spacing</td></tr>"
+     ]
+    },
+    {
+     "file": "reviews/2026-10-30-next70/queue-provenance.json",
+     "lines": [
+      277
+     ],
+     "snippet": [
+      "    \"464315748\","
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/chopard-coverage.csv",
+     "lines": [
+      117
+     ],
+     "snippet": [
+      "A,B6,464315748,6436666383265499136,279.948863,-65.889326,False,False,False,,"
+     ]
+    }
+   ],
+   "384284045": [
+    {
+     "file": "accepted-systems.csv",
+     "lines": [
+      171
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,327.54606,51.80023,through 2026-11-05,previously accepted under the historical review standard,overview/systems.csv"
+     ]
+    },
+    {
+     "file": "batch-candidates.csv",
+     "lines": [
+      40
+     ],
+     "snippet": [
+      "384284045,G 10-11,10.4664,3.78703,25.2,-0.012,71,4.3,\"confirmed, counted as A179\",\"confirmed (per-object re-analysis 2026-10-21; grazing near-twin G+G SB2 (M 1.07 + 1.15 Msun), both eclipses 28.89/25.58 ppt, T14 2.20/2.24 h, 34 + 37 events; the deeper eclipse is at conjunction B: Gaia's SB2 'primary"
+     ]
+    },
+    {
+     "file": "overview/systems.csv",
+     "lines": [
+      171
+     ],
+     "snippet": [
+      "A179,384284045,confirmed,327.54606,51.80023,true,objects.csv"
+     ]
+    },
+    {
+     "file": "paper.html",
+     "lines": [
+      683
+     ],
+     "snippet": [
+      "<tr><td>A179</td><td>384284045</td><td>TYC 3616-2395-1</td><td>10.023</td><td>Batch</td><td>confirmed</td></tr>"
+     ]
+    },
+    {
+     "file": "reviews/2026-10-30-next70/queue-provenance.json",
+     "lines": [
+      226
+     ],
+     "snippet": [
+      "    \"384284045\","
+     ]
+    },
+    {
+     "file": "reviews/2026-10-30-next70/shared-catalogues/c4-ebcats-out-original.txt",
+     "lines": [
+      79
+     ],
+     "snippet": [
+      "384284045 | none of the vetted/unvetted EB tables"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R689/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R690/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R691/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R692/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R693/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R694/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R695/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R696/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R697/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R698/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R699/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R700/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R701/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R702/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R703/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R704/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R705/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R706/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R707/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R708/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R709/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R710/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R711/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R712/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R713/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R714/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R715/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R716/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R717/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R718/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R719/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R720/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R721/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R722/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R723/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/R724/batch-shared/selection-time-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-baseline-reconciliation/known-removals/revised-identity-accounting.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,327.54606,51.80023,true,objects.csv,confirmed,confirmed,true,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-catalogue-recovery/catalogues/exact-labels.json",
+     "lines": [
+      343
+     ],
+     "snippet": [
+      "  \"384284045\": \"A179\","
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-catalogue-recovery/catalogues/positions-969.json",
+     "lines": [
+      231905,
+      231907
+     ],
+     "snippet": [
+      "\"384284045\": {",
+      "\"ID\": 384284045,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-next100/accepted-ledger.csv",
+     "lines": [
+      175
+     ],
+     "snippet": [
+      "A179,384284045,,confirmed,True,new_claim,True,Fable 5\\made\\sb1-scale\\pervet\\vet384284045\\REPORT.md,,frozen corrected baseline,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-05-next100/queue-seal.json",
+     "lines": [
+      1272
+     ],
+     "snippet": [
+      "    \"384284045\","
+     ]
+    },
+    {
+     "file": "reviews/duet-findings/masses/tic-records.csv",
+     "lines": [
+      863
+     ],
+     "snippet": [
+      "384284045,1980920834829359488,10.0227,10.4664,10.8225,9.97593,4.80974,0.0269721,206.677,0.0200439,5776,153.232,4.11638,1.47338,0.0704925,1.035,2.17686772,0.107061952,DWARF,0.0919472948"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/chopard-coverage.csv",
+     "lines": [
+      211
+     ],
+     "snippet": [
+      "A,A179,384284045,,327.54606,51.80023,False,False,False,,"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/evidence/35248bec53-batch_candidates.csv",
+     "lines": [
+      40
+     ],
+     "snippet": [
+      "384284045,G 10-11,10.4664,3.78703,25.2,-0.012,71,4.3,\"confirmed, counted as A179\",\"confirmed (per-object re-analysis 2026-10-21; grazing near-twin G+G SB2 (M 1.07 + 1.15 Msun), both eclipses 28.89/25.58 ppt, T14 2.20/2.24 h, 34 + 37 events; the deeper eclipse is at conjunction B: Gaia's SB2 'primary"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/evidence/bdada4ace8-c4-ebcats-out.txt",
+     "lines": [
+      79
+     ],
+     "snippet": [
+      "384284045 | none of the vetted/unvetted EB tables"
+     ]
+    },
+    {
+     "file": "reviews/supplement-evidence/A179-source/report.md",
+     "lines": [
+      1,
+      6,
+      42
+     ],
+     "snippet": [
+      "# TIC 384284045 (TYC 3616-2395-1, Gaia DR3 1980920834829359488): per-object vet",
+      "- Downloads, including the SPOC DV xml: `C:\\Home\\sky\\data\\qlp-sb-p20-60\\pervet384284045\\`. (Saved by the parent session; the file-write tool refused REPORT.md for the subagent.)",
+      "- **Web search** on \"TYC 3616-2395-1\" and \"TIC 384284045\": nothing relevant."
+     ]
+    }
+   ],
+   "5900468269330031744": [
+    {
+     "file": "release-sha256.csv",
+     "lines": [
+      36783
+     ],
+     "snippet": [
+      "reviews/2026-11-24-expanded-search/gaia/sources/5900468269330031744.json,081e7d0c126ec7380c79a6f53f5093a1c0b186f80b301c1bf14da4eedce6d32d"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-expanded-search/gaia/dispositions.csv",
+     "lines": [
+      20
+     ],
+     "snippet": [
+      "126460696,5900468269330031744,228.2121226137681,-51.262615562706934,hold,8.286181557280317,2358.939314,38,0.2084984503579891,275.917,6,3,12|38|102|103,98.927,-0.978,0.816,8.27375,SB1,A,-1.302584297912577,102:weak_diff|103:on_target|12:weak_diff|38:on_target,Kostov Table 2 machine flag,Sectors give h"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-expanded-search/gaia/screened.csv",
+     "lines": [
+      13
+     ],
+     "snippet": [
+      "5900468269330031744,126460696,8.27375,228.2121226137681,-51.262615562706934,35.8,hold,Sectors give highly inconsistent eclipse depths; only two of four difference images favor target. Existing Kostov Table 2 machine flag."
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-expanded-search/gaia/sha256.csv",
+     "lines": [
+      25
+     ],
+     "snippet": [
+      "sources/5900468269330031744.json,081e7d0c126ec7380c79a6f53f5093a1c0b186f80b301c1bf14da4eedce6d32d"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-expanded-search/gaia/sources/5900468269330031744.json",
+     "lines": [
+      2,
+      52,
+      594,
+      596,
+      615,
+      668,
+      703,
+      705,
+      710,
+      734,
+      744,
+      757,
+      758,
+      762
+     ],
+     "snippet": [
+      " \"gaia_dr3\": \"5900468269330031744\",",
+      "  \"source_id\": \"5900468269330031744\",",
+      "  \"gaia_dr3\": \"5900468269330031744\","
+     ]
+    }
+   ],
+   "428977802": [
+    {
+     "file": "reviews/2026-10-30-next70/shared-catalogues/c4-ebcats-out-original.txt",
+     "lines": [
+      293
+     ],
+     "snippet": [
+      "428977802 | none of the vetted/unvetted EB tables"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/evidence/bdada4ace8-c4-ebcats-out.txt",
+     "lines": [
+      293
+     ],
+     "snippet": [
+      "428977802 | none of the vetted/unvetted EB tables"
+     ]
+    }
+   ],
+   "323292655": [
+    {
+     "file": "reviews/2026-11-24-expanded-search/ffi-wider/field-selection.csv",
+     "lines": [
+      502
+     ],
+     "snippet": [
+      "2101,323292655,s0037|s0038|s0039|s0064|s0065|s0066,catalogue screen,False,False"
+     ]
+    }
+   ],
+   "3350075697770930304": [
+    {
+     "file": "reviews/2026-11-24-expanded-search/gaia/screened.csv",
+     "lines": [
+      18
+     ],
+     "snippet": [
+      "3350075697770930304,,1.62628,88.14925068268289,17.68858536922754,27.3,\"error 3350075697770930304: expected one exact Gaia TIC match, got 0\",\"error 3350075697770930304: expected one exact Gaia TIC match, got 0\""
+     ]
+    }
+   ],
+   "5633392634307163776": [
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/catalogue-matches.csv",
+     "lines": [
+      18
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,,,B/vsx/vsx:Gaia DR3 5633392634307163776:VAR:P=0.014623700000:0.2as,,,CD-28  7251,SB*,0.1,,,"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/gaia-orbits.csv",
+     "lines": [
+      13
+     ],
+     "snippet": [
+      "5633392634307163776,SB2,6.96108580484263,1.5122705E-4,-1.0388650769452774,0.13344511,0.07601178028086204,0.008083192,342.9514761166694,7.053468,79.81466872566406,1.2122735,94.66300256795384,0.94390094,31.200530268963263,0.37417763,255,\"(0.014341596, 0.014723859, -0.095245846, 0.023134481, 0.11340053"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/gaia-visits.csv",
+     "lines": [
+      1107,
+      1108,
+      1109,
+      1110,
+      1111,
+      1112,
+      1113,
+      1114,
+      1115,
+      1116,
+      1117,
+      1118,
+      1119,
+      1120,
+      1121,
+      1122,
+      1123,
+      1124,
+      1125,
+      1126
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,20457458893107237,1766.8045529966712,8.855384336887692,false,false",
+      ",189269584,5633392634307163776,21793962992997880,1790.9764351349522,8.861285784311143,false,false",
+      ",189269584,5633392634307163776,23410681228178702,1820.2160926464237,8.900401480331364,false,false"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/pixel-localizations.csv",
+     "lines": [
+      60,
+      61,
+      62
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,0,on_target,4,340.4852857548231,2.7233121834816463,1,386228.9399760356,[],,https://stpubdata.s3.us-east-1.amazonaws.com/tess/public/tid/s0062/0000/0001/8926/9584/tess2023043185947-s0062-0000000189269584-0254-s_tp.fits,6bd30f78ed81b308f935e279f6d03e0cc437216d86947bbe",
+      ",189269584,5633392634307163776,89,0,on_target,4,218.28311763657695,2.476840388650224,1,81740.55395106247,[],,https://mast.stsci.edu/tesscut/api/v0.1/astrocut?ra=141.43482404874516&dec=-29.32698292140422&x=9&y=9&sector=89,e803a3c0b2c9054ffc470ff1419ce77a9e758911476fbf26340ac8a65c0a8b63",
+      ",189269584,5633392634307163776,99,0,on_target,3,104.26064445801254,6.615759333713479,1,36086.315436801146,[],,https://mast.stsci.edu/tesscut/api/v0.1/astrocut?ra=141.43482404874516&dec=-29.32698292140422&x=9&y=9&sector=99,b84cc4939204a2e08981e5aa44d5811db8ea9f7cc031955836f19add1ee0765a"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/reviewed-stars.csv",
+     "lines": [
+      20
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,,wider Gaia window,recovery,published published B7 and earlier TCE,6.9609951,3003.80271,\"CD-28 7251, previously published published B7 with 6.9610-day twins. Three on-target images support the earlier identification.\",https://gaia.aip.de/tap/sync?REQUEST=doQuery&LANG=A"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/tess-photometry.csv",
+     "lines": [
+      118,
+      119,
+      120
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,tess2023043185947-s0062-0000000189269584-0254-s_lc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3ATESS%2Fproduct%2Ftess2023043185947-s0062-0000000189269584-0254-s_lc.fits,225ec2be323530d2a75bbad7b176f54809d37a03d49ce0ba793bbb08e0cb220e",
+      ",189269584,5633392634307163776,89,hlsp_qlp_tess_ffi_s0089-0000000189269584_tess_v01_llc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3AHLSP%2Fqlp%2Fs0089%2F0000%2F0001%2F8926%2F9584%2Fhlsp_qlp_tess_ffi_s0089-0000000189269584_tess_v01_llc.fits,6c7f1a3799cbe2b3956123ccca2de20df29010d1e6",
+      ",189269584,5633392634307163776,99,hlsp_qlp_tess_ffi_s0099-0000000189269584_tess_v01_llc.fits,https://mast.stsci.edu/api/v0.1/Download/file?uri=mast%3AHLSP%2Fqlp%2Fs0099%2F0000%2F0001%2F8926%2F9584%2Fhlsp_qlp_tess_ffi_s0099-0000000189269584_tess_v01_llc.fits,28b40786cba5a7e17e68bed8a29621380d0b2483da"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-box-fits.csv",
+     "lines": [
+      5
+     ],
+     "snippet": [
+      "5633392634307163776,189269584,6.96108580484263,1.5122705E-4,6.9609951,2989.88333,0.5121,0.30907,165.104,11,62 89 99"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-events.csv",
+     "lines": [
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,62,2989.88333,23,46,169.422,1.627",
+      ",189269584,5633392634307163776,62,2996.84433,22,90,187.154,2.22",
+      ",189269584,5633392634307163776,62,3003.80532,22,90,188.657,5.464"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-selection.csv",
+     "lines": [
+      5
+     ],
+     "snippet": [
+      "5633392634307163776,141.43482404874516,-29.32698292140422,6.96109,8.860162,,0,1,-99.0,36.7,A85,12014.21"
+     ]
+    },
+    {
+     "file": "reviews/2026-11-24-gaia-epoch-review/wider-window-vsx.csv",
+     "lines": [
+      9,
+      10
+     ],
+     "snippet": [
+      ",189269584,5633392634307163776,45.85,Gaia DR3 5633392252052067968,ACV|roAm|roAp|SXARI,,141.42284,-29.33426",
+      ",189269584,5633392634307163776,0.16,Gaia DR3 5633392634307163776,VAR,0.014623700000,141.43488,-29.32699"
+     ]
+    },
+    {
+     "file": "reviews/novelty-reconciliation/chopard-coverage.csv",
+     "lines": [
+      118
+     ],
+     "snippet": [
+      "A,B7,189269584,5633392634307163776,141.434872,-29.326988,False,False,False,,"
+     ]
+    }
+   ],
+   "6436666383265499136": [
+    {
+     "file": "reviews/novelty-reconciliation/chopard-coverage.csv",
+     "lines": [
+      117
+     ],
+     "snippet": [
+      "A,B6,464315748,6436666383265499136,279.948863,-65.889326,False,False,False,,"
+     ]
+    }
+   ]
+  },
+  "errors": {},
+  "n_scanned": 34176,
+  "sha": "6699c5fe9bf7705f489e8273ad6f4b655e3d613b",
+  "route": "zip",
+  "zip_bytes": 1947584694
+ },
+ "verdict": {
+  "HD 250735": {
+   "tic": 400170926,
+   "gaia": "3450611154067089408",
+   "role": "claimed new SB2 EB (23 Nov)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "BD+15 2743": {
+   "tic": 119613818,
+   "gaia": "1185962761030147072",
+   "role": "claimed new SB2 EB (25 Nov)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "HD 11239": {
+   "tic": 115321276,
+   "gaia": "4961129715887496320",
+   "role": "claimed new SB2 EB (26 Nov)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "HD 125386A": {
+   "tic": 1021067547,
+   "gaia": "5854558019550047872",
+   "role": "claimed new SB1 EB (26 Nov)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "HD 125386 blend": {
+   "tic": 337318750,
+   "gaia": null,
+   "role": "TIC of the blended pair HD 125386",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "TYC 6340-23-1": {
+   "tic": 71945261,
+   "gaia": "6853008555751131648",
+   "role": "claimed EB (19-20 Nov)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "TYC 3330-286-1": {
+   "tic": 428977802,
+   "gaia": null,
+   "role": "weak SB2 EB candidate",
+   "in_ijspeert2024_eb": false,
+   "in_eba": true,
+   "eba_files": [
+    "reviews/2026-10-30-next70/shared-catalogues/c4-ebcats-out-original.txt",
+    "reviews/novelty-reconciliation/evidence/bdada4ace8-c4-ebcats-out.txt"
+   ]
+  },
+  "TIC 93622019": {
+   "tic": 93622019,
+   "gaia": "5345417757181174144",
+   "role": "Gaia transit candidate",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "TIC 44997521": {
+   "tic": 44997521,
+   "gaia": "5432318139709900160",
+   "role": "Gaia transit candidate",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "TIC 4638108": {
+   "tic": 4638108,
+   "gaia": "5431056347037926784",
+   "role": "Gaia transit candidate",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "TYC 1316-1554-1": {
+   "tic": null,
+   "gaia": "3350075697770930304",
+   "role": "SB1 eclipse candidate",
+   "in_ijspeert2024_eb": null,
+   "in_eba": true,
+   "eba_files": [
+    "reviews/2026-11-24-expanded-search/gaia/screened.csv"
+   ]
+  },
+  "TYC 3384-347-1": {
+   "tic": null,
+   "gaia": "968093290740779008",
+   "role": "SB1 eclipse candidate",
+   "in_ijspeert2024_eb": null,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "UCAC4 544-021692": {
+   "tic": null,
+   "gaia": "3350386649103238016",
+   "role": "SB1 eclipse candidate",
+   "in_ijspeert2024_eb": null,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "UCAC4 468-115332": {
+   "tic": null,
+   "gaia": "4289848214689460736",
+   "role": "SB1 eclipse candidate",
+   "in_ijspeert2024_eb": null,
+   "in_eba": false,
+   "eba_files": []
+  },
+  "UCAC4 194-101841": {
+   "tic": null,
+   "gaia": "5900468269330031744",
+   "role": "SB1 eclipse candidate",
+   "in_ijspeert2024_eb": null,
+   "in_eba": true,
+   "eba_files": [
+    "release-sha256.csv",
+    "reviews/2026-11-24-expanded-search/gaia/dispositions.csv",
+    "reviews/2026-11-24-expanded-search/gaia/screened.csv",
+    "reviews/2026-11-24-expanded-search/gaia/sha256.csv",
+    "reviews/2026-11-24-expanded-search/gaia/sources/5900468269330031744.json"
+   ]
+  },
+  "TYC 3616-2395-1": {
+   "tic": 384284045,
+   "gaia": null,
+   "role": "control E1 (EbA accepted-systems row A179)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": true,
+   "eba_files": [
+    "accepted-systems.csv",
+    "batch-candidates.csv",
+    "overview/systems.csv",
+    "paper.html",
+    "reviews/2026-10-30-next70/queue-provenance.json",
+    "reviews/2026-10-30-next70/shared-catalogues/c4-ebcats-out-original.txt",
+    "reviews/2026-11-05-baseline-reconciliation/R689/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R690/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R691/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R692/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R693/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R694/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R695/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R696/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R697/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R698/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R699/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R700/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R701/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R702/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R703/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R704/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R705/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R706/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R707/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R708/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R709/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R710/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R711/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R712/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R713/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R714/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R715/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R716/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R717/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R718/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R719/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R720/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R721/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R722/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R723/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/R724/batch-shared/selection-time-ledger.csv",
+    "reviews/2026-11-05-baseline-reconciliation/known-removals/revised-identity-accounting.csv",
+    "reviews/2026-11-05-catalogue-recovery/catalogues/exact-labels.json",
+    "reviews/2026-11-05-catalogue-recovery/catalogues/positions-969.json",
+    "reviews/2026-11-05-next100/accepted-ledger.csv",
+    "reviews/2026-11-05-next100/queue-seal.json",
+    "reviews/duet-findings/masses/tic-records.csv",
+    "reviews/novelty-reconciliation/chopard-coverage.csv",
+    "reviews/novelty-reconciliation/evidence/35248bec53-batch_candidates.csv",
+    "reviews/novelty-reconciliation/evidence/bdada4ace8-c4-ebcats-out.txt",
+    "reviews/supplement-evidence/A179-source/report.md"
+   ]
+  },
+  "CD-28 7251": {
+   "tic": 189269584,
+   "gaia": "5633392634307163776",
+   "role": "control E2 (EbA CHECKCARD row B7)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": true,
+   "eba_files": [
+    "CHECKCARD.csv",
+    "paper.html",
+    "reviews/2026-10-30-next70/queue-provenance.json",
+    "reviews/2026-11-24-gaia-epoch-review/catalogue-matches.csv",
+    "reviews/2026-11-24-gaia-epoch-review/gaia-orbits.csv",
+    "reviews/2026-11-24-gaia-epoch-review/gaia-visits.csv",
+    "reviews/2026-11-24-gaia-epoch-review/pixel-localizations.csv",
+    "reviews/2026-11-24-gaia-epoch-review/reviewed-stars.csv",
+    "reviews/2026-11-24-gaia-epoch-review/tess-photometry.csv",
+    "reviews/2026-11-24-gaia-epoch-review/wider-window-box-fits.csv",
+    "reviews/2026-11-24-gaia-epoch-review/wider-window-events.csv",
+    "reviews/2026-11-24-gaia-epoch-review/wider-window-selection.csv",
+    "reviews/2026-11-24-gaia-epoch-review/wider-window-vsx.csv",
+    "reviews/novelty-reconciliation/chopard-coverage.csv"
+   ]
+  },
+  "HD 171459": {
+   "tic": 464315748,
+   "gaia": "6436666383265499136",
+   "role": "control E3 (EbA CHECKCARD row B6)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": true,
+   "eba_files": [
+    "CHECKCARD.csv",
+    "paper.html",
+    "reviews/2026-10-30-next70/queue-provenance.json",
+    "reviews/novelty-reconciliation/chopard-coverage.csv"
+   ]
+  },
+  "RS Cha": {
+   "tic": 323292655,
+   "gaia": "5209024611054646272",
+   "role": "control O1 (IJspeert 2024 EB)",
+   "in_ijspeert2024_eb": true,
+   "in_eba": true,
+   "eba_files": [
+    "reviews/2026-11-24-expanded-search/ffi-wider/field-selection.csv"
+   ]
+  },
+  "ZZ Boo": {
+   "tic": 357358259,
+   "gaia": "1450355965609917568",
+   "role": "control O1 (IJspeert 2024 EB)",
+   "in_ijspeert2024_eb": false,
+   "in_eba": false,
+   "eba_files": []
+  }
+ },
+ "grade": {
+  "V0_controls": "CONTROLS_OK",
+  "V0_eba_controls": true,
+  "V0_obaf_controls": true,
+  "V1_complete": "SCAN_COMPLETE",
+  "V2_claims": "CLAIMS_UNLISTED",
+  "V2_listed": [],
+  "V3_sb1_listed": [
+   "TYC 1316-1554-1",
+   "UCAC4 194-101841"
+  ],
+  "V4_transit_listed": []
+ },
+ "finished": "2026-11-26T15:57:02Z"
+}
