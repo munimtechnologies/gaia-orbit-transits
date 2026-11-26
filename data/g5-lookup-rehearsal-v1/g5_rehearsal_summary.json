@@ -1,0 +1,140 @@
+{
+ "R1": {
+  "label": "LOOKUP_REPAIRED",
+  "villanova_controls": {
+   "positive": true,
+   "negative": false,
+   "ok": true
+  },
+  "n_vetted": 8,
+  "n_match": 8,
+  "rows": [
+   {
+    "tic": "17342647",
+    "name": "HD 144359",
+    "expected": false,
+    "got": false,
+    "match": true
+   },
+   {
+    "tic": "79548760",
+    "name": "HD 21273",
+    "expected": true,
+    "got": true,
+    "match": true
+   },
+   {
+    "tic": "189269584",
+    "name": "CD-28 7251",
+    "expected": false,
+    "got": false,
+    "match": true
+   },
+   {
+    "tic": "238162238",
+    "name": "HIP 34208",
+    "expected": true,
+    "got": true,
+    "match": true
+   },
+   {
+    "tic": "400170926",
+    "name": "HD 250735",
+    "expected": false,
+    "got": false,
+    "match": true
+   },
+   {
+    "tic": "137501278",
+    "name": "BD+83 227",
+    "expected": true,
+    "got": true,
+    "match": true
+   },
+   {
+    "tic": "121083955",
+    "name": "BD+37 3347",
+    "expected": false,
+    "got": false,
+    "match": true
+   },
+   {
+    "tic": "384284045",
+    "name": "TYC 3616-2395-1",
+    "expected": false,
+    "got": false,
+    "match": true
+   }
+  ]
+ },
+ "R2": {
+  "counts": {
+   "KNOWN": 51,
+   "NEW_V2": 5
+  },
+  "new_v2": [
+   {
+    "tic": "17342647",
+    "source_id": "1323858527224296448",
+    "G": "6.7638574"
+   },
+   {
+    "tic": "189269584",
+    "source_id": "5633392634307163776",
+    "G": "8.860162"
+   },
+   {
+    "tic": "400170926",
+    "source_id": "3450611154067089408",
+    "G": "9.33441"
+   },
+   {
+    "tic": "121083955",
+    "source_id": "2099159459124234112",
+    "G": "9.529484"
+   },
+   {
+    "tic": "384284045",
+    "source_id": "1980920834829359488",
+    "G": "10.467624"
+   }
+  ],
+  "unvetted": []
+ },
+ "R3": {
+  "definite_share": 0.9851190476190477,
+  "n_cells": 336,
+  "label": "LOOKUPS_DEFINITE"
+ },
+ "viz_controls": {
+  "tessebs_viz": {
+   "cat": "J/ApJS/258/16",
+   "mode": "cone",
+   "tic_col": null,
+   "control": [
+    175.108298759065,
+    -6.102530195887
+   ],
+   "error": ""
+  },
+  "t10k_viz": {
+   "cat": "J/ApJS/279/50",
+   "mode": "cone",
+   "tic_col": null,
+   "control": [
+    219.00555469,
+    -27.56944137
+   ],
+   "error": ""
+  }
+ },
+ "meta": {
+  "version": "0.2.0",
+  "base_sha": "0a8883c902143934f2ca9933affb57cc01a851b1",
+  "mode": "rehearse-dr3",
+  "started": "2026-11-26T13:25:19Z",
+  "tap_schema_gaiadr3": "unavailable: Error('field larger than field limit (131072)')",
+  "schema_gate_gaiadr3": "UNTESTED",
+  "finished": "2026-11-26T13:26:26Z"
+ }
+}
