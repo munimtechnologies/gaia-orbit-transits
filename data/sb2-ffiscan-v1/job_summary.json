@@ -1,0 +1,67 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "sb2-ffiscan-v1",
+ "id": "0a4f3ec84de8",
+ "field": "astrophysics",
+ "run": "20261124T082313Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-27T14:17:18.024128+00:00",
+ "finished_at": "2026-11-27T15:16:15.984114+00:00",
+ "duration_seconds": 3537,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 330.0
+ },
+ "peak_memory_gb": 0.25,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir -r requirements.txt",
+   "exit": 0,
+   "seconds": 84
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python -m unittest -v test_sb2_ffiscan",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python sb2_ffiscan.py --self-test",
+   "exit": 0,
+   "seconds": 1
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python sb2_ffiscan.py --out-dir /out --max-minutes 300",
+   "exit": 0,
+   "seconds": 3045
+  }
+ ],
+ "out_files": [
+  "ffiscan_folds.csv",
+  "ffiscan_stars.csv",
+  "ffiscan_stars.jsonl",
+  "ffiscan_summary.json"
+ ],
+ "out_files_total": 4,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-03-python stderr] ty mask (quality_bitmask=17087).\nWarning: 30% (1003/3399) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 30% (5873/19412) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 20% (733/3623) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 23% (840/3605) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 20% (3711/18126) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 26% (3410/12904) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 32% (409/1288) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 30% (1008/3399) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 23% (3817/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 21% (1592/7705) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 25% (4783/19050) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-03-python stdout] \"snr\": 191.7975209646398, \"null_max\": 71.5427378681078, \"phase\": \"UNTESTABLE\", \"phase_z\": null, \"sec\": \"SEC_NOT_DETECTED\", \"sep\": null, \"depth_rel\": 0.022145071386652143, \"authors\": \"QLP|SPOC|TESS-SPOC\"}\n15:15:33 [161/161] Gaia DR3 5711863232999907584 target  NOT_DETECTED {\"snr\": 5.151817676744437, \"null_max\": 41.14445768480339, \"phase\": null, \"phase_z\": null, \"sec\": null, \"sep\": null, \"depth_rel\": 0.001338709622393455, \"authors\": \"QLP|TESS-SPOC\"}\n{\"truncated\": false, \"F0\": {\"label\": \"CONTROLS_OK\", \"n_controls_with_data\": 86, \"n_detected\": 82}, \"F1\": {\"label\": \"UNTESTABLE\", \"n_tested\": 0, \"n_match\": 0, \"split\": {\"eccentric\": {\"n\": 0, \"match\": 0}, \"circular\": {\"n\": 0, \"match\": 0}}, \"sep_tested\": 0, \"sep_match\": 0}, \"F2\": {\"n_targets_with_data\": 62, \"n_candidates\": 0, \"candidates\": [], \"n_phase_matched_already_in_vsx\": 0, \"already_in_vsx\": [], \"ge1\": false, \"ge3\": false, \"ge5\": false}, \"F3\": {\"label\": \"NOT_ALL_RECOVERED\", \"rows\": [{\"name\": \"CD-28 7251\", \"label\": \"DETECTED\", \"phase\": \"UNTESTABLE\", \"phase_z\": null}, {\"name\": \"HD 250735\", \"label\": \"DETECTED\", \"phase\": \"UNTESTABLE\", \"phase_z\": null}]}, \"noise\": {\"n_with_data\": 160, \"null_max_ge_snr_min\": 148, \"targets_not_detected\": 42}}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261124T082313Z-astrophysics\\ffi)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

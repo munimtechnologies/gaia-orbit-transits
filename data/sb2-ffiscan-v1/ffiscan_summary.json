@@ -1,0 +1,323 @@
+{
+ "meta": {
+  "version": "0.1.0",
+  "started": "2026-11-27T14:24:50Z",
+  "screen_url": "https://raw.githubusercontent.com/munimtechnologies/gaia-orbit-transits/80be282773812acc69c0e5d190abc25687de1f5a/data/sb2-edgeon-screen-v1/sb2_screen.csv",
+  "screen_rows": 183,
+  "screen_rows_ok": true,
+  "n_selected": 161,
+  "roles": {
+   "control": 87,
+   "toi": 4,
+   "target": 70
+  },
+  "orbit_source": "none",
+  "orbit_errors": [
+   "ESA: Error('field larger than field limit (131072)')",
+   "AIP: no rows (<?xml version=\"1.0\"?> <VOTABLE version=\"1.3\"     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"     xmlns=\"http:/)"
+  ],
+  "n_orbits": 0,
+  "finished": "2026-11-27T15:15:33Z"
+ },
+ "grades": {
+  "truncated": false,
+  "F0": {
+   "label": "CONTROLS_OK",
+   "n_controls_with_data": 86,
+   "n_detected": 82
+  },
+  "F1": {
+   "label": "UNTESTABLE",
+   "n_tested": 0,
+   "n_match": 0,
+   "split": {
+    "eccentric": {
+     "n": 0,
+     "match": 0
+    },
+    "circular": {
+     "n": 0,
+     "match": 0
+    }
+   },
+   "sep_tested": 0,
+   "sep_match": 0
+  },
+  "F2": {
+   "n_targets_with_data": 62,
+   "n_candidates": 0,
+   "candidates": [],
+   "n_phase_matched_already_in_vsx": 0,
+   "already_in_vsx": [],
+   "detected_phase_not_matched": [
+    {
+     "name": "Gaia DR3 6370053605166404992",
+     "tic": 311430361,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 294.8890806780245
+    },
+    {
+     "name": "Gaia DR3 4558912591329144064",
+     "tic": 143009538,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 167.73832843933673
+    },
+    {
+     "name": "Gaia DR3 261894152090105088",
+     "tic": 309682332,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 280.26008699372244
+    },
+    {
+     "name": "Gaia DR3 2186746353538849408",
+     "tic": 276477308,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 263.35359055712325
+    },
+    {
+     "name": "Gaia DR3 418728701136352000",
+     "tic": 452997239,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 335.315215517927
+    },
+    {
+     "name": "Gaia DR3 5697475844169557248",
+     "tic": 153514323,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 326.8271714530479
+    },
+    {
+     "name": "Gaia DR3 1226781889693185408",
+     "tic": 310396365,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 90.51178756419847
+    },
+    {
+     "name": "Gaia DR3 1584571769464585856",
+     "tic": 157332634,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 177.66783055134997
+    },
+    {
+     "name": "Gaia DR3 6374372070227419008",
+     "tic": 371839648,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 302.35990411405794
+    },
+    {
+     "name": "Gaia DR3 5642018474833614464",
+     "tic": 185806911,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 362.0145086986665
+    },
+    {
+     "name": "Gaia DR3 1993111257691035904",
+     "tic": 26804032,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 170.83349800879407
+    },
+    {
+     "name": "Gaia DR3 5597873804538618496",
+     "tic": 153734545,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 145.78494952695036
+    },
+    {
+     "name": "Gaia DR3 3443821674062259328",
+     "tic": 309334280,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 249.40736040419503
+    },
+    {
+     "name": "Gaia DR3 2599211025245327232",
+     "tic": 12653017,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 218.90493635383802
+    },
+    {
+     "name": "Gaia DR3 2825104215999846144",
+     "tic": 243126121,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 188.83495650486284
+    },
+    {
+     "name": "Gaia DR3 510467347154606592",
+     "tic": 444617279,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 162.21881555117974
+    },
+    {
+     "name": "Gaia DR3 4322674031257647744",
+     "tic": 339787086,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 214.61311636453468
+    },
+    {
+     "name": "Gaia DR3 5871568499564025472",
+     "tic": 453601725,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 206.20976917002116
+    },
+    {
+     "name": "Gaia DR3 555108687465591040",
+     "tic": 137328861,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 226.9815363658856
+    },
+    {
+     "name": "Gaia DR3 657205695088834560",
+     "tic": 82329624,
+     "phase": "UNTESTABLE",
+     "phase_z": null,
+     "snr": 232.0343259819523
+    }
+   ],
+   "ge1": false,
+   "ge3": false,
+   "ge5": false
+  },
+  "F3": {
+   "label": "NOT_ALL_RECOVERED",
+   "rows": [
+    {
+     "name": "CD-28 7251",
+     "label": "DETECTED",
+     "phase": "UNTESTABLE",
+     "phase_z": null
+    },
+    {
+     "name": "HD 250735",
+     "label": "DETECTED",
+     "phase": "UNTESTABLE",
+     "phase_z": null
+    }
+   ]
+  },
+  "noise": {
+   "n_with_data": 160,
+   "null_max_ge_snr_min": 148,
+   "targets_not_detected": 42
+  },
+  "known_hand": [
+   {
+    "name": "HD 144359",
+    "tic": 17342647,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   },
+   {
+    "name": "HD 21273",
+    "tic": 79548760,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   },
+   {
+    "name": "Gaia DR3 5508748010453477760",
+    "tic": 238162238,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   },
+   {
+    "name": "BD+83 227",
+    "tic": 137501278,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   },
+   {
+    "name": "Gaia DR3 2099159459124234112",
+    "tic": 121083955,
+    "label": "NOT_DETECTED",
+    "phase": null
+   },
+   {
+    "name": "Gaia DR3 1980920834829359488",
+    "tic": 384284045,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   }
+  ],
+  "toi": [
+   {
+    "name": "Gaia DR3 5607593418598052992",
+    "tic": 97158538,
+    "label": "NOT_DETECTED",
+    "phase": null
+   },
+   {
+    "name": "TYC 9451-1268-1",
+    "tic": 384744828,
+    "label": "NOT_DETECTED",
+    "phase": null
+   },
+   {
+    "name": "BD-12 3697",
+    "tic": 289988797,
+    "label": "NOT_DETECTED",
+    "phase": null
+   },
+   {
+    "name": "Gaia DR3 5549740136101187840",
+    "tic": 219205407,
+    "label": "DETECTED",
+    "phase": "UNTESTABLE"
+   }
+  ]
+ },
+ "params": {
+  "NB": 200,
+  "WIDTHS": [
+   1,
+   2,
+   3,
+   4,
+   6,
+   8,
+   12,
+   16,
+   24
+  ],
+  "MIN_PTS": 10,
+  "SHAPE_MIN": 0.5,
+  "ZCLIP": 8.0,
+  "SNR_MIN": 10.0,
+  "NULL_RATIO": 1.5,
+  "SNR_SEC": 7.0,
+  "Z_PHASE": 3.0,
+  "MAX_LC": 6,
+  "MAX_STEPS": 400,
+  "N_HARM": 2,
+  "NULL_FACTORS": [
+   0.7321,
+   0.7887,
+   0.8165,
+   0.8452,
+   0.933,
+   1.0718,
+   1.118,
+   1.1832,
+   1.2247,
+   1.3093,
+   1.354,
+   1.4641
+  ]
+ }
+}
