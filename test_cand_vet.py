@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Offline tests for cand_vet 0.2.0 (gaia-orbit-transits, MV2 of Munim, Inc.; made with AI agents)."""
+"""Offline tests for cand_vet 0.3.0 (gaia-orbit-transits, MV2 of Munim, Inc.; made with AI agents)."""
 import io
 import unittest
 import zipfile
@@ -27,7 +27,12 @@ class TestScan(unittest.TestCase):
         self.assertEqual(tok["5633392634307163776"], "CD-28 7251")
         self.assertEqual(tok["3350075697770930304"], "TYC 1316-1554-1")
         self.assertEqual(tok["1021067547"], "HD 125386A")
-        self.assertEqual(len(m.TARGETS), 20)
+        self.assertEqual(tok["430687563"], "TYC 3614-1907-1")
+        self.assertEqual(tok["2000830001125603968"], "TYC 3614-1907-1")
+        self.assertEqual(tok["300539729"], "BD+12 3880")
+        self.assertEqual(tok["4318964656978448768"], "BD+12 3880")
+        self.assertEqual(len(m.TARGETS), 22)
+        self.assertEqual(len(tok), len({t for t in tok}))
 
     def test_is_text(self):
         self.assertTrue(m.is_text("CHECKCARD.csv"))
@@ -103,6 +108,12 @@ class TestGrade(unittest.TestCase):
         self.assertEqual(g["V2_claims"], "CLAIMS_UNLISTED")
         self.assertEqual(g["V3_sb1_listed"], ["TYC 3384-347-1"])
         self.assertEqual(g["V4_transit_listed"], [])
+        self.assertEqual(g["V5_tier2_listed"], [])
+
+    def test_tier2_listed(self):
+        v = self._v(listed_eba=("TYC 3614-1907-1",), listed_obaf=("BD+12 3880",))
+        g = m.grade(v, {"n_scanned": 1, "n_text": 1, "skipped_large": [], "errors": {}}, True)
+        self.assertEqual(g["V5_tier2_listed"], ["TYC 3614-1907-1", "BD+12 3880"])
 
     def test_control_fail_and_claim_listed(self):
         v = self._v(listed_eba=("TYC 3616-2395-1", "CD-28 7251", "HD 11239"), listed_obaf=("ZZ Boo",))

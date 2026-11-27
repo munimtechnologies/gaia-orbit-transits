@@ -1,19 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-"""cand_vet 0.2.0 - are MV2's eclipsing-binary claims and candidates already listed anywhere in the
+"""cand_vet 0.3.0 - are MV2's eclipsing-binary claims and candidates already listed anywhere in the
 open Eclipses by Appointment catalogue, or in IJspeert et al. (2024)?
 
 gaia-orbit-transits, MV2 of Munim, Inc. Made with AI agents working in his name. Apache-2.0.
-Pre-registration: findings/2026-11-26-candidate-vet-v2-prereg.md
+Pre-registrations: findings/2026-11-26-candidate-vet-v2-prereg.md (0.2.0) and
+findings/2026-11-27-sb1-tier2-prereg.md (0.3.0 additions).
 
-Changes from 0.1.0 (which found CD-28 7251 in the catalogue's CHECKCARD.csv, a file our hand vetting
-had not read):
-  * every text file of the catalogue (.csv .tsv .json .md .html .txt), not only .csv;
-  * the whole HEAD commit is read from one codeload zip, so no file is missed silently (fallback:
-    the git tree, with a truncated listing completed by walking sub-trees);
-  * targets may have a TIC, a Gaia DR3 source_id, or both (single-lined candidates have no TIC here);
-  * three catalogue controls that must be found: TYC 3616-2395-1 (accepted-systems row A179),
-    CD-28 7251 (CHECKCARD row B7), HD 171459 (CHECKCARD row B6);
-  * the 723 MB IJspeert parent sample is no longer streamed.
+Changes from 0.2.0: two tier-2 single-lined candidates added (TYC 3614-1907-1 = TIC 430687563,
+BD+12 3880 = TIC 300539729) with their own verdict V5; output file cand_vet3.json. The search
+itself is unchanged.
 
 1. IJspeert et al. (2024, A&A 691, A242) O-F eclipsing-binary candidates, as re-published with the
    same TIC column on Zenodo record 20123193 (OBAF_EB.csv, 38 MB), searched by TIC.
@@ -34,8 +29,8 @@ import urllib.parse
 import urllib.request
 import zipfile
 
-VERSION = "0.2.0"
-UA = "gaia-orbit-transits-cand-vet/0.2 (open research script)"
+VERSION = "0.3.0"
+UA = "gaia-orbit-transits-cand-vet/0.3 (open research script)"
 OBAF_EB_URL = "https://zenodo.org/api/records/20123193/files/OBAF_EB.csv/content"
 EBA_REPO = "Snowstar38/eclipses-by-appointment"
 TEXT_EXT = (".csv", ".tsv", ".json", ".md", ".html", ".txt")
@@ -58,6 +53,8 @@ TARGETS = [
     ("UCAC4 544-021692", None, "3350386649103238016", "SB1 eclipse candidate"),
     ("UCAC4 468-115332", None, "4289848214689460736", "SB1 eclipse candidate"),
     ("UCAC4 194-101841", None, "5900468269330031744", "SB1 eclipse candidate"),
+    ("TYC 3614-1907-1", 430687563, "2000830001125603968", "tier-2 SB1 eclipse candidate (27 Nov)"),
+    ("BD+12 3880", 300539729, "4318964656978448768", "tier-2 SB1 ellipsoidal/eclipse candidate (27 Nov)"),
     ("TYC 3616-2395-1", 384284045, None, "control E1 (EbA accepted-systems row A179)"),
     ("CD-28 7251", 189269584, "5633392634307163776", "control E2 (EbA CHECKCARD row B7)"),
     ("HD 171459", 464315748, "6436666383265499136", "control E3 (EbA CHECKCARD row B6)"),
@@ -66,6 +63,7 @@ TARGETS = [
 ]
 EBA_CONTROLS = ("TYC 3616-2395-1", "CD-28 7251", "HD 171459")
 OBAF_CONTROLS = ("RS Cha", "ZZ Boo")
+TIER2 = ("TYC 3614-1907-1", "BD+12 3880")
 
 
 def fetch(url, timeout=300):
@@ -261,7 +259,8 @@ def verdicts(targets, eba_hits, obaf_hits):
 
 
 def grade(v, eba, obaf_ok):
-    """Controls and registered labels (prereg findings/2026-11-26-candidate-vet-v2-prereg.md)."""
+    """Controls and registered labels (prereg findings/2026-11-26-candidate-vet-v2-prereg.md;
+    V5 added by findings/2026-11-27-sb1-tier2-prereg.md)."""
     e_ok = all(v[c]["in_eba"] for c in EBA_CONTROLS)
     o_ok = obaf_ok and any(v[c]["in_ijspeert2024_eb"] for c in OBAF_CONTROLS)
     complete = bool(eba) and not eba.get("errors") and eba.get("n_scanned", 0) == eba.get("n_text", -1) - len(eba.get("skipped_large", []))
@@ -277,6 +276,7 @@ def grade(v, eba, obaf_ok):
         "V3_sb1_listed": [c for c in sb1 if v[c]["in_eba"]],
         "V4_transit_listed": [c for c in ("TIC 93622019", "TIC 44997521", "TIC 4638108")
                               if v[c]["in_eba"] or v[c]["in_ijspeert2024_eb"]],
+        "V5_tier2_listed": [c for c in TIER2 if v[c]["in_eba"] or v[c]["in_ijspeert2024_eb"]],
     }
 
 
@@ -315,7 +315,7 @@ def main(argv=None):
     out["verdict"] = v
     out["grade"] = grade(v, out["eba"] if "error" not in out["eba"] else {}, obaf_hits is not None)
     out["finished"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    with open(os.path.join(a.out_dir, "cand_vet2.json"), "w") as fh:
+    with open(os.path.join(a.out_dir, "cand_vet3.json"), "w") as fh:
         json.dump(out, fh, indent=1)
     print(json.dumps({"grade": out["grade"],
                       "verdict": {k: [x["in_eba"], x["in_ijspeert2024_eb"], x["eba_files"][:5]]
