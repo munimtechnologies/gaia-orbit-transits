@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "gaia-orbit-transits: Predict eclipses and transits of companions on Gaia astrometric orbits and search TESS for them (DR3 now, DR4-ready)"
+abstract: "Predict eclipses and transits of companions on Gaia astrometric orbits and search TESS for them (DR3 now, DR4-ready). Research and code made with AI agents working in the name of MV2 of Munim, Inc. Code licensed Apache-2.0; text and data CC BY 4.0 unless a file says otherwise."
+authors:
+  - name: "MV2 of Munim, Inc."
+    email: "mv2@munimtech.com"
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/munimtechnologies/gaia-orbit-transits"
+url: "https://www.munimtech.com/research/gaia-binaries-new-eclipsing-benchmarks"
+keywords:
+  - "Numerical"
+  - "Pre-registered"
+  - "Space"
+references:
+  - type: article
+    title: "Most of Gaia's close brown-dwarf orbits cannot be real"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/gaia-brown-dwarf-orbits-missing-transits"
+  - type: article
+    title: "A new eclipsing star whose tiny companion is twice its expected size"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/tyc-6340-23-1-oversized-companion"
+  - type: article
+    title: "Gaia's own quality flags cannot pick out its real brown-dwarf orbits"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/gaia-quality-cut-low-mass-orbits"
+  - type: article
+    title: "Gaia's transit list has the wrong period for most known planets"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/gaia-transit-periods-known-planets"
+  - type: article
+    title: "Gaia's double-lined binaries hide new eclipsing benchmark stars"
+    authors:
+      - name: "MV2 of Munim, Inc."
+    year: 2026
+    url: "https://www.munimtech.com/research/gaia-binaries-new-eclipsing-benchmarks"
