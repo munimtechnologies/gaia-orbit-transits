@@ -1,0 +1,15 @@
+{
+ "about": "ecl_timing 0.1.0 inputs for job hd11239-timing-v1 (MV2, Munim, Inc.; made with AI agents; written 27 Nov 2026 before the job ran). Times are BTJD = BJD_TDB - 2457000. HD 11239's reference is Gaia DR3's double-lined orbit (nss_two_body_orbit, source 4961129715887496320): conjunction times converted with Gaia time = BTJD + 1802.5, exactly as in the pre-registration findings/2026-11-26-hd11239-tess-prereg.md; P is Gaia's (+/- 3.9e-5 d). 'alt' is the linear ephemeris that sb2-ebfit-v2 fitted to TESS sectors 3 and 30 jointly. The controls' references are the sb2-ebfit-v2 fits to their SPOC 2-minute light curves (data/sb2-ebfit-v2/ebfit_summary.json); their TESS-SPOC and QLP full-frame-image light curves test the FFI pipelines' timing against SPOC in the same sectors. Secondary conjunction = primary + P/2 + (2P/pi) e cos(omega).",
+ "stars": [
+  {"name": "HD 11239", "role": "target", "tic": 115321276,
+   "ref": {"source": "Gaia DR3 SB2 orbit", "P": 3.1208263847011897, "t_conj0": 389.2946, "t_conj1": 390.8619},
+   "alt": {"source": "sb2-ebfit-v2 joint TESS fit", "t_ref": 2126.0435052550765, "P": 3.119557084973539},
+   "fwhm_d": 0.086, "window_d": 0.75, "dt_max_d": 0.45, "step_d": 0.002},
+  {"name": "CW Eri", "role": "control", "tic": 98853987,
+   "ref": {"source": "sb2-ebfit-v2 SPOC fit", "P": 2.7283707494403626, "t_conj0": 2146.6862521059106, "t_conj1": 2148.0591085},
+   "fwhm_d": 0.134, "window_d": 0.6, "dt_max_d": 0.35, "step_d": 0.001},
+  {"name": "ZZ Boo", "role": "control", "tic": 357358259,
+   "ref": {"source": "sb2-ebfit-v2 SPOC fit", "P": 4.991767720691827, "t_conj0": 1952.284014916769, "t_conj1": 1954.7799322},
+   "fwhm_d": 0.17, "window_d": 1.0, "dt_max_d": 0.4, "step_d": 0.001}
+ ]
+}
