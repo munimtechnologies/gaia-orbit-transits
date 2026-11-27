@@ -1,0 +1,23 @@
+{
+ "about": "sb1_tess_fold 0.1.0 inputs for job sb1-tier2-tess-v1 (MV2, Munim, Inc.; made with AI agents; written 27 Nov 2026 before any TESS data of these stars were examined). Orbital elements are Gaia DR3 nss_two_body_orbit values (fetched 27 Nov 2026 from the AIP Gaia TAP mirror). Tp is days from 2016.0 (BTJD 389.0). Thresholds are those of findings/2026-11-27-sb1-tier2-prereg.md.",
+ "stars": [
+  {"name": "TYC 3614-1907-1", "role": "new candidate (tier 2)", "kind": "eb", "tic": 430687563,
+   "gaia_dr3": "2000830001125603968",
+   "P": 3.3597641326623937, "sigma_P": 3.0174178e-05, "Tp": 0.15189719629668968,
+   "e": 0.021337869940452676, "omega_deg": 139.15387281478363,
+   "window_phase": 0.15, "bin_phase": 0.005, "tol_extra_d": 0.10,
+   "min_depth": 0.02, "ratio_range": [0.10, 0.60]},
+  {"name": "BD+12 3880", "role": "new candidate (tier 2)", "kind": "ell", "tic": 300539729,
+   "gaia_dr3": "4318964656978448768",
+   "P": 1.9958003486397644, "sigma_P": 1.8703797e-05, "Tp": -0.9110619774831055,
+   "e": 0.010040041785658815, "omega_deg": 97.9559822338739,
+   "window_phase": 0.17, "bin_phase": 0.005, "tol_extra_d": 0.10,
+   "min_ell_amp": 0.001},
+  {"name": "HD 76320", "role": "control (VSX EA, P 7.77292 d)", "kind": "control", "tic": 62576534,
+   "gaia_dr3": "5763596973065060096",
+   "P": 7.772944146679363, "sigma_P": 0.00014806692, "Tp": -3.253631710535638,
+   "e": 0.18021504106350542, "omega_deg": 80.57105879613859,
+   "window_phase": 0.06, "bin_phase": 0.002, "tol_extra_d": 0.10,
+   "min_depth": 0.0}
+ ]
+}
