@@ -1,0 +1,18 @@
+{
+ "name": "sb2-phase-grade-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261127T154603Z-astrophysics/grade",
+ "image": "python:3.12",
+ "setup": ["pip install --no-cache-dir -r requirements.txt"],
+ "run": [
+  "python fetch_deps.py",
+  "python -m unittest -v test_sb2_phase_grade",
+  "python sb2_phase_grade.py --out-dir /out"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-orbit-tess",
+ "cpu": 1,
+ "memory_gb": 0.5,
+ "timeout_minutes": 45
+}
