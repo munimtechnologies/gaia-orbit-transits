@@ -1,0 +1,25 @@
+{
+ "name": "ztf-cands-tess-v1",
+ "kind": "compete",
+ "workdir": "E:/MV2-Pursuit/work/20261128T143544Z-astrophysics/tessztf",
+ "image": "python:3.12",
+ "setup": [
+  "pip install --no-cache-dir --prefer-binary -r requirements.txt",
+  "python fetch_deps.py",
+  "python fetch_csv.py"
+ ],
+ "run": [
+  "python -m unittest -v test_vpt_followup",
+  "python vpt_followup.py --self-test",
+  "python vpt_followup.py --targets fu_targets.csv --out-dir /out --tmp-dir /tmp/vfu --max-sectors 99",
+  "python -m unittest -v test_ztf_recheck test_eba_scan",
+  "python eba_scan.py --out-dir /out --data-dir /data/candvet",
+  "python ztf_recheck.py --csv ztf_faint_points.csv --out-dir /out"
+ ],
+ "network": true,
+ "data_urls": [],
+ "data_key": "gaia-orbit-tess",
+ "cpu": 1,
+ "memory_gb": 2,
+ "timeout_minutes": 240
+}
