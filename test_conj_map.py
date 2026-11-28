@@ -76,5 +76,79 @@ class TestAsas3Frozen(unittest.TestCase):
         self.assertAlmostEqual(cm.binom_sf(0, 10, 0.32), 1.0, places=12)
 
 
+class TestDR4TimeOrigins(unittest.TestCase):
+    """0.2.0: ESA draft DR4 data model (2026-06-26), nss_two_body_orbit.t_periastron."""
+
+    def test_ref_epochs(self):
+        self.assertAlmostEqual(cm.ref_epoch_to_btjd(2016.0), 389.0, places=9)
+        self.assertAlmostEqual(cm.ref_epoch_to_btjd(2017.5), 936.875, places=9)
+        self.assertEqual(cm.ref_btjd(None), 389.0)
+        self.assertEqual(cm.ref_btjd("dr3"), 389.0)
+        self.assertEqual(cm.ref_btjd("DR4"), 936.875)
+        self.assertEqual(cm.ref_btjd(936.875), 936.875)
+        with self.assertRaises(ValueError):
+            cm.ref_btjd("dr5")
+        with self.assertRaises(ValueError):
+            cm.ref_btjd(float("nan"))
+
+    def test_dr4_shift(self):
+        b3, f3 = cm.conj_times(BD15["P"], BD15["tp"])
+        b4, f4 = cm.conj_times(BD15["P"], BD15["tp"], ref="dr4")
+        self.assertAlmostEqual(b4 - b3, 547.875, places=9)
+        self.assertAlmostEqual(f4 - f3, 547.875, places=9)
+        # the DR3 origin applied to a DR4 row is not a whole number of orbits away
+        cycles = 547.875 / BD15["P"]
+        self.assertGreater(abs(cycles - round(cycles)), 0.01)
+
+    def test_gaia_time(self):
+        self.assertAlmostEqual(2455197.5 + 1000.0 - 2457000.0, 1000.0 + cm.GAIA_TIME_TO_BTJD, places=9)
+
+    def test_circular_conventions(self):
+        self.assertEqual(cm.conj_phases(None, None, "SB2C"), (0.25, 0.75))
+        self.assertEqual(cm.conj_phases(None, None, "SB1"), (0.25, 0.75))
+        self.assertEqual(cm.conj_phases(None, None, "EclipsingSpectroSB2"), (0.0, 0.5))
+        self.assertEqual(cm.conj_phases(None, None, "EclipsingBinary"), (0.0, 0.5))
+        # eccentric solutions use the true periastron whatever the solution type
+        self.assertEqual(cm.conj_phases(0.3, 90.0, "EclipsingSpectroSB2"), cm.conj_phases(0.3, 90.0))
+
+    def test_tcb_tdb(self):
+        self.assertAlmostEqual(cm.tcb_minus_tdb_days(936.875) * 86400.0, 19.817, delta=0.01)
+        b0 = cm.conj_times(BD15["P"], BD15["tp"], ref="dr4")[0]
+        b1 = cm.conj_times(BD15["P"], BD15["tp"], ref="dr4", tdb=True)[0]
+        self.assertAlmostEqual(b0 - b1, 2.2936e-4, delta=1e-6)
+
+    def test_from_row_dr4_eclipsing(self):
+        row = {"period": "7.25", "t_periastron": "-2.0", "eccentricity": "", "arg_periastron": "",
+               "period_error": "0.0001", "t_periastron_error": "0.01",
+               "nss_solution_type": "EclipsingSpectroSB2", "ref_epoch": "2017.5"}
+        kw = cm.from_row(row, "dr4")
+        self.assertAlmostEqual(kw["ref"], 936.875, places=9)
+        self.assertIsNone(kw["e"])
+        t = 936.875 - 2.0 + 10 * 7.25
+        r = cm.map_eclipse(t, **kw)
+        self.assertEqual(r["conj_kind"], "star1_behind")
+        self.assertEqual(r["n_cycles"], 10)
+        self.assertAlmostEqual(r["offset_days"], 0.0, places=9)
+        self.assertAlmostEqual(r["sigma_days"], math.hypot(0.01, 0.001), places=12)
+        self.assertEqual(r["rule"], "MAP_CONJUNCTION")
+        # the same row read as a spectroscopic orbit would put the eclipse a quarter orbit off
+        kw_sb = dict(kw, solution_type="SB2C")
+        self.assertEqual(cm.map_eclipse(t, **kw_sb)["rule"], "MAP_UNRESOLVED")
+
+    def test_from_row_dr3_and_mismatch(self):
+        row = {"period": BD15["P"], "t_periastron": BD15["tp"], "period_error": BD15["P_err"],
+               "t_periastron_error": BD15["tp_err"], "nss_solution_type": "SB2C"}
+        kw = cm.from_row(row, "dr3")
+        r = cm.map_eclipse(T0_BD15, **kw)
+        self.assertEqual(r["n_cycles"], 1119)
+        self.assertEqual(r["eclipsed"], "gaia2")
+        with self.assertRaises(ValueError):
+            cm.from_row(dict(row, ref_epoch=2016.0), "dr4")
+        with self.assertRaises(ValueError):
+            cm.from_row({"period": "", "t_periastron": "1"}, "dr4")
+        with self.assertRaises(ValueError):
+            cm.from_row(row, 936.875)
+
+
 if __name__ == "__main__":
     unittest.main()
