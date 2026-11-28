@@ -1,0 +1,74 @@
+{
+ "contract": "mv2-compete-result-v1",
+ "name": "sb2-ffiscan-t2-v1",
+ "id": "76a732582e6b",
+ "field": "astrophysics",
+ "run": "20261124T130643Z-astrophysics",
+ "kind": "compete",
+ "status": "ok",
+ "reason": "",
+ "host": "dell",
+ "image": "python:3.12",
+ "started_at": "2026-11-27T22:06:15.777450+00:00",
+ "finished_at": "2026-11-27T23:32:27.772835+00:00",
+ "duration_seconds": 5171,
+ "limits": {
+  "cpu": 1.0,
+  "memory_gb": 1.5,
+  "timeout_minutes": 440.0
+ },
+ "peak_memory_gb": 0.27,
+ "network": {
+  "setup": true,
+  "run": true
+ },
+ "steps": [
+  {
+   "step": "setup-01-pip",
+   "cmd": "pip install --no-cache-dir -r requirements.txt",
+   "exit": 0,
+   "seconds": 69
+  },
+  {
+   "step": "run-01-python",
+   "cmd": "python fetch_pinned.py",
+   "exit": 0,
+   "seconds": 2
+  },
+  {
+   "step": "run-02-python",
+   "cmd": "python -m unittest -v test_sb2_tier2 test_sb2_ffiscan test_sb2_ffiscan_t2",
+   "exit": 0,
+   "seconds": 5
+  },
+  {
+   "step": "run-03-python",
+   "cmd": "python sb2_ffiscan_t2.py --self-test",
+   "exit": 0,
+   "seconds": 5
+  },
+  {
+   "step": "run-04-python",
+   "cmd": "python sb2_ffiscan_t2.py --out-dir /out --max-minutes 400",
+   "exit": 0,
+   "seconds": 4372
+  }
+ ],
+ "out_files": [
+  "ffiscan_t2_folds.csv",
+  "ffiscan_t2_roles.csv",
+  "ffiscan_t2_stars.csv",
+  "ffiscan_t2_stars.jsonl",
+  "ffiscan_t2_summary.json"
+ ],
+ "out_files_total": 5,
+ "out_skipped": [],
+ "upload_skipped": [],
+ "summary_tail": "[run-04-python stderr]  mask (quality_bitmask=17087).\nWarning: 26% (3405/12904) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 20% (3691/18307) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 39% (6550/16999) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 24% (853/3605) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 20% (1570/7705) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 31% (1061/3399) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 30% (5873/19412) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 25% (4575/18126) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 31% (1057/3399) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 23% (3816/16779) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\nWarning: 32% (410/1288) of the cadences will be ignored due to the quality mask (quality_bitmask=17087).\n[run-04-python stdout] 137.47758517790626, \"depth_rel\": 0.04845516975017663, \"phase_z\": -1.280877401637717, \"p_chance\": 0.44808316797992537, \"sec\": \"SEC_DETECTED\", \"sep\": \"SEP_MATCH\", \"authors\": \"TESS-SPOC\", \"vsx_checked\": true, \"vsx_names\": \"Gaia DR3 1874302944629647872\"}], \"n_phase_matched_already_in_vsx\": 0, \"already_in_vsx\": [], \"ge1\": true, \"ge3\": true, \"ge5\": true}, \"F3\": {\"label\": \"NOT_APPLICABLE\", \"note\": \"no hand-vetted new EBs are in tier 2\"}, \"noise\": {\"n_with_data\": 207, \"null_max_ge_snr_min\": 200, \"targets_not_detected\": 74}, \"T2F_sample\": {\"n_selected\": 240, \"predicted\": \"120-300\", \"in_range\": true, \"rowan_tier2_selected\": 10, \"rowan_tier2_expected\": 10, \"hd35131_selected\": true}, \"HD35131\": {\"name\": \"Gaia DR3 262216446435606016\", \"tic\": 309683389, \"role\": \"target\", \"label\": \"NOT_DETECTED\", \"snr\": 8.435889065209023, \"null_max\": 18.421584245643462, \"P_best\": 4.0624915202592575, \"depth_rel\": 7.656216209918321e-05, \"n_cycles\": 27, \"phase\": null, \"phase_z\": null, \"sec\": null, \"sep\": null, \"authors\": \"TESS-SPOC\", \"n_sectors\": 4}, \"roles\": {\"control\": 109, \"toi\": 2, \"target\": 129}, \"control_sources\": {\"vsx\": 106, \"gaia_eb\": 80, \"gaia_class_ecl\": 80, \"rowan\": 10}, \"vsx_unchecked\": 1, \"no_tic\": 26}\n",
+ "paths": {
+  "workdir": "/work (copy of E:\\MV2-Pursuit\\work\\20261124T130643Z-astrophysics\\ft2)",
+  "out": "/out -> out/",
+  "data": "/data (docker volume mv2c-data-gaia-orbit-tess, kept for later jobs)"
+ },
+ "note": ""
+}

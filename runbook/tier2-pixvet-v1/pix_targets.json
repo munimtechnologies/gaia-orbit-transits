@@ -1,0 +1,36 @@
+{
+ "note": "pix_vet 0.1.0 targets, frozen 2026-11-28 before the job ran. Ephemerides from sb2-ffiscan-t2-v1 (ffiscan_t2_stars.csv: T_dip1, P_best, dur_d, depth_rel); control period from Prsa et al. 2022. Positions Gaia DR3.",
+ "stars": [
+  {
+   "name": "TYC 7628-1267-1",
+   "role": "target",
+   "tic": 148478890,
+   "gaia_dr3": "5576469852185715200",
+   "ra": 102.64189990304881,
+   "dec": -38.15777005495868,
+   "neighbour": {"name": "TYC 7628-1335-1", "gaia_dr3": "5576469817825978240", "G": 11.459795,
+                 "ra": 102.63929083359567, "dec": -38.16623749637011},
+   "t0_btjd": 2590.837388448295,
+   "period_d": 7.248554846185049,
+   "dur_d": 0.28994219384740194,
+   "depth_obs": 0.04058484083040917,
+   "inject": true,
+   "sectors_prefer": [61, 87, 88, 34, 33, 7, 6]
+  },
+  {
+   "name": "TIC 270648838",
+   "role": "control",
+   "tic": 270648838,
+   "gaia_dr3": "580323718904456832",
+   "ra": 136.70043847346093,
+   "dec": 5.464556654489361,
+   "fake_neighbour_offset_arcsec": [-7.385, -30.48],
+   "t0_btjd": 2789.198401227345,
+   "period_d": 7.6353274,
+   "dur_d": 0.1527010902702598,
+   "depth_obs": 0.289088791519143,
+   "inject": false,
+   "sectors_prefer": [72, 61, 88, 46]
+  }
+ ]
+}
